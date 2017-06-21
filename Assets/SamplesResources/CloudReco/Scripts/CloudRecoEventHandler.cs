@@ -174,6 +174,12 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		//targetを発見したら画像認識機能をStop
 		mObjectTracker.TargetFinder.Stop ();
 
+		//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
+		Debug.Log("targetSearchResult.UniqueTargetId: " + targetSearchResult.UniqueTargetId);
+//		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
+		CountUp (targetSearchResult.UniqueTargetId);
+
+
 		if(targetSearchResult.MetaData == null){
 			return;
 		} else {
@@ -472,6 +478,65 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	}
 
 
+
+
+	public void CountUp(string targetId)
+	{
+		WWWForm form = new WWWForm();
+		form.AddField("targetId", targetId);
+		string POST_URL = "http://52.54.232.130:8000/api/targets/" + targetId + "/set_count_up_and_inactive/";
+		WWW www = new WWW(POST_URL, form);
+		StartCoroutine("WaitForRequest", www);
+	}
+
+	//通信の処理待ち
+	private IEnumerator WaitForRequest(WWW www)
+	{
+		yield return www;
+		connectionEnd(www);
+	}
+
+	//通信終了後の処理
+	private void connectionEnd(WWW www)
+	{
+		//通信結果をLogで出す
+		if (www.error != null)
+		{			
+			//エラー内容 -> www.error
+			Debug.Log("www.error");
+			Debug.Log(www.error);
+		}
+		else
+		{
+			//通信結果 -> www.text
+			Debug.Log("www.text");
+			Debug.Log(www.text);
+		}
+	}
+
+
+	IEnumerator CountUp2 (string targetId) {
+		string url = "http://52.54.232.130:8000/api/targets/" + targetId + "/set_count_up_and_inactive/";
+		Debug.Log (url);
+
+		WWWForm form = new WWWForm ();
+		//form.AddField ("jsondata", jsondata);
+		var www = new WWW (url, form);
+		yield return www;
+//		print (www.text);
+
+
+
+//		userData.name = "Yamada";
+//		userData.age = 20;
+//		string jsondata = JsonMapper.ToJson (userData);
+//		print (jsondata);
+//		WWWForm form = new WWWForm ();
+//		form.AddField ("jsondata", jsondata);
+//		var www = new WWW (url, form);
+//		yield return www;
+//		print (www.text);
+	}
 
     #endregion //PRIVATE_METHODS
 }
