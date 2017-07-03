@@ -200,6 +200,8 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 	//画像認識して動画を再生する(多分)
     void OnRenderObject()
     {
+		//return;	//@ToDo パフォーマンス テスト
+
 		Debug.Log ("OnRenderObject:0");	
 		Debug.Log ("mAppPaused:" + mAppPaused);	
 

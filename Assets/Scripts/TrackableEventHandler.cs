@@ -31,6 +31,8 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
     void Update()
     {
+		//return;	//@ToDo パフォーマンス テスト
+
 		Debug.Log("TrackableEventHandler:Update-0");
 
 		// Pause the video if tracking is lost for more than two seconds
