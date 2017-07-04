@@ -2705,7 +2705,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         NSLog(@"MASA -displayLinkCallback 4-");
         
         textureID = videoTextureIdGL;
-                //**** vuforiaで取得しているopenGL適用 end
+            //**** vuforiaで取得しているopenGL適用 end
         
         
         if (pixelBuffer != NULL) {

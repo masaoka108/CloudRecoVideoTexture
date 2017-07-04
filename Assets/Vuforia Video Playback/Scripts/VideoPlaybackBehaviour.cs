@@ -236,7 +236,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 				StartCoroutine(InitVideoPlayer()); 
 
 				Debug.Log ("OnRenderObject:0-4");
-				}
+			}
 
             return;
         }
@@ -254,18 +254,18 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
 		Debug.Log ("UpdateVideoData return:" + state);
 
-		//@ToDo 一旦、ストップは考えないでとりあえず再生する。
-//			if ((state == VideoPlayerHelper.MediaState.PLAYING)
-//                || (state == VideoPlayerHelper.MediaState.PLAYING_FULLSCREEN))
-//            {
+			//@ToDo 一旦、ストップは考えないでとりあえず再生する。 2017/7/3 パフォーマンスを考え修正
+			if (state == VideoPlayerHelper.MediaState.PLAYING)
+            {
 				
 			#if UNITY_WSA_10_0 && !UNITY_EDITOR
                 // For Direct3D video texture update, we need to be on the rendering thread
                 GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
 #else
+				Debug.Log ("GL.InvalidateState()");
                 GL.InvalidateState();
 #endif
-//            }
+            }
 
 		Debug.Log ("OnRenderObject:state:" + state);
 		Debug.Log ("OnRenderObject:3:" + mCurrentState);
@@ -274,15 +274,20 @@ public class VideoPlaybackBehaviour : MonoBehaviour
             if (state != mCurrentState)
             {
 
-				//@ToDo とりあえず強制的に再生させる。
-				Debug.Log ("HandleStateChange:0");
-                //HandleStateChange(state);
-				HandleStateChange(VideoPlayerHelper.MediaState.PLAYING);
-				
-				//@ToDo ここは強制的にPLAYINGにする。
-				Debug.Log ("HandleStateChange:0");
-                //mCurrentState = state;
-				mCurrentState = VideoPlayerHelper.MediaState.PLAYING;
+				//2017/7/3 パフォーマンスを考え修正
+
+//				//@ToDo とりあえず強制的に再生させる。
+//				Debug.Log ("HandleStateChange:0");
+//                //HandleStateChange(state);
+//				HandleStateChange(VideoPlayerHelper.MediaState.PLAYING);
+//				
+//				//@ToDo ここは強制的にPLAYINGにする。
+//				Debug.Log ("HandleStateChange:0");
+//                //mCurrentState = state;
+//				mCurrentState = VideoPlayerHelper.MediaState.PLAYING;
+
+                HandleStateChange(state);
+                mCurrentState = state;
             }
 
 

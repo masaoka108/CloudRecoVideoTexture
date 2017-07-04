@@ -19,16 +19,24 @@ public class VideoPlaybackTapHandler : TapHandler
     #region PROTECTED_METHODS
     protected override void OnSingleTapConfirmed()
     {
+		Debug.Log("VideoPlaybackTapHandler:OnSingleTapConfirmed:0");		
+
         base.OnSingleTapConfirmed();
+
+		Debug.Log("VideoPlaybackTapHandler:OnSingleTapConfirmed:1");		
 
         if (mPlayVideo == null)
         {
-            mPlayVideo = FindObjectOfType<PlayVideo>();
+			Debug.Log("VideoPlaybackTapHandler:OnSingleTapConfirmed:2");		
+
+			mPlayVideo = FindObjectOfType<PlayVideo>();
         }
 
         if (mPlayVideo)
         {
-            mPlayVideo.TryPickingVideo();
+			Debug.Log("VideoPlaybackTapHandler:OnSingleTapConfirmed:3");		
+
+			mPlayVideo.TryPickingVideo();
         }
     }
 

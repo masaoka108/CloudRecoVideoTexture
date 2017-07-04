@@ -151,7 +151,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
             mContentManager.ShowObject(false);
         }
 
-        ShowScanLine(scanning);
+        //ShowScanLine(scanning);
     }
 
 	[Serializable]
