@@ -179,11 +179,12 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 //		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
 		CountUp (targetSearchResult.UniqueTargetId);
 
+		VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
 
 		if(targetSearchResult.MetaData == null){
 			return;
 		} else {
-			VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
+//			VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
 
 			VuforiaRenderer.RendererAPI rendererAPI = VuforiaRenderer.Instance.GetRendererAPI();
 
@@ -218,7 +219,6 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 				} else {
 					Debug.Log ("success from title......!!!");
 				}
-
 			}
 		}
 
@@ -227,6 +227,14 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 		// enable the new result with the same ImageTargetBehaviour:
 		ImageTargetBehaviour imageTargetBehaviour = mObjectTracker.TargetFinder.EnableTracking(targetSearchResult, mParentOfImageTargetTemplate) as ImageTargetBehaviour;
+
+
+
+		//20170704 okamura add
+		video.VideoRender();
+
+
+
 
 		//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
 //		if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled()) {

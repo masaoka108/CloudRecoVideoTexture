@@ -197,34 +197,139 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 		mIsInited = false;
 	}
 
-	//画像認識して動画を再生する(多分)
-    void OnRenderObject()
-    {
-		//return;	//@ToDo パフォーマンス テスト
+//	//画像認識して動画を再生する(多分)
+//    void OnRenderObject()
+//    {
+//		//return;	//@ToDo パフォーマンス テスト
+//
+//		Debug.Log ("OnRenderObject:0");	
+//		Debug.Log ("mAppPaused:" + mAppPaused);	
+//
+//		//pause だったら何もしない
+//		if (mAppPaused) return;
+//
+//		Debug.Log ("OnRenderObject:0-1");	
+//
+//		//Iconの表示/非表示を設定。(多分)
+//        CheckIconPlaneVisibility();
+//
+//		Debug.Log ("OnRenderObject:0-2");	
+//		Debug.Log ("mIsInited:" + mIsInited);	
+//
+//        if (!mIsInited)
+//        {
+//			//Videoの初期設定が出来ていない場合
+//
+//			Debug.Log ("OnRenderObject:0-3");
+//			Debug.Log ("mInitInProgess:" + mInitInProgess);	
+//
+//			if (!mInitInProgess)
+//            {
+//				//Videoの初期設定を実行中でないなら、実行する。
+//
+//				Debug.Log ("OnRenderObject:0-3");
+//				Debug.Log ("mInitInProgess:" + mInitInProgess);	
+//
+//				mInitInProgess = true;
+//
+//				//ここから展開していく InitVideoPlayer -> LoadVideo -> PrepareVideo
+//				StartCoroutine(InitVideoPlayer()); 
+//
+//				Debug.Log ("OnRenderObject:0-4");
+//			}
+//
+//            return;
+//        }
+//
+//		Debug.Log ("OnRenderObject:1");
+//		Debug.Log ("isPlayableOnTexture" + isPlayableOnTexture);
+//
+////        if (isPlayableOnTexture)
+////        {
+//
+//			Debug.Log ("OnRenderObject:2");
+//
+//			// Update the video texture with the latest video frame
+//            VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
+//
+//
+//		Debug.Log ("UpdateVideoData return:" + state);
+//
+//			//@ToDo 一旦、ストップは考えないでとりあえず再生する。 2017/7/3 パフォーマンスを考え修正
+//			if (state == VideoPlayerHelper.MediaState.PLAYING)
+//            {
+//				
+//			#if UNITY_WSA_10_0 && !UNITY_EDITOR
+//                // For Direct3D video texture update, we need to be on the rendering thread
+//                GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
+//#else
+//				Debug.Log ("GL.InvalidateState()");
+//                GL.InvalidateState();
+//#endif
+//            }
+//
+//		Debug.Log ("OnRenderObject:state:" + state);
+//		Debug.Log ("OnRenderObject:3:" + mCurrentState);
+//
+//		// Check for playback state change
+//            if (state != mCurrentState)
+//            {
+//
+//				//2017/7/3 パフォーマンスを考え修正
+//
+////				//@ToDo とりあえず強制的に再生させる。
+////				Debug.Log ("HandleStateChange:0");
+////                //HandleStateChange(state);
+////				HandleStateChange(VideoPlayerHelper.MediaState.PLAYING);
+////				
+////				//@ToDo ここは強制的にPLAYINGにする。
+////				Debug.Log ("HandleStateChange:0");
+////                //mCurrentState = state;
+////				mCurrentState = VideoPlayerHelper.MediaState.PLAYING;
+//
+//                HandleStateChange(state);
+//                mCurrentState = state;
+//            }
+//
+//
+//
+////        }
+////        else
+////        {
+////            // Get the current status
+////            VideoPlayerHelper.MediaState state = mVideoPlayer.GetStatus();
+////            if ((state == VideoPlayerHelper.MediaState.PLAYING)
+////               || (state == VideoPlayerHelper.MediaState.PLAYING_FULLSCREEN))
+////            {
+////                GL.InvalidateState();
+////            }
+////
+////            // Check for playback state change
+////            if (state != mCurrentState)
+////            {
+////                HandleStateChange(state);
+////                mCurrentState = state;
+////            }
+////        }
+//    }
 
-		Debug.Log ("OnRenderObject:0");	
-		Debug.Log ("mAppPaused:" + mAppPaused);	
-
-		//pause だったら何もしない
-		if (mAppPaused) return;
-
-		Debug.Log ("OnRenderObject:0-1");	
-
+	public void VideoRender()
+	{
 		//Iconの表示/非表示を設定。(多分)
-        CheckIconPlaneVisibility();
+		CheckIconPlaneVisibility();
 
 		Debug.Log ("OnRenderObject:0-2");	
 		Debug.Log ("mIsInited:" + mIsInited);	
 
-        if (!mIsInited)
-        {
+		if (!mIsInited)
+		{
 			//Videoの初期設定が出来ていない場合
 
 			Debug.Log ("OnRenderObject:0-3");
 			Debug.Log ("mInitInProgess:" + mInitInProgess);	
 
 			if (!mInitInProgess)
-            {
+			{
 				//Videoの初期設定を実行中でないなら、実行する。
 
 				Debug.Log ("OnRenderObject:0-3");
@@ -238,79 +343,88 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 				Debug.Log ("OnRenderObject:0-4");
 			}
 
-            return;
-        }
+			return;
+		}
 
 		Debug.Log ("OnRenderObject:1");
 		Debug.Log ("isPlayableOnTexture" + isPlayableOnTexture);
 
-//        if (isPlayableOnTexture)
-//        {
+		Debug.Log ("OnRenderObject:2");
 
-			Debug.Log ("OnRenderObject:2");
+//		// Update the video texture with the latest video frame
+//		VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
+//
+//
+//		Debug.Log ("UpdateVideoData return:" + state);
 
-			// Update the video texture with the latest video frame
-            VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
 
-		Debug.Log ("UpdateVideoData return:" + state);
+//		if (state == VideoPlayerHelper.MediaState.PLAYING)
+//		{
+//			#if UNITY_WSA_10_0 && !UNITY_EDITOR
+//			// For Direct3D video texture update, we need to be on the rendering thread
+//			GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
+//			#else
+//			Debug.Log ("GL.InvalidateState()");
+//			GL.InvalidateState();
+//			#endif
+//		}
+//
+//		Debug.Log ("OnRenderObject:state:" + state);
+//		Debug.Log ("OnRenderObject:3:" + mCurrentState);
+//
+//		// Check for playback state change
+//		if (state != mCurrentState)
+//		{
+//			HandleStateChange(state);
+//			mCurrentState = state;
+//		}
+	}
 
-			//@ToDo 一旦、ストップは考えないでとりあえず再生する。 2017/7/3 パフォーマンスを考え修正
-			if (state == VideoPlayerHelper.MediaState.PLAYING)
-            {
-				
+	public void SetState() {
+
+		// Update the video texture with the latest video frame
+		VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
+
+
+		if (mIsInited == true && mInitInProgess == false && state == VideoPlayerHelper.MediaState.READY) 
+		{
+			Debug.Log ("SetState:1");
+			this.VideoPlayer.Play(false, 0);
+			Debug.Log ("SetState:2");
+			this.HideIcon ();
+			Debug.Log ("SetState:3");
+			this.CheckIconPlaneVisibility ();
+			Debug.Log ("SetState:4");
+		}
+
+		if (state == VideoPlayerHelper.MediaState.PLAYING)
+		{
 			#if UNITY_WSA_10_0 && !UNITY_EDITOR
-                // For Direct3D video texture update, we need to be on the rendering thread
-                GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
-#else
-				Debug.Log ("GL.InvalidateState()");
-                GL.InvalidateState();
-#endif
-            }
+			// For Direct3D video texture update, we need to be on the rendering thread
+			GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
+			#else
+			Debug.Log ("GL.InvalidateState()");
+			GL.InvalidateState();
+			#endif
+		}
 
 		Debug.Log ("OnRenderObject:state:" + state);
 		Debug.Log ("OnRenderObject:3:" + mCurrentState);
 
 		// Check for playback state change
-            if (state != mCurrentState)
-            {
-
-				//2017/7/3 パフォーマンスを考え修正
-
-//				//@ToDo とりあえず強制的に再生させる。
-//				Debug.Log ("HandleStateChange:0");
-//                //HandleStateChange(state);
-//				HandleStateChange(VideoPlayerHelper.MediaState.PLAYING);
-//				
-//				//@ToDo ここは強制的にPLAYINGにする。
-//				Debug.Log ("HandleStateChange:0");
-//                //mCurrentState = state;
-//				mCurrentState = VideoPlayerHelper.MediaState.PLAYING;
-
-                HandleStateChange(state);
-                mCurrentState = state;
-            }
+		if (state != mCurrentState)
+		{
+			HandleStateChange(state);
+			mCurrentState = state;
+		}
+	
+	}
 
 
 
-//        }
-//        else
-//        {
-//            // Get the current status
-//            VideoPlayerHelper.MediaState state = mVideoPlayer.GetStatus();
-//            if ((state == VideoPlayerHelper.MediaState.PLAYING)
-//               || (state == VideoPlayerHelper.MediaState.PLAYING_FULLSCREEN))
-//            {
-//                GL.InvalidateState();
-//            }
-//
-//            // Check for playback state change
-//            if (state != mCurrentState)
-//            {
-//                HandleStateChange(state);
-//                mCurrentState = state;
-//            }
-//        }
-    }
+
+
+
 
 
 
@@ -324,7 +438,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
 
         // Initialize the video player
-        VuforiaRenderer.RendererAPI rendererAPI = VuforiaRenderer.Instance.GetRendererAPI();
+//        VuforiaRenderer.RendererAPI rendererAPI = VuforiaRenderer.Instance.GetRendererAPI();
         
 //		//このInitでnativeのvideoPlayerInitIOS -> initWithMetalRendering 実行している。
 //		if (mVideoPlayer.Init(rendererAPI))
@@ -514,9 +628,12 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 			Debug.Log("PrepareVideo-0:mVideoPlayer.GetStatus():" + mVideoPlayer.GetStatus());
 
 			// Not in error state, we can move on...
-			while (mVideoPlayer.GetStatus() == VideoPlayerHelper.MediaState.NOT_READY)
+			//while (mVideoPlayer.GetStatus() == VideoPlayerHelper.MediaState.NOT_READY)
+			while (state == VideoPlayerHelper.MediaState.NOT_READY)
 			{
 				Debug.Log("PrepareVideo-0-1:mVideoPlayer.GetStatus():" + mVideoPlayer.GetStatus());
+
+				state = mVideoPlayer.GetStatus ();
 
 				// Wait one or few frames for video state to become ready
 				yield return new WaitForEndOfFrame();
@@ -765,12 +882,14 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     }
 
 
-    private void CheckIconPlaneVisibility()
+    public void CheckIconPlaneVisibility()
     {
         // If the video object renderer is currently enabled, we might need to toggle the icon plane visibility
         if (GetComponent<Renderer>().enabled)
         {
-            // Check if the icon plane renderer has to be disabled explicitly in case it was enabled by another script (e.g. TrackableEventHandler)
+			Debug.Log("CheckIconPlaneVisibility:1");		
+
+			// Check if the icon plane renderer has to be disabled explicitly in case it was enabled by another script (e.g. TrackableEventHandler)
             Renderer rendererComp = mIconPlane.GetComponent<Renderer>();
             if (rendererComp.enabled != mIconPlaneActive)
                 rendererComp.enabled = mIconPlaneActive;

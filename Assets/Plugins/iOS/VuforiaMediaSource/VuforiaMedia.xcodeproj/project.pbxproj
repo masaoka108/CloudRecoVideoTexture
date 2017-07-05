@@ -10,13 +10,7 @@
 		AA747D9F0F9514B9006C5449 /* VuforiaMedia_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* VuforiaMedia_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		CE5460381EB4AE53001F1416 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5460371EB4AE53001F1416 /* AVFoundation.framework */; };
-		CE54603A1EB4AE62001F1416 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5460391EB4AE62001F1416 /* CoreVideo.framework */; };
-		CE54603C1EB4AE6B001F1416 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE54603B1EB4AE6B001F1416 /* OpenGLES.framework */; };
-		CE54603E1EB4AE75001F1416 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE54603D1EB4AE75001F1416 /* CoreGraphics.framework */; };
 		CE5460401EB4AE83001F1416 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE54603F1EB4AE83001F1416 /* UIKit.framework */; };
-		CE5460421EB4AE89001F1416 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5460411EB4AE89001F1416 /* QuartzCore.framework */; };
-		CE5460441EB4AE9A001F1416 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5460431EB4AE9A001F1416 /* MobileCoreServices.framework */; };
-		CE979DCA1EAC91E5009DCA4B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE979DC91EAC91E5009DCA4B /* CoreMedia.framework */; };
 		CEAEB0EB1E8E368600FED036 /* APLEAGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = CEAEB0E91E8E368600FED036 /* APLEAGLView.h */; };
 		CEAEB0EC1E8E368600FED036 /* APLEAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAEB0EA1E8E368600FED036 /* APLEAGLView.m */; };
 		F7466C3F152D590C00AFEF41 /* VideoPlayerWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = F7466C3D152D590C00AFEF41 /* VideoPlayerWrapper.h */; };
@@ -29,13 +23,7 @@
 		AA747D9E0F9514B9006C5449 /* VuforiaMedia_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VuforiaMedia_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CE5460371EB4AE53001F1416 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		CE5460391EB4AE62001F1416 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
-		CE54603B1EB4AE6B001F1416 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		CE54603D1EB4AE75001F1416 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		CE54603F1EB4AE83001F1416 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		CE5460411EB4AE89001F1416 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		CE5460431EB4AE9A001F1416 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		CE979DC91EAC91E5009DCA4B /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		CEAEB0E91E8E368600FED036 /* APLEAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APLEAGLView.h; sourceTree = "<group>"; };
 		CEAEB0EA1E8E368600FED036 /* APLEAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APLEAGLView.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libVuforiaMedia.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libVuforiaMedia.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,14 +38,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE5460441EB4AE9A001F1416 /* MobileCoreServices.framework in Frameworks */,
-				CE5460421EB4AE89001F1416 /* QuartzCore.framework in Frameworks */,
 				CE5460401EB4AE83001F1416 /* UIKit.framework in Frameworks */,
-				CE54603E1EB4AE75001F1416 /* CoreGraphics.framework in Frameworks */,
-				CE54603C1EB4AE6B001F1416 /* OpenGLES.framework in Frameworks */,
-				CE54603A1EB4AE62001F1416 /* CoreVideo.framework in Frameworks */,
 				CE5460381EB4AE53001F1416 /* AVFoundation.framework in Frameworks */,
-				CE979DCA1EAC91E5009DCA4B /* CoreMedia.framework in Frameworks */,
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -87,14 +69,8 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CE5460431EB4AE9A001F1416 /* MobileCoreServices.framework */,
-				CE5460411EB4AE89001F1416 /* QuartzCore.framework */,
 				CE54603F1EB4AE83001F1416 /* UIKit.framework */,
-				CE54603D1EB4AE75001F1416 /* CoreGraphics.framework */,
-				CE54603B1EB4AE6B001F1416 /* OpenGLES.framework */,
-				CE5460391EB4AE62001F1416 /* CoreVideo.framework */,
 				CE5460371EB4AE53001F1416 /* AVFoundation.framework */,
-				CE979DC91EAC91E5009DCA4B /* CoreMedia.framework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 			);
 			name = Frameworks;

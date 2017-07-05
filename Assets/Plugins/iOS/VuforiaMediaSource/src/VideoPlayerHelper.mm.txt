@@ -7,6 +7,8 @@ Vuforia is a trademark of PTC Inc., registered in the United States and other
 countries.
 ==============================================================================*/
 
+// test coment 20170704
+
 #import "VideoPlayerHelper.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <AudioToolbox/AudioServices.h>
@@ -61,10 +63,10 @@ static NSString* const kTracksKey = @"tracks";
 - (id<MTLTexture>)createVideoTextureMetal;
 - (void)doSeekAndPlayAudio;
 - (void)waitForFrameTimerThreadToEnd;
-- (void)moviePlayerLoadStateChanged:(NSNotification*)notification;
-- (void)moviePlayerPlaybackDidFinish:(NSNotification*)notification;
-- (void)moviePlayerDidExitFullscreen:(NSNotification*)notification;
-- (void)moviePlayerExitAtPosition:(NSTimeInterval)position;
+//- (void)moviePlayerLoadStateChanged:(NSNotification*)notification;
+//- (void)moviePlayerPlaybackDidFinish:(NSNotification*)notification;
+//- (void)moviePlayerDidExitFullscreen:(NSNotification*)notification;
+//- (void)moviePlayerExitAtPosition:(NSTimeInterval)position;
 
 - (void)displayLinkCallback:(CADisplayLink *)sender;
 @property CADisplayLink *displayLink;
@@ -84,9 +86,9 @@ static NSString* const kTracksKey = @"tracks";
 {
     self = [super init];
     
-    if (nil != self) {
-        _moviePlayer = [[MPMoviePlayerController alloc] init];
-    }
+//    if (nil != self) {
+//        _moviePlayer = [[MPMoviePlayerController alloc] init];
+//    }
     
     return self;
 }
@@ -94,7 +96,7 @@ static NSString* const kTracksKey = @"tracks";
 
 - (void)dealloc
 {
-    [_moviePlayer release];
+//    [_moviePlayer release];
     
     [super dealloc];
 }
@@ -102,7 +104,7 @@ static NSString* const kTracksKey = @"tracks";
 
 - (void)loadView
 {
-    [self setView:_moviePlayer.view];
+//    [self setView:_moviePlayer.view];
 }
 
 
@@ -132,7 +134,10 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 #pragma mark Lifecycle
 - (id)initWithMetalRendering:(BOOL)isMetalRendering
 {
-//    //この1セットでXcodeでデバック可能となる。
+    NSLog(@"indivestigate:isMetalRendering");
+
+    
+    //    //この1セットでXcodeでデバック可能となる。
 //    CVPixelBufferRef pixelBuffer;
 //    NSLog(@"あああああ");
 //    NSLog(@"%@",pixelBuffer); //これをやるとXcodeにこのファイルが表示される！！！！
@@ -168,12 +173,32 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         // **********************************************************************
         // *** MUST DO THIS TO BE ABLE TO GET THE VIDEO SAMPLES WITHOUT ERROR ***
         // **********************************************************************
-        AudioSessionInitialize(NULL, NULL, NULL, NULL);
-        UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
-        OSStatus status = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-        UInt32 setProperty = 1;
-        status = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryMixWithOthers, sizeof(setProperty), &setProperty);
 
+        AVAudioSession *session = [AVAudioSession sharedInstance];
+        
+        // スリープモードでも再生
+        // オーディオのミックス動作のオーバーライド
+        NSError *setCategoryError = nil;
+                [session setCategory:AVAudioSessionCategoryPlayback
+                         withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                               error:&setCategoryError];
+        
+        [session setActive:YES error:nil];
+        
+
+        
+        
+//        NSError *error = [[NSError alloc] init];
+//        BOOL activated = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+        //AudioSessionInitialize(NULL, NULL, NULL, NULL);
+
+//        UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+//        OSStatus status = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+//        UInt32 setProperty = 1;
+//        status = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryMixWithOthers, sizeof(setProperty), &setProperty);
+
+        
+        
         // Initialise data
         [self resetData];
         
@@ -192,6 +217,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (void)deinit
 {
+    NSLog(@"indivestigate:deinit");
+
     // Stop playback
     (void)[self stop];
     [self resetData];
@@ -202,6 +229,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (void)dealloc
 {
+    NSLog(@"indivestigate:dealloc");
+
     [super dealloc];
 }
 
@@ -275,8 +304,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // - (BOOL)load:(NSString*)videoURL playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
 - (BOOL)load:(NSString*)filename mediaType:(MEDIA_TYPE)requestedType playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
 {
-    bool test = NO;
-	//    (void)AudioSessionSetActive(true);
+
+    NSLog(@"indivestigate:load");
+    
 	BOOL ret = NO;
 
     NSLog(@"MASA --VideoPlayerHelper load--");
@@ -290,7 +320,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         NSString* fullPath = nil;
         fullPath = [NSString stringWithString:filename];
         //NSURL *urltest = [NSURL URLWithString:fullPath];
-        NSURL *urltest = [NSURL URLWithString:[fullPath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]]];
+//        NSURL *urltest = [NSURL URLWithString:[fullPath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]]];
         
         
         //url = [fullPath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
@@ -534,6 +564,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (BOOL)loadMediaURL:(NSURL*)url
 {
+    NSLog(@"indivestigate:loadMediaURL");
+
+    
     BOOL ret = NO;
     
     NSLog(@"MASA --loadMediaURL 1--");
@@ -642,17 +675,29 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
                             [player replaceCurrentItemWithPlayerItem:item];
                             [self.videoOutput requestNotificationOfMediaDataChangeWithAdvanceInterval:ONE_FRAME_DURATION];
                             
-                            //**** とりあえず、即再生する。 start
-                            playImmediately = YES;
-                            mediaState = PLAYING;
+//                            //**** とりあえず、即再生する。 start
+//                            playImmediately = YES;
+//                            mediaState = PLAYING;
+//                            [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
+//                            //**** とりあえず、即再生する。 end
+//
+//                            NSLog(@"mediaState:%u",mediaState);
+//
+//                            playAudio = YES;
+//                            [player play];
+
+                            playImmediately = NO;
+                            mediaState = READY;
+
+                            NSLog(@"--loadMediaURL--mediaState-1:%u",mediaState);
+
                             [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
-                            //**** とりあえず、即再生する。 end
-
-//                            NSLog(@"mediaState:" + mediaState);
-                            NSLog(@"mediaState:%u",mediaState);
-
+                            
+                            NSLog(@"--loadMediaURL--mediaState-2:%u",mediaState);
+                            
                             playAudio = YES;
-                            [player play];
+//                            [player play];
+                        
                         });
                         
                     }
@@ -669,6 +714,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Unload the movie
 - (BOOL)unload
 {
+    NSLog(@"indivestigate:unload");
+    
     // Stop playback
     (void)[self stop];
     [self resetData];
@@ -687,6 +734,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Indicates whether the movie is playable on texture
 - (BOOL)isPlayableOnTexture
 {
+    NSLog(@"indivestigate:isPlayableOnTexture");
+
     // We can render local files on texture
     return YES;
 }
@@ -695,6 +744,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Indicates whether the movie is playable in fullscreen mode
 - (BOOL)isPlayableFullscreen
 {
+    NSLog(@"indivestigate:isPlayableFullscreen");
+
     // We can play both local and remote files in fullscreen mode
     return (videoType == FULLSCREEN || videoType == ON_TEXTURE_FULLSCREEN);
 }
@@ -703,6 +754,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Get the current player state
 - (MEDIA_STATE)getStatus
 {
+    NSLog(@"indivestigate:getStatus");
+
     return mediaState;
 }
 
@@ -771,6 +824,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Get the height of the video (on-texture player only)
 - (int)getVideoHeight
 {
+    NSLog(@"indivestigate:getVideoHeight");
+
     //int ret = 320;  //@ToDo 決め打ち
     int ret = -1;
     
@@ -786,6 +841,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Get the width of the video (on-texture player only)
 - (int)getVideoWidth
 {
+    NSLog(@"indivestigate:getVideoWidth");
+
 //    int ret = 460;  //@ToDo 決め打ち
     int ret = -1;
     
@@ -812,6 +869,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Get the length of the media (on-texture player only)
 - (float)getLength
 {
+    NSLog(@"indivestigate:getLength");
+
+    
     float ret = -1.0f;
 
     // Return information only for local files
@@ -1094,6 +1154,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Play the asset
 - (BOOL)play:(BOOL)fullscreen fromPosition:(float)seekPosition
 {
+    NSLog(@"indivestigate:play");
+
 
 //    [player play];
 ////    mediaState = PLAYING;
@@ -1254,6 +1316,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Pause playback (on-texture player only)
 - (BOOL)pause
 {
+    NSLog(@"indivestigate:pause");
+
 //    BOOL ret = YES;
     
     BOOL ret = NO;
@@ -1338,6 +1402,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (BOOL)stop
 {
+    NSLog(@"indivestigate:stop");
+
     BOOL ret = NO;
     
     NSLog(@"stop-0:mediaState:%u",mediaState);
@@ -1360,6 +1426,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Seek to a particular playback cursor position (on-texture player only)
 - (BOOL)seekTo:(float)position
 {
+    NSLog(@"indivestigate:seekTo");
+
     BOOL ret = NO;
 
     // Control available only when playing on texture (not the native player)
@@ -1392,6 +1460,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Get the current playback cursor position (on-texture player only)
 - (float)getCurrentPosition
 {
+    NSLog(@"indivestigate:getCurrentPosition");
+
     float ret = -1.0f;
 
     // Return information only when playing on texture (not the native player)
@@ -1416,6 +1486,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Set the volume level (on-texture player only)
 - (BOOL)setVolume:(float)volume
 {
+    NSLog(@"indivestigate:setVolume");
+
     BOOL ret = NO;
 
     // Control available only when playing on texture (not the native player)
@@ -1641,6 +1713,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Update the OpenGL video texture with the latest available video data
 - (GLuint)updateVideoData
 {
+    NSLog(@"indivestigate:updateVideoData");
+
     return mediaState;
     //return textureID;
 }
@@ -1649,6 +1723,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Create an OpenGL texture for the video data
 - (GLuint)createVideoTexture
 {
+    NSLog(@"indivestigate:createVideoTexture");
+
 	 GLuint handle;
 	 glGenTextures(1, &handle);
 	 glBindTexture(GL_TEXTURE_2D, handle);
@@ -1673,6 +1749,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
                         change:(NSDictionary*)change
                        context:(void*)context
 {
+    NSLog(@"indivestigate:observeValueForKeyPath");
+
+    
     if (AVPlayerItemStatusObservationContext == context) {
         AVPlayerItemStatus status = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
         switch (status) {
@@ -1734,25 +1813,28 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 //}
 #pragma mark - MPMoviePlayerController observation
 // Called when the movie player's media load state changes
-- (void)moviePlayerLoadStateChanged:(NSNotification*)notification;
-{
-    DEBUGLOG(@"moviePlayerLoadStateChanged");
-    if (MPMovieLoadStatePlayable & [movieViewController.moviePlayer loadState]) {
-        // If the movie is playable, set the playback time to the current cursor
-        // position (in case the on texture player is passing responsibility for
-        // playing the current media to the native player) and start playback
-        [movieViewController.moviePlayer setCurrentPlaybackTime:playerCursorPosition];
-        
-        // Use fullscreen mode
-        [movieViewController.moviePlayer setFullscreen:YES];
-        
-        // If video was playing on texture before switching to fullscreen mode,
-        // start playback
-        if (YES == resumeOnTexturePlayback) {
-            [movieViewController.moviePlayer play];
-        }
-    }
-}
+//- (void)moviePlayerLoadStateChanged:(NSNotification*)notification;
+//{
+//    NSLog(@"indivestigate:moviePlayerLoadStateChanged");
+//
+//    
+//    DEBUGLOG(@"moviePlayerLoadStateChanged");
+//    if (MPMovieLoadStatePlayable & [movieViewController.moviePlayer loadState]) {
+//        // If the movie is playable, set the playback time to the current cursor
+//        // position (in case the on texture player is passing responsibility for
+//        // playing the current media to the native player) and start playback
+//        [movieViewController.moviePlayer setCurrentPlaybackTime:playerCursorPosition];
+//        
+//        // Use fullscreen mode
+//        [movieViewController.moviePlayer setFullscreen:YES];
+//        
+//        // If video was playing on texture before switching to fullscreen mode,
+//        // start playback
+//        if (YES == resumeOnTexturePlayback) {
+//            [movieViewController.moviePlayer play];
+//        }
+//    }
+//}
 
 //
 //// Called when the movie player's media playback ends
@@ -1784,35 +1866,39 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 //    [self moviePlayerExitAtPosition:cursorPosition];
 //}
 // Called when the movie player's media playback ends
-- (void)moviePlayerPlaybackDidFinish:(NSNotification*)notification
-{
-    DEBUGLOG(@"moviePlayerPlaybackDidFinish");
-    // Determine the reason the playback finished
-    NSDictionary* dict = [notification userInfo];
-    NSNumber* reason = (NSNumber*)[dict objectForKey:@"MPMoviePlayerPlaybackDidFinishReasonUserInfoKey"];
-    
-    CFTimeInterval cursorPosition = PLAYER_CURSOR_POSITION_MEDIA_START;
-    
-    switch ([reason intValue]) {
-        case MPMovieFinishReasonPlaybackEnded:
-            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackEnded");
-            break;
-        case MPMovieFinishReasonPlaybackError:
-            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackError");
-            break;
-        case MPMovieFinishReasonUserExited:
-            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonUserExited");
-            cursorPosition = [movieViewController.moviePlayer currentPlaybackTime];
-            break;
-        default:
-            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> Unknown");
-            break;
-    }
-    
-    // no need to resume player if going back to texture
-    resumeOnTexturePlayback = NO;
-    [self moviePlayerExitAtPosition:cursorPosition];
-}
+
+//- (void)moviePlayerPlaybackDidFinish:(NSNotification*)notification
+//{
+//    NSLog(@"indivestigate:moviePlayerPlaybackDidFinish");
+//
+//    
+//    DEBUGLOG(@"moviePlayerPlaybackDidFinish");
+//    // Determine the reason the playback finished
+//    NSDictionary* dict = [notification userInfo];
+//    NSNumber* reason = (NSNumber*)[dict objectForKey:@"MPMoviePlayerPlaybackDidFinishReasonUserInfoKey"];
+//    
+//    CFTimeInterval cursorPosition = PLAYER_CURSOR_POSITION_MEDIA_START;
+//    
+//    switch ([reason intValue]) {
+//        case MPMovieFinishReasonPlaybackEnded:
+//            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackEnded");
+//            break;
+//        case MPMovieFinishReasonPlaybackError:
+//            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackError");
+//            break;
+//        case MPMovieFinishReasonUserExited:
+//            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonUserExited");
+//            cursorPosition = [movieViewController.moviePlayer currentPlaybackTime];
+//            break;
+//        default:
+//            DEBUGLOG(@"moviePlayerPlaybackDidFinish -> Unknown");
+//            break;
+//    }
+//    
+//    // no need to resume player if going back to texture
+//    resumeOnTexturePlayback = NO;
+//    [self moviePlayerExitAtPosition:cursorPosition];
+//}
 
 
 //- (void)moviePlayerDidExitFullscreen:(NSNotification*)notification
@@ -1820,11 +1906,15 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 //    DEBUGLOG(@"moviePlayerDidExitFullscreen");
 //    [self moviePlayerExitAtPosition:[moviePlayer currentPlaybackTime]];
 //}
-- (void)moviePlayerDidExitFullscreen:(NSNotification*)notification
-{
-    DEBUGLOG(@"moviePlayerDidExitFullscreen");
-    [self moviePlayerExitAtPosition:[movieViewController.moviePlayer currentPlaybackTime]];
-}
+
+//- (void)moviePlayerDidExitFullscreen:(NSNotification*)notification
+//{
+//    NSLog(@"indivestigate:moviePlayerDidExitFullscreen");
+//
+//    
+//    DEBUGLOG(@"moviePlayerDidExitFullscreen");
+//    [self moviePlayerExitAtPosition:[movieViewController.moviePlayer currentPlaybackTime]];
+//}
 
 
 //- (void)moviePlayerExitAtPosition:(NSTimeInterval)position
@@ -1868,40 +1958,44 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 //    playerType = PLAYER_TYPE_ON_TEXTURE;
 //    mediaState = READY;
 //}
-- (void)moviePlayerExitAtPosition:(NSTimeInterval)position
-{
-#ifdef DEBUG
-    NSLog(@"moviePlayerExitAtPosition: %lf", position);
-#endif
-    // Stop receiving notifications
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:movieViewController.moviePlayer];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerLoadStateDidChangeNotification object:movieViewController.moviePlayer];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerDidExitFullscreenNotification object:movieViewController.moviePlayer];
-    
-    // Stop fullscreen mode
-    [movieViewController.moviePlayer setFullscreen:NO];
-    
-    // Dismiss the MovieViewController
-    [rootViewController rootViewControllerDismissPresentedViewController];
-    
-    [movieViewController release];
-    movieViewController = nil;
-    
-    [dataLock lock];
-    // Update the playback cursor position
-    [self updatePlayerCursorPosition:position];
-    [dataLock unlock];
-    
-    // If video was playing on texture before switching to fullscreen mode,
-    // restart playback
-    if (YES == resumeOnTexturePlayback) {
-        resumeOnTexturePlayback = NO;
-        [self play:NO fromPosition:VIDEO_PLAYBACK_CURRENT_POSITION];
-    }
-    else {
-        mediaState = PAUSED;
-    }
-}
+
+//- (void)moviePlayerExitAtPosition:(NSTimeInterval)position
+//{
+//    NSLog(@"indivestigate:moviePlayerExitAtPosition");
+//
+//    
+//#ifdef DEBUG
+//    NSLog(@"moviePlayerExitAtPosition: %lf", position);
+//#endif
+//    // Stop receiving notifications
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:movieViewController.moviePlayer];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerLoadStateDidChangeNotification object:movieViewController.moviePlayer];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerDidExitFullscreenNotification object:movieViewController.moviePlayer];
+//    
+//    // Stop fullscreen mode
+//    [movieViewController.moviePlayer setFullscreen:NO];
+//    
+//    // Dismiss the MovieViewController
+//    [rootViewController rootViewControllerDismissPresentedViewController];
+//    
+//    [movieViewController release];
+//    movieViewController = nil;
+//    
+//    [dataLock lock];
+//    // Update the playback cursor position
+//    [self updatePlayerCursorPosition:position];
+//    [dataLock unlock];
+//    
+//    // If video was playing on texture before switching to fullscreen mode,
+//    // restart playback
+//    if (YES == resumeOnTexturePlayback) {
+//        resumeOnTexturePlayback = NO;
+//        [self play:NO fromPosition:VIDEO_PLAYBACK_CURRENT_POSITION];
+//    }
+//    else {
+//        mediaState = PAUSED;
+//    }
+//}
 
 
 
@@ -1910,6 +2004,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 #pragma mark Private methods
 - (void)resetData
 {
+    NSLog(@"indivestigate:resetData");
+
+    
 //    if (PLAYING == mediaState || REACHED_END == mediaState) {
 //        [player pause];
 //        [[self displayLink] setPaused:YES];
@@ -1983,6 +2080,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (BOOL)loadLocalMediaFromURL:(NSURL*)url
 {
+    NSLog(@"indivestigate:loadLocalMediaFromURL");
+
+    
     BOOL ret = NO;
     asset = [[AVURLAsset alloc] initWithURL:url options:nil];
 
@@ -2024,6 +2124,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
  // Prepare the AVURLAsset for playback
  - (BOOL)prepareAssetForPlayback
  {
+     NSLog(@"indivestigate:prepareAssetForPlayback");
+
      // Get video properties
      videoSize = [[[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] naturalSize];
 
@@ -2161,6 +2263,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Prepare the AVURLAsset for reading so we can obtain video frame data from it
 - (BOOL)prepareAssetForReading:(CMTime)startTime
 {
+    NSLog(@"indivestigate:prepareAssetForReading");
+
+    
     BOOL ret = YES;
 
     // ===== Audio =====
@@ -2200,6 +2305,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Prepare the AVPlayer object for media playback
 - (void)prepareAVPlayer
 {
+    NSLog(@"indivestigate:prepareAVPlayer");
+
+    
     // Create a player item
     AVPlayerItem* item = [AVPlayerItem playerItemWithAsset:asset];
 
@@ -2215,6 +2323,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Video frame pump timer callback
 - (void)frameTimerFired:(NSTimer*)timer;
 {
+    NSLog(@"indivestigate:frameTimerFired");
+
+    
     if (NO == stopFrameTimer) {
         [self getNextVideoFrame];
     }
@@ -2229,6 +2340,9 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // timer driving the frame pump will be accurate)
 - (void)getNextVideoFrame
 {
+    NSLog(@"indivestigate:getNextVideoFrame");
+
+    
     // Synchronise access to publicly accessible internal data.  We use tryLock
     // here to prevent possible deadlock when pause or stop are called on
     // another thread
@@ -2359,6 +2473,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Create a timer to drive the video frame pump
 - (void)createFrameTimer
 {
+    NSLog(@"indivestigate:createFrameTimer");
+
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
     frameTimer = [[NSTimer scheduledTimerWithTimeInterval:(1 / videoFrameRate) target:self selector:@selector(frameTimerFired:) userInfo:nil repeats:YES] retain];
@@ -2394,6 +2510,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Create an OpenGL texture for the video data
 - (GLuint)createVideoTextureGL
 {
+    NSLog(@"indivestigate:createVideoTextureGL");
+
     GLuint handle;
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_2D, handle);
@@ -2408,6 +2526,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Create a Metal texture for the video data
 - (id<MTLTexture>)createVideoTextureMetal
 {
+    NSLog(@"indivestigate:createVideoTextureMetal");
+
     if (metalDevice != nil)
     {
         if (MTLTextureDescriptorClass == nil) {
@@ -2433,6 +2553,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // [Always called with dataLock locked]
 - (void)updatePlayerCursorPosition:(float)position
 {
+    NSLog(@"indivestigate:updatePlayerCursorPosition");
+
     // Set the player cursor position so the native player can restart from the
     // appropriate time if play (fullscreen) is called again
     playerCursorPosition = position;
@@ -2447,6 +2569,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // [Always called with dataLock locked]
 - (BOOL)setVolumeLevel:(float)volume
 {
+    NSLog(@"indivestigate:setVolumeLevel");
+
     BOOL ret = NO;
     NSArray* arrayTracks = [asset tracksWithMediaType:AVMediaTypeAudio];
 
@@ -2480,6 +2604,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // [Always called with dataLock locked]
 - (void)doSeekAndPlayAudio
 {
+    NSLog(@"indivestigate:doSeekAndPlayAudio");
+
     if (PLAYER_CURSOR_REQUEST_COMPLETE < requestedCursorPosition) {
         // Store the cursor position from which playback will start
         playerCursorStartPosition = CMTimeMake(requestedCursorPosition * TIMESCALE, TIMESCALE);
@@ -2512,6 +2638,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Request the frame timer to terminate and wait for its thread to end
 - (void)waitForFrameTimerThreadToEnd
 {
+    NSLog(@"indivestigate:waitForFrameTimerThreadToEnd");
+
     stopFrameTimer = YES;
 
     // Wait for the frame pump thread to stop
@@ -2526,6 +2654,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // Set the video texture handle
 - (BOOL)setVideoTexturePtr:(void*)texturePtr
 {
+    NSLog(@"indivestigate:setVideoTexturePtr");
+
     if (useMetal) {
         videoTextureMetal = (id<MTLTexture>)texturePtr;
         return YES;
@@ -2539,6 +2669,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (void)onPause
 {
+    NSLog(@"indivestigate:onPause");
+
 //    if (moviePlayer != nil)
 //    {
 //        [self moviePlayerExitAtPosition:[moviePlayer currentPlaybackTime]];
@@ -2547,6 +2679,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (void)displayLinkCallback:(CADisplayLink *)sender
 {
+    NSLog(@"indivestigate:displayLinkCallback");
+
     /*
      The callback gets called once every Vsync.
      Using the display link's timestamp and duration we can compute the next time the screen will be refreshed, and copy the pixel buffer for that time

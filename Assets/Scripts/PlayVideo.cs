@@ -104,6 +104,10 @@ public class PlayVideo : MonoBehaviour
 					currentVideo.VideoPlayer.Play (false, currentVideo.VideoPlayer.GetCurrentPosition ());
 
 					currentVideo.HideIcon ();
+
+					//表示を最終的にセット 20170705
+					currentVideo.CheckIconPlaneVisibility();
+
 				} else if (state == VideoPlayerHelper.MediaState.REACHED_END) {
 					Debug.Log ("----B----");
 
@@ -123,6 +127,9 @@ public class PlayVideo : MonoBehaviour
 
 					//play アイコンを表示
 					currentVideo.ShowPlayIcon();
+
+					//表示を最終的にセット 20170705
+					currentVideo.CheckIconPlaneVisibility();
 				} else {
 					Debug.Log ("----D----");
 					currentVideo.VideoPlayer.Play(false, 0);

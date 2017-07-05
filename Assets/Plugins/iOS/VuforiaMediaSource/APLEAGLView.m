@@ -190,6 +190,7 @@ static const GLfloat kColorConversion709[] = {
 	if(_videoTextureCache) {
 		CFRelease(_videoTextureCache);
 	}
+ //   [super dealloc];
 }
 
 #pragma mark - OpenGLES drawing
