@@ -14,12 +14,16 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
     private bool mHasBeenFound = false;
     private bool mLostTracking;
     private float mSecondsSinceLost;
+
+	private VideoPlaybackBehaviour video;
     #endregion // PRIVATE_MEMBERS
 
 
     #region MONOBEHAVIOUR_METHODS
     void Start()
     {
+		video = GetComponentInChildren<VideoPlaybackBehaviour>();
+
         mTrackableBehaviour = GetComponent<TrackableBehaviour>();
         if (mTrackableBehaviour)
         {
@@ -35,6 +39,10 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
 		Debug.Log("TrackableEventHandler:Update-0");
 
+		video.SetState();
+
+		Debug.Log("TrackableEventHandler:Update-0-1");
+
 		// Pause the video if tracking is lost for more than two seconds
         if (mHasBeenFound && mLostTracking)
         {
@@ -46,7 +54,7 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
             {
 				Debug.Log("TrackableEventHandler:Update-2");
 
-				VideoPlaybackBehaviour video = GetComponentInChildren<VideoPlaybackBehaviour>();
+//				VideoPlaybackBehaviour video = GetComponentInChildren<VideoPlaybackBehaviour>();
 
 				Debug.Log("video:" + video);
 				Debug.Log("video.CurrentState:" + video.CurrentState);

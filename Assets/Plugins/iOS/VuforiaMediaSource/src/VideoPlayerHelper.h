@@ -54,7 +54,7 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 // control its behaviour exactly as we want it
 @interface MovieViewController : UIViewController
 
-@property (nonatomic, readonly) MPMoviePlayerController* moviePlayer;
+//@property (nonatomic, readonly) MPMoviePlayerController* moviePlayer;
 
 @end
 
