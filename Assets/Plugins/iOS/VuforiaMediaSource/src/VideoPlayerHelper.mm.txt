@@ -64,7 +64,7 @@ static NSString* const kTracksKey = @"tracks";
 - (void)doSeekAndPlayAudio;
 - (void)waitForFrameTimerThreadToEnd;
 //- (void)moviePlayerLoadStateChanged:(NSNotification*)notification;
-//- (void)moviePlayerPlaybackDidFinish:(NSNotification*)notification;
+- (void)moviePlayerPlaybackDidFinish:(NSNotification*)notification;
 //- (void)moviePlayerDidExitFullscreen:(NSNotification*)notification;
 //- (void)moviePlayerExitAtPosition:(NSTimeInterval)position;
 
@@ -1187,6 +1187,12 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         [player play];
     }
     
+    //動画再生終了時 onVideoEnd を実行する。
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onVideoEnd)
+                                                 name:AVPlayerItemDidPlayToEndTimeNotification
+                                               object:nil];
+    
     ret = YES;
 
     
@@ -1359,6 +1365,62 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     return ret;
 }
 
+
+- (void)onVideoEnd
+{
+    NSLog(@"video end");
+
+//    Float64 seconds = 500.0f;
+    Float64 seconds = 0.0f;
+    CMTime targetTime = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
+    [player seekToTime:targetTime
+            toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    
+    resumeOnTexturePlayback = NO;
+    
+    (void)[self stop];
+    
+    
+    
+//    player = [[[AVPlayer alloc] initWithPlayerItem:self.playerItem] autorelease];
+
+    //    self.videoPlayer = [[[AVPlayer alloc] initWithPlayerItem:self.playerItem] autorelease];
+    
+//    AVPlayerLayer* layer = ( AVPlayerLayer* )self.videoPlayerView.layer;
+//    layer.videoGravity = AVLayerVideoGravityResizeAspect;
+//    layer.player       = self.videoPlayer;
+    
+    
+//
+//        
+//        DEBUGLOG(@"moviePlayerPlaybackDidFinish");
+//        // Determine the reason the playback finished
+//        NSDictionary* dict = [notification userInfo];
+//        NSNumber* reason = (NSNumber*)[dict objectForKey:@"MPMoviePlayerPlaybackDidFinishReasonUserInfoKey"];
+//    
+//        CFTimeInterval cursorPosition = PLAYER_CURSOR_POSITION_MEDIA_START;
+//    
+//        switch ([reason intValue]) {
+//            case MPMovieFinishReasonPlaybackEnded:
+//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackEnded");
+//                break;
+//            case MPMovieFinishReasonPlaybackError:
+//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackError");
+//                break;
+//            case MPMovieFinishReasonUserExited:
+//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonUserExited");
+//                cursorPosition = [movieViewController.moviePlayer currentPlaybackTime];
+//                break;
+//            default:
+//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> Unknown");
+//                break;
+//        }
+//    
+//        // no need to resume player if going back to texture
+//        resumeOnTexturePlayback = NO;
+//        [self moviePlayerExitAtPosition:cursorPosition];
+    
+}
 
 // Stop playback (on-texture player only)
 //- (BOOL)stop

@@ -174,12 +174,24 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		//targetを発見したら画像認識機能をStop
 		mObjectTracker.TargetFinder.Stop ();
 
+
+		//video表示エフェクト particle systemを表示
+		GameObject Particle_video = GameObject.Find("Particle_video");
+		Debug.Log ("Particle_video:" + Particle_video);
+
+//		ParticleSystem PS = Particle_video.GetComponent<ParticleSystem> ();
+//		PS.Play ();
+
+
 		//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
 		Debug.Log("targetSearchResult.UniqueTargetId: " + targetSearchResult.UniqueTargetId);
 //		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
 		CountUp (targetSearchResult.UniqueTargetId);
 
+
 		VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
+
+		var targetMenuURL = "";
 
 		if(targetSearchResult.MetaData == null){
 			return;
@@ -207,6 +219,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 			Debug.Log("We got a target metadata title: " + data2.title);
 			Debug.Log("We got a target metadata url: " + data2.url);
+			targetMenuURL = data2.url; 
 			video.m_path = data2.url;
 
 			if(video != null) {
@@ -230,10 +243,17 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 
 
+
+
 		//20170704 okamura add
 		video.VideoRender();
 
-
+		// LINKのメニューを表示
+		//ターゲット メニューボタンのURLを設定
+		GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+		Debug.Log ("TargetMenuPlane:" + TargetMenuPlane);
+		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+		tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
 
 
 		//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
@@ -492,7 +512,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	{
 		WWWForm form = new WWWForm();
 		form.AddField("targetId", targetId);
-		string POST_URL = "http://52.54.232.130:8000/api/targets/" + targetId + "/set_count_up_and_inactive/";
+		string POST_URL = "https://universe.hiliberate.biz/api/targets/" + targetId + "/set_count_up_and_inactive/";
 		WWW www = new WWW(POST_URL, form);
 		StartCoroutine("WaitForRequest", www);
 	}
@@ -524,7 +544,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 
 	IEnumerator CountUp2 (string targetId) {
-		string url = "http://52.54.232.130:8000/api/targets/" + targetId + "/set_count_up_and_inactive/";
+		string url = "https://universe.hiliberate.biz/api/targets/" + targetId + "/set_count_up_and_inactive/";
 		Debug.Log (url);
 
 		WWWForm form = new WWWForm ();

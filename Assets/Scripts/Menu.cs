@@ -14,11 +14,16 @@ public class Menu : MonoBehaviour {
 	void OnGUI () {
 		// ボタンを表示する
 //		if ( GUI.Button(new Rect(50, 50, 100, 100), "Button") ) {
-		GUI.color = new Color(1,1,1,0.5f);
-		if ( GUI.Button(new Rect(25, 25, 100, 100), menu_icon) ) {
-			Debug.Log("Button is clicked.");
-			Application.OpenURL("http://52.54.232.130:8000/hlar/target/");
-		}
+
+		//これは恐らく使用していない(2017/7/23)
+//		// ボタンを半透明化
+//		GUI.color = new Color(1,1,1,0.5f);
+//
+//		// ボタン押下時の動き
+//		if ( GUI.Button(new Rect(25, 25, 100, 100), menu_icon) ) {
+//			Debug.Log("Button is clicked.");
+//			Application.OpenURL("https://universe.hiliberate.biz/hlar/target/");
+//		}
 	}
 
 	// Use this for initialization

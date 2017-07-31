@@ -43,10 +43,9 @@ public class PlayVideo : MonoBehaviour
         // Find out which video was tapped, if any
         currentVideo = PickVideo(Input.mousePosition);
 
-		Debug.Log ("path:" + currentVideo.m_path);
-
         if (currentVideo != null)
         {
+			Debug.Log ("path:" + currentVideo.m_path);
 
             Debug.Log("----2----");
 

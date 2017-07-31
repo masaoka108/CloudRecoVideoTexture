@@ -408,8 +408,8 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 			#endif
 		}
 
-		Debug.Log ("OnRenderObject:state:" + state);
-		Debug.Log ("OnRenderObject:3:" + mCurrentState);
+//		Debug.Log ("OnRenderObject:state:" + state);
+//		Debug.Log ("OnRenderObject:3:" + mCurrentState);
 
 		// Check for playback state change
 		if (state != mCurrentState)

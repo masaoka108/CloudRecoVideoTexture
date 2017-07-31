@@ -32,6 +32,12 @@ public class VideoPlaybackTapHandler : TapHandler
 			mPlayVideo = FindObjectOfType<PlayVideo>();
         }
 
+//		if (mPlayVideo == null) 
+//		{
+//			mPlayVideo = GetVideo();
+//		}
+
+
         if (mPlayVideo)
         {
 			Debug.Log("VideoPlaybackTapHandler:OnSingleTapConfirmed:3");		
@@ -76,5 +82,20 @@ public class VideoPlaybackTapHandler : TapHandler
         }
         return null;
     }
-    #endregion //PRIVATE_METHODS
+
+
+	private VideoPlaybackBehaviour GetVideo()
+	{
+		VideoPlaybackBehaviour[] videos = (VideoPlaybackBehaviour[])
+			FindObjectsOfType(typeof(VideoPlaybackBehaviour));
+
+		foreach (VideoPlaybackBehaviour video in videos)
+		{
+			return video;
+		}
+		return null;
+	}
+
+
+	#endregion //PRIVATE_METHODS
 }
