@@ -179,8 +179,13 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		GameObject Particle_video = GameObject.Find("Particle_video");
 		Debug.Log ("Particle_video:" + Particle_video);
 
-		ParticleSystem PS = Particle_video.GetComponent<ParticleSystem> ();
+//		ParticleSystem PS = Particle_video.GetComponent<ParticleSystem> ();
+//		PS.Play ();
+
+		GameObject SimpleFlame2 = GameObject.Find("SimpleFlame2(Green)");
+		ParticleSystem PS = SimpleFlame2.GetComponent<ParticleSystem> ();
 		PS.Play ();
+
 
 
 		//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
