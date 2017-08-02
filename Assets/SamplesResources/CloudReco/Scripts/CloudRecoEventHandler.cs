@@ -253,12 +253,27 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		//20170704 okamura add
 		video.VideoRender();
 
-		// LINKのメニューを表示
+		// ターゲットのメニューを設定
 		//ターゲット メニューボタンのURLを設定
 		GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
 		Debug.Log ("TargetMenuPlane:" + TargetMenuPlane);
 		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
 		tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
+
+		//ターゲットメニュー はメイン以外は初期は非表示
+		GameObject www_icon = GameObject.Find("www_icon");
+		GameObject fullscreen_icon = GameObject.Find("fullscreen_icon");
+		GameObject twitter_icon = GameObject.Find("twitter_icon");
+		GameObject fb_icon = GameObject.Find("fb_icon");
+		//GameObject insta_icon = GameObject.Find("insta_icon");
+
+		showHideGameObject (www_icon);
+		showHideGameObject (fullscreen_icon);
+		showHideGameObject (twitter_icon);
+		showHideGameObject (fb_icon);
+		//showHideGameObject (insta_icon);
+
+
 
 
 		//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
@@ -569,6 +584,31 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 //		var www = new WWW (url, form);
 //		yield return www;
 //		print (www.text);
+	}
+
+
+	//@ToDo 共通化したい
+	public void showHideGameObject(GameObject obj)
+	{
+		Material m = obj.GetComponent<Renderer> ().material;
+
+		if (m.color.a == 0) {
+			//fade in
+			fadeInGameObject(obj);
+		} else {
+			//fade out
+			fadeOutGameObject(obj);
+		}
+	}
+
+	public void fadeInGameObject(GameObject obj)
+	{
+		iTween.FadeTo(obj, iTween.Hash("alpha", 1, "time", 1, "delay", 0));
+	}
+
+	public void fadeOutGameObject(GameObject obj)
+	{
+		iTween.FadeTo(obj, iTween.Hash("alpha", 0, "time", 1));
 	}
 
     #endregion //PRIVATE_METHODS
