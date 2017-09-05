@@ -193,6 +193,10 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 //		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
 		CountUp (targetSearchResult.UniqueTargetId);
 
+		//HLARのaccess logにinsert
+		InsAccessLog (targetSearchResult.UniqueTargetId);
+
+
 
 		VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
 
@@ -536,6 +540,25 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		WWW www = new WWW(POST_URL, form);
 		StartCoroutine("WaitForRequest", www);
 	}
+
+	public void InsAccessLog(string targetId)
+	{
+		WWWForm form = new WWWForm();
+		form.AddField("targetId", targetId);
+
+		//operating_system
+		string os = WWW.EscapeURL(SystemInfo.operatingSystem);
+
+		//device_unique_identifier
+		string ui = WWW.EscapeURL(SystemInfo.deviceUniqueIdentifier);
+
+		// アクセス URL
+		string POST_URL = "https://universe.hiliberate.biz/api/targets/" + targetId + "/ins_access_log/?os=" + os + "&ui" + ui;
+		WWW www = new WWW(POST_URL, form);
+		StartCoroutine("WaitForRequest", www);
+	}
+
+
 
 	//通信の処理待ち
 	private IEnumerator WaitForRequest(WWW www)
