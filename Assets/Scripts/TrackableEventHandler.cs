@@ -39,6 +39,8 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
 //		Debug.Log("TrackableEventHandler:Update-0");
 
+		Debug.Log ("Update:0");
+
 		video.SetState();
 
 //		Debug.Log("TrackableEventHandler:Update-0-1");

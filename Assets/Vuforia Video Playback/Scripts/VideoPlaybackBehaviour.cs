@@ -385,6 +385,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 		// Update the video texture with the latest video frame
 		VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
 
+		Debug.Log ("SetState:0:" + state);
 
 		if (mIsInited == true && mInitInProgess == false && state == VideoPlayerHelper.MediaState.READY) 
 		{
@@ -408,12 +409,23 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 			#endif
 		}
 
+		// ビデオがstopしているのにiconが表示されていない場合は表示
+		if (state == VideoPlayerHelper.MediaState.STOPPED || state == VideoPlayerHelper.MediaState.REACHED_END || state == VideoPlayerHelper.MediaState.PAUSED) {
+			Debug.Log ("SetState:5");
+			ShowPlayIcon ();
+		}
+
+
 //		Debug.Log ("OnRenderObject:state:" + state);
 //		Debug.Log ("OnRenderObject:3:" + mCurrentState);
 
 		// Check for playback state change
 		if (state != mCurrentState)
 		{
+			Debug.Log ("SetState:6");
+			Debug.Log (state);
+			Debug.Log (mCurrentState);
+
 			HandleStateChange(state);
 			mCurrentState = state;
 		}
@@ -764,7 +776,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     {
         mIconPlane.GetComponent<Renderer>().material.mainTexture = m_playTexture;
 		mIconPlaneActive = true;	//oka add 20170510
-    }
+	}
 
 	//oka add 20170510
 	public void HideIcon()
@@ -823,10 +835,11 @@ public class VideoPlaybackBehaviour : MonoBehaviour
         // Display the appropriate icon, or disable if not needed
         switch (newState)
         {
-            case VideoPlayerHelper.MediaState.READY:
-            case VideoPlayerHelper.MediaState.REACHED_END:
-            case VideoPlayerHelper.MediaState.PAUSED:
-            case VideoPlayerHelper.MediaState.STOPPED:
+			case VideoPlayerHelper.MediaState.READY:
+			case VideoPlayerHelper.MediaState.REACHED_END:
+			case VideoPlayerHelper.MediaState.PAUSED:
+			case VideoPlayerHelper.MediaState.STOPPED:
+				Debug.Log ("HandleStateChange-0-:" + m_playTexture);
                 mIconPlane.GetComponent<Renderer>().material.mainTexture = m_playTexture;
                 mIconPlaneActive = true;
                 break;

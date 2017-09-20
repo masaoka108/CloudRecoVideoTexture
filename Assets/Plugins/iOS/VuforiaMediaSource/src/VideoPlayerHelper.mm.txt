@@ -1377,7 +1377,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
             toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     
     resumeOnTexturePlayback = NO;
-    
+    mediaState = REACHED_END;
     (void)[self stop];
     
     
