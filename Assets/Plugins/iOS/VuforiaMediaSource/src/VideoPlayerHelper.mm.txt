@@ -2802,13 +2802,23 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         const size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
 
         //if (bytesPerRow / BYTES_PER_TEXEL == videoSize.width) {
+
+        NSLog(@"%ld",bytesPerRow);
+        NSLog(@"%d",BYTES_PER_TEXEL);
+        NSLog(@"%ld",CVPixelBufferGetWidth(pixelBuffer));
+        
+        NSLog(@"MASA -displayLinkCallback 2-");
+
+        
         if (bytesPerRow / BYTES_PER_TEXEL == CVPixelBufferGetWidth(pixelBuffer)) {
             // No padding between lines of decoded video
 
             NSLog(@"MASA -displayLinkCallback 2-");
 
             if (useMetal) {
-//                MTLRegion videoRegion = MTLRegionMake2D(0, 0, videoSize.width, videoSize.height);
+                NSLog(@"MASA -displayLinkCallback 2 useMetal-");
+                
+                // MTLRegion videoRegion = MTLRegionMake2D(0, 0, videoSize.width, videoSize.height);
                 MTLRegion videoRegion = MTLRegionMake2D(0, 0, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer));
                 [videoTextureMetal replaceRegion:videoRegion mipmapLevel:0 withBytes:pixelBufferBaseAddress bytesPerRow:bytesPerRow];
             }
@@ -2838,11 +2848,24 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 //                    MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
 //                    [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
 //                }
-                for (int i = 0; i < CVPixelBufferGetHeight(pixelBuffer); ++i) {
-                    unsigned char* line = pixelBufferBaseAddress + i * bytesPerRow;
-                    MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
-                    [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
-                }
+
+                
+                NSLog(@"MASA -displayLinkCallback 3 useMetal-");
+
+                
+                
+                //これでいけるはずだったが、、、
+//                for (int i = 0; i < CVPixelBufferGetHeight(pixelBuffer); ++i) {
+//                    unsigned char* line = pixelBufferBaseAddress + i * bytesPerRow;
+//                    MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
+//                    [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
+//                }
+                
+                NSLog(@"MASA -displayLinkCallback 2 useMetal-");
+                
+                // 試しに上のコードで処理してみる。
+                MTLRegion videoRegion = MTLRegionMake2D(0, 0, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer));
+                [videoTextureMetal replaceRegion:videoRegion mipmapLevel:0 withBytes:pixelBufferBaseAddress bytesPerRow:bytesPerRow];
             }
             else {
                 // Allocate storage for the texture (correctly sized)
@@ -2889,6 +2912,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
         
         if (!useMetal) {
+            NSLog(@"MASA -displayLinkCallback !useMetal-");
+            
             // Unbind OpenGL texture
             glBindTexture(GL_TEXTURE_2D, 0);
         }

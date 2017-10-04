@@ -474,8 +474,9 @@ const char *GADUNativeCustomTemplateAdImageAsBytesForKey(
       (__bridge GADUNativeCustomTemplateAd *)nativeCustomTemplateAd;
   NSData *imageData = UIImageJPEGRepresentation(
       [internalNativeCustomTemplateAd imageForKey:GADUStringFromUTF8String(key)], 0.0);
-  NSString *base64String = [imageData base64Encoding];
-  return cStringCopy(base64String.UTF8String);
+//  NSString *base64String = [imageData base64Encoding];
+  NSString *base64String = [imageData base64EncodedStringWithOptions:0];
+    return cStringCopy(base64String.UTF8String);
 }
 
 /// Returns the string corresponding to the specifed key.

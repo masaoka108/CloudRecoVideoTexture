@@ -53,7 +53,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     private static bool sLoadingLocked = false;
 
     private VideoPlayerHelper mVideoPlayer = null;
-    private bool mIsInited = false;
+    public bool mIsInited = false;
     private bool mInitInProgess = false;
     private bool mAppPaused = false;
 
@@ -133,7 +133,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
     void Start()
     {
-		Debug.Log ("Start:0");	
+		Debug.Log ("VideoPlaybackBehaviour:Start:0");	
 
         // Find the icon plane (child of this object)
         mIconPlane = transform.Find("Icon").gameObject;
@@ -152,7 +152,12 @@ public class VideoPlaybackBehaviour : MonoBehaviour
             HandleStateChange(VideoPlayerHelper.MediaState.NOT_READY);
             mCurrentState = VideoPlayerHelper.MediaState.NOT_READY;
         }
-        // Create the video player and set the filename
+
+		Debug.Log ("VideoPlaybackBehaviour:Start:0");	
+		Debug.Log ("VideoPlaybackBehaviour:Start:1");	
+		Debug.Log (m_path);
+
+		// Create the video player and set the filename
         mVideoPlayer = new VideoPlayerHelper();
         mVideoPlayer.SetFilename(m_path);
 

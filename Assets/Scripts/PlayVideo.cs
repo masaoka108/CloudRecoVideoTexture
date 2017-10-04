@@ -43,111 +43,117 @@ public class PlayVideo : MonoBehaviour
         // Find out which video was tapped, if any
         currentVideo = PickVideo(Input.mousePosition);
 
-        if (currentVideo != null)
-        {
-			Debug.Log ("path:" + currentVideo.m_path);
 
-            Debug.Log("----2----");
+		if (currentVideo != null && currentVideo.mIsInited == true) {
 
+			if (currentVideo != null)
+			{
+				Debug.Log ("path:" + currentVideo.m_path);
 
-            if (playFullscreen)
-            {
-
-                Debug.Log("----3----");
-
-                if (currentVideo.VideoPlayer.IsPlayableFullscreen())
-                {
-                    Debug.Log("----4----");
+				Debug.Log("----2----");
 
 
-                    // Pause the video if it is currently playing
-                    currentVideo.VideoPlayer.Pause();
+				if (playFullscreen)
+				{
 
-                    // Seek the video to the beginning();
-                    currentVideo.VideoPlayer.SeekTo(0.0f);
+					Debug.Log("----3----");
 
-                    // Display the busy icon
-                    currentVideo.ShowBusyIcon();
-
-                    // Play the video full screen
-                    StartCoroutine( PlayFullscreenVideoAtEndOfFrame(currentVideo) );
-                }
-            }
-            else
-            {
-
-                Debug.Log("----5----");
+					if (currentVideo.VideoPlayer.IsPlayableFullscreen())
+					{
+						Debug.Log("----4----");
 
 
-                // if (currentVideo.VideoPlayer.IsPlayableOnTexture())
-                // {
+						// Pause the video if it is currently playing
+						currentVideo.VideoPlayer.Pause();
 
-                    Debug.Log("----6----");
+						// Seek the video to the beginning();
+						currentVideo.VideoPlayer.SeekTo(0.0f);
 
+						// Display the busy icon
+						currentVideo.ShowBusyIcon();
 
-                    // This video is playable on a texture, toggle playing/paused
-                    VideoPlayerHelper.MediaState state = currentVideo.VideoPlayer.GetStatus();
-
-				Debug.Log("TryPickingVideo state:" + state);
-
-				if (state == VideoPlayerHelper.MediaState.PAUSED ||
-				                    state == VideoPlayerHelper.MediaState.READY ||
-				                    state == VideoPlayerHelper.MediaState.STOPPED) {
-					Debug.Log ("----A----");
-
-					// Pause other videos before playing this one
-					PauseOtherVideos (currentVideo);
-
-					// Play this video on texture where it left off
-					// nativeのplayにアクセス
-					currentVideo.VideoPlayer.Play (false, currentVideo.VideoPlayer.GetCurrentPosition ());
-
-					currentVideo.HideIcon ();
-
-					//表示を最終的にセット 20170705
-					currentVideo.CheckIconPlaneVisibility();
-
-				} else if (state == VideoPlayerHelper.MediaState.REACHED_END) {
-					Debug.Log ("----B----");
-
-					// Pause other videos before playing this one
-					PauseOtherVideos (currentVideo);
-
-					// Play this video from the beginning
-					currentVideo.VideoPlayer.Play (false, 0);
-				} else if (state == VideoPlayerHelper.MediaState.PLAYING) {
-					Debug.Log ("----C----");
-
-					// Video is already playing, pause it
-					// nativeのpauseにアクセス
-					currentVideo.VideoPlayer.Pause ();
-
-					//currentVideo.OnApplicationPause (true);
-
-					//play アイコンを表示
-					currentVideo.ShowPlayIcon();
-
-					//表示を最終的にセット 20170705
-					currentVideo.CheckIconPlaneVisibility();
-				} else {
-					Debug.Log ("----D----");
-					currentVideo.VideoPlayer.Play(false, 0);
-                    Debug.Log ("----E----");
+						// Play the video full screen
+						StartCoroutine( PlayFullscreenVideoAtEndOfFrame(currentVideo) );
+					}
 				}
+				else
+				{
 
-//                 }
-//                 else
-//                 {
-//                     // Display the busy icon
-//                     currentVideo.ShowBusyIcon();
-//
-// Debug.Log("----7----");
-//
-//                     // This video cannot be played on a texture, play it full screen
-//                     StartCoroutine( PlayFullscreenVideoAtEndOfFrame(currentVideo) );
-//                 }
-            }
-        }
+					Debug.Log("----5----");
+
+
+					// if (currentVideo.VideoPlayer.IsPlayableOnTexture())
+					// {
+
+					Debug.Log("----6----");
+
+
+					// This video is playable on a texture, toggle playing/paused
+					VideoPlayerHelper.MediaState state = currentVideo.VideoPlayer.GetStatus();
+
+					Debug.Log("TryPickingVideo state:" + state);
+
+					if (state == VideoPlayerHelper.MediaState.PAUSED ||
+						state == VideoPlayerHelper.MediaState.READY ||
+						state == VideoPlayerHelper.MediaState.STOPPED) {
+						Debug.Log ("----A----");
+
+						// Pause other videos before playing this one
+						PauseOtherVideos (currentVideo);
+
+						// Play this video on texture where it left off
+						// nativeのplayにアクセス
+						currentVideo.VideoPlayer.Play (false, currentVideo.VideoPlayer.GetCurrentPosition ());
+
+						currentVideo.HideIcon ();
+
+						//表示を最終的にセット 20170705
+						currentVideo.CheckIconPlaneVisibility();
+
+					} else if (state == VideoPlayerHelper.MediaState.REACHED_END) {
+						Debug.Log ("----B----");
+
+						// Pause other videos before playing this one
+						PauseOtherVideos (currentVideo);
+
+						// Play this video from the beginning
+						currentVideo.VideoPlayer.Play (false, 0);
+					} else if (state == VideoPlayerHelper.MediaState.PLAYING) {
+						Debug.Log ("----C----");
+
+						// Video is already playing, pause it
+						// nativeのpauseにアクセス
+						currentVideo.VideoPlayer.Pause ();
+
+						//currentVideo.OnApplicationPause (true);
+
+						//play アイコンを表示
+						currentVideo.ShowPlayIcon();
+
+						//表示を最終的にセット 20170705
+						currentVideo.CheckIconPlaneVisibility();
+					} else {
+						Debug.Log ("----D----");
+						currentVideo.VideoPlayer.Play(false, 0);
+						Debug.Log ("----E----");
+					}
+
+					//                 }
+					//                 else
+					//                 {
+					//                     // Display the busy icon
+					//                     currentVideo.ShowBusyIcon();
+					//
+					// Debug.Log("----7----");
+					//
+					//                     // This video cannot be played on a texture, play it full screen
+					//                     StartCoroutine( PlayFullscreenVideoAtEndOfFrame(currentVideo) );
+					//                 }
+				}
+			}
+
+		
+		}
     }
 
     public static IEnumerator PlayFullscreenVideoAtEndOfFrame(VideoPlaybackBehaviour video)
