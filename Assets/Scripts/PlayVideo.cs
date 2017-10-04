@@ -44,7 +44,7 @@ public class PlayVideo : MonoBehaviour
         currentVideo = PickVideo(Input.mousePosition);
 
 
-		if (currentVideo.mIsInited == true && currentVideo != null) {
+		if (currentVideo != null && currentVideo.mIsInited == true) {
 
 			if (currentVideo != null)
 			{

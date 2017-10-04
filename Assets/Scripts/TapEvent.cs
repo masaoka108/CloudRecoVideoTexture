@@ -50,10 +50,10 @@ public class TapEvent : MonoBehaviour {
 		if (obj != null) {
 			
 			if (obj.name == "TargetMenuPlane") {
-				GameObject www_icon = GameObject.Find("www_icon");
-				GameObject fullscreen_icon = GameObject.Find("fullscreen_icon");
-				GameObject twitter_icon = GameObject.Find("twitter_icon");
-				GameObject fb_icon = GameObject.Find("fb_icon");
+				GameObject www_icon = GameObject.Find ("www_icon");
+				GameObject fullscreen_icon = GameObject.Find ("fullscreen_icon");
+				GameObject twitter_icon = GameObject.Find ("twitter_icon");
+				GameObject fb_icon = GameObject.Find ("fb_icon");
 				//GameObject insta_icon = GameObject.Find("insta_icon");
 
 				showHideGameObject (www_icon);
@@ -64,20 +64,20 @@ public class TapEvent : MonoBehaviour {
 
 			} else if (obj.name == "www_icon") {
 				//www アイコン
-				if (getVisibleGameObject(obj)) {
-					Application.OpenURL(targetURL);
+				if (getVisibleGameObject (obj)) {
+					Application.OpenURL (targetURL);
 				}
 			} else if (obj.name == "fullscreen_icon") {
 				//fullscreen アイコン
-				if (getVisibleGameObject(obj)) {
-					VideoPlaybackBehaviour video = PickVideo();
+				if (getVisibleGameObject (obj)) {
+					VideoPlaybackBehaviour video = PickVideo ();
 
 					Debug.Log ("fullscreen アイコン");
 					Debug.Log (video);
 
 					if (video != null) {
 //						// Pause the video if it is currently playing
-						video.VideoPlayer.Pause();
+						video.VideoPlayer.Pause ();
 //
 //						// Seek the video to the beginning();
 //						video.VideoPlayer.SeekTo(0.0f);
@@ -90,41 +90,50 @@ public class TapEvent : MonoBehaviour {
 //
 
 
-						Handheld.PlayFullScreenMovie(targetURL, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFit);
+						Handheld.PlayFullScreenMovie (targetURL, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFit);
 					}
 
 				}
 			} else if (obj.name == "twitter_icon") {
 				//twitter アイコン
-				if (getVisibleGameObject(obj)) {
+				if (getVisibleGameObject (obj)) {
 					//@ToDo ここでターゲット画像のURLを取得して添付する
-					string tweetMsg = WWW.EscapeURL("ARアプリUNIVERSE https://universe.hiliberate.biz/static/images/IMG_1272.JPG");
-					string tweetURL = WWW.EscapeURL("https://universe.hiliberate.biz/hlar/");
+					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universe.hiliberate.biz/static/images/IMG_1272.JPG");
+					string tweetURL = WWW.EscapeURL ("https://universe.hiliberate.biz/hlar/");
 					//string tweetMsg = "ARアプリUNIVERSE";
-					Application.OpenURL("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);
+					Application.OpenURL ("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);
 				}
 			} else if (obj.name == "fb_icon") {
 				Debug.Log ("fb_icon");
 				//fb アイコン
-				if (getVisibleGameObject(obj)) {
+				if (getVisibleGameObject (obj)) {
 					Debug.Log ("fb_icon --1--");
 
 					string fbURL = WWW.EscapeURL ("https://universe.hiliberate.biz/hlar/");
 					Debug.Log ("fb_icon --2--");
 					Debug.Log (fbURL);
 
-					Application.OpenURL("https://www.facebook.com/share.php?u=" + fbURL);
+					Application.OpenURL ("https://www.facebook.com/share.php?u=" + fbURL);
 
 					Debug.Log ("fb_icon --3--");
 
 				}
 			} else if (obj.name == "insta_icon") {
 				//insta アイコン
-				if (getVisibleGameObject(obj)) {
+				if (getVisibleGameObject (obj)) {
 
 				}
 			}
 
+		} else {
+
+			if (Input.GetMouseButtonDown (0) || 0 < Input.touchCount) {
+				Debug.Log ("message:del");
+				GameObject MessageUI = GameObject.Find ("MessageUI");
+				if (MessageUI != null) {
+					MessageUI.SetActive (false);
+				}
+			}
 		}
 	
 	}

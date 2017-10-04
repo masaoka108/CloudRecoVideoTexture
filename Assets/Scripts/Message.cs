@@ -14,14 +14,14 @@ public class Message : MonoBehaviour {
 
 		Debug.Log("Message.cs:start");
 
-		if (UnityEditor.EditorUtility.DisplayDialog("Game Over", "Again?", "Restart", "Exit"))
-		{
-			Application.LoadLevel (0); 
-		}
-		else
-		{
-			Application.Quit();
-		}
+//		if (UnityEditor.EditorUtility.DisplayDialog("Game Over", "Again?", "Restart", "Exit"))
+//		{
+//			Application.LoadLevel (0); 
+//		}
+//		else
+//		{
+//			Application.Quit();
+//		}
 
 //		MessageBox.Show(Callback, "Hello World!", "Hello", buttons, icon, defaultButton);
 
