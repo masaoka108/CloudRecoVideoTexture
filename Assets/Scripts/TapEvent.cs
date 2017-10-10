@@ -5,7 +5,7 @@ using UnityEngine;
 //20170225 okamura作成
 public class TapEvent : MonoBehaviour {
 
-	public string targetURL = "https://universe.hiliberate.biz/hlar/";
+	public string targetURL = "https://universear.hiliberate.biz/hlar/";
 
 	// Use this for initialization
 	void Start () {
@@ -98,8 +98,8 @@ public class TapEvent : MonoBehaviour {
 				//twitter アイコン
 				if (getVisibleGameObject (obj)) {
 					//@ToDo ここでターゲット画像のURLを取得して添付する
-					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universe.hiliberate.biz/static/images/IMG_1272.JPG");
-					string tweetURL = WWW.EscapeURL ("https://universe.hiliberate.biz/hlar/");
+					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universear.hiliberate.biz/static/images/IMG_1272.JPG");
+					string tweetURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
 					//string tweetMsg = "ARアプリUNIVERSE";
 					Application.OpenURL ("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);
 				}
@@ -109,7 +109,7 @@ public class TapEvent : MonoBehaviour {
 				if (getVisibleGameObject (obj)) {
 					Debug.Log ("fb_icon --1--");
 
-					string fbURL = WWW.EscapeURL ("https://universe.hiliberate.biz/hlar/");
+					string fbURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
 					Debug.Log ("fb_icon --2--");
 					Debug.Log (fbURL);
 

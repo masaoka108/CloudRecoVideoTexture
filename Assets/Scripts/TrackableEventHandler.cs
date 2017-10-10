@@ -61,12 +61,17 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 				Debug.Log("video:" + video);
 				Debug.Log("video.CurrentState:" + video.CurrentState);
 
-				if (video != null &&
-                    video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
-                {
+//				if (video != null &&
+//                    video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
+//                {
+//					Debug.Log("TrackableEventHandler:Update-3");
+//					video.VideoPlayer.Pause();
+//                }
+				if (video != null)
+				{
 					Debug.Log("TrackableEventHandler:Update-3");
 					video.VideoPlayer.Pause();
-                }
+				}
 
                 mLostTracking = false;
 
