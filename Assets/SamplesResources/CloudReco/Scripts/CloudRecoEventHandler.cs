@@ -174,6 +174,8 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		//targetを発見したら画像認識機能をStop
 		mObjectTracker.TargetFinder.Stop ();
 
+		//一旦全てのvideoを止める
+		PauseAllVideos ();
 
 		//video表示エフェクト particle systemを表示
 		GameObject Particle_video = GameObject.Find("Particle_video");
@@ -217,7 +219,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 			//新しいVideoを再生するのでinitフラグをfalseにするなど操作。okamura 2017/5/14
 //			video.VideoPlayer.Pause ();			//video をpause
-			PauseOtherVideos (video);			//video 以外のものをpauseする
+//			PauseOtherVideos (video);			//video 以外のものをpauseする
 			video.OnApplicationPause (true);	//init flgなどの制御
 
 			//StartCoroutine("timeStop");	//時間を停止させる
@@ -513,30 +515,66 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 //		}
 
 
-		Debug.Log ("FindGameObjectsWithTag:0");
-		respawns = GameObject.FindGameObjectsWithTag("VideoGameObject");
-
-		Debug.Log ("respawns.Length:" + respawns.Length);
-
-		foreach (GameObject respawn in respawns) {
-			VideoPlaybackBehaviour video = respawn.GetComponent( typeof(VideoPlaybackBehaviour) ) as VideoPlaybackBehaviour;
-
-			Debug.Log ("PauseOtherVideos:video:" + video);
-
-			video.VideoPlayer.Stop ();
-			//Instantiate(respawnPrefab, respawn.transform.position, respawn.transform.rotation);
-		}
+//		Debug.Log ("FindGameObjectsWithTag:0");
+//		respawns = GameObject.FindGameObjectsWithTag("VideoGameObject");
+//
+//		Debug.Log ("respawns.Length:" + respawns.Length);
+//
+//		foreach (GameObject respawn in respawns) {
+//			VideoPlaybackBehaviour video = respawn.GetComponent( typeof(VideoPlaybackBehaviour) ) as VideoPlaybackBehaviour;
+//
+//			Debug.Log ("PauseOtherVideos:video:" + video);
+//
+//			video.VideoPlayer.Stop ();
+//			//Instantiate(respawnPrefab, respawn.transform.position, respawn.transform.rotation);
+//		}
 	
+
+		Debug.Log ("FindGameObjectsWithTag:0");
+		VideoPlaybackBehaviour video = GetPlayingVideo();
+		if (video != null && video.VideoPlayer.IsPlayableOnTexture()) {
+			if (currentVideo != video) {
+				video.VideoPlayer.Pause();
+			}
+		}
+
 	}
 
+	// Pause all videos
+	private void PauseAllVideos()
+	{
+		Debug.Log ("PauseAllVideos:0");
+		VideoPlaybackBehaviour video = GetPlayingVideo();
+		if (video != null && video.VideoPlayer.IsPlayableOnTexture()) {
+				video.VideoPlayer.Pause();
+		}
 
+	}
+
+	/// <summary>
+	/// Returns the currently active (playing) video, if any
+	/// </summary>
+	private VideoPlaybackBehaviour GetPlayingVideo()
+	{
+		VideoPlaybackBehaviour[] videos = (VideoPlaybackBehaviour[])
+			FindObjectsOfType(typeof(VideoPlaybackBehaviour));
+
+		foreach (VideoPlaybackBehaviour video in videos)
+		{
+			if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
+			{
+				return video;
+			}
+		}
+		return null;
+	}
 
 
 	public void CountUp(string targetId)
 	{
 		WWWForm form = new WWWForm();
 		form.AddField("targetId", targetId);
-		string POST_URL = "https://universe.hiliberate.biz/api/targets/" + targetId + "/set_count_up_and_inactive/";
+		string POST_URL = "https://universear.hiliberate.biz/api/targets/" + targetId + "/set_count_up_and_inactive/";
 		WWW www = new WWW(POST_URL, form);
 		StartCoroutine("WaitForRequest", www);
 	}
@@ -553,7 +591,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		string ui = WWW.EscapeURL(SystemInfo.deviceUniqueIdentifier);
 
 		// アクセス URL
-		string POST_URL = "https://universe.hiliberate.biz/api/targets/" + targetId + "/ins_access_log/?os=" + os + "&ui" + ui;
+		string POST_URL = "https://universear.hiliberate.biz/api/targets/" + targetId + "/ins_access_log/?os=" + os + "&ui" + ui;
 		WWW www = new WWW(POST_URL, form);
 		StartCoroutine("WaitForRequest", www);
 	}
@@ -587,7 +625,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 
 	IEnumerator CountUp2 (string targetId) {
-		string url = "https://universe.hiliberate.biz/api/targets/" + targetId + "/set_count_up_and_inactive/";
+		string url = "https://universear.hiliberate.biz/api/targets/" + targetId + "/set_count_up_and_inactive/";
 		Debug.Log (url);
 
 		WWWForm form = new WWWForm ();

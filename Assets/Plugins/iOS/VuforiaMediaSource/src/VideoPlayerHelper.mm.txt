@@ -2742,7 +2742,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 - (void)displayLinkCallback:(CADisplayLink *)sender
 {
     NSLog(@"indivestigate:displayLinkCallback");
-
+    
     /*
      The callback gets called once every Vsync.
      Using the display link's timestamp and duration we can compute the next time the screen will be refreshed, and copy the pixel buffer for that time
@@ -2757,7 +2757,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     
     if ([[self videoOutput] hasNewPixelBufferForItemTime:outputItemTime]) {
         //outputする適切なデータがある場合
-
+        
         [latestSampleBufferLock lock];
         
         CVPixelBufferRef pixelBuffer = NULL;
@@ -2767,16 +2767,16 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         
         //pixelBuffer を適用
         //[[self playerView2] displayPixelBuffer:pixelBuffer];
-
+        
         //**** vuforiaで取得しているopenGL適用 start
-
+        
         //** textureID を取得してグローバル変数に入れておく。
         textureID = 0;
-
+        
         unsigned char* pixelBufferBaseAddress = NULL;
         CVPixelBufferLockBaseAddress(pixelBuffer, 0);   //ロック
         //pixelBufferBaseAddress = (unsigned char*)CVPixelBufferGetBaseAddress(pixelBuffer);
-
+        
         CVImageBufferRef cvimgRef = (CVImageBufferRef)pixelBuffer;
         pixelBufferBaseAddress = (unsigned char*)CVPixelBufferGetBaseAddress(cvimgRef);
         
@@ -2795,26 +2795,26 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
                 videoTextureIdGL = [self createVideoTexture];
             }
             glBindTexture(GL_TEXTURE_2D, videoTextureIdGL);
-
+            
         }
         
-
+        
         const size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
-
+        
         //if (bytesPerRow / BYTES_PER_TEXEL == videoSize.width) {
-
+        
         NSLog(@"%ld",bytesPerRow);
         NSLog(@"%d",BYTES_PER_TEXEL);
         NSLog(@"%ld",CVPixelBufferGetWidth(pixelBuffer));
         
         NSLog(@"MASA -displayLinkCallback 2-");
-
+        
         
         if (bytesPerRow / BYTES_PER_TEXEL == CVPixelBufferGetWidth(pixelBuffer)) {
             // No padding between lines of decoded video
-
+            
             NSLog(@"MASA -displayLinkCallback 2-");
-
+            
             if (useMetal) {
                 NSLog(@"MASA -displayLinkCallback 2 useMetal-");
                 
@@ -2838,28 +2838,28 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         }
         else {
             NSLog(@"MASA -displayLinkCallback 3-");
-
+            
             // Decoded video contains padding between lines.  We must not
             // upload it to graphics memory as we do not want to display it
-
+            
             if (useMetal) {
-//                for (int i = 0; i < videoSize.height; ++i) {
-//                    unsigned char* line = pixelBufferBaseAddress + i * bytesPerRow;
-//                    MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
-//                    [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
-//                }
-
+                //                for (int i = 0; i < videoSize.height; ++i) {
+                //                    unsigned char* line = pixelBufferBaseAddress + i * bytesPerRow;
+                //                    MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
+                //                    [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
+                //                }
+                
                 
                 NSLog(@"MASA -displayLinkCallback 3 useMetal-");
-
+                
                 
                 
                 //これでいけるはずだったが、、、
-//                for (int i = 0; i < CVPixelBufferGetHeight(pixelBuffer); ++i) {
-//                    unsigned char* line = pixelBufferBaseAddress + i * bytesPerRow;
-//                    MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
-//                    [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
-//                }
+                //                for (int i = 0; i < CVPixelBufferGetHeight(pixelBuffer); ++i) {
+                //                    unsigned char* line = pixelBufferBaseAddress + i * bytesPerRow;
+                //                    MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
+                //                    [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
+                //                }
                 
                 NSLog(@"MASA -displayLinkCallback 2 useMetal-");
                 
@@ -2909,7 +2909,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
                 }
             }
         }
-
+        
         
         if (!useMetal) {
             NSLog(@"MASA -displayLinkCallback !useMetal-");
@@ -2918,7 +2918,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
             glBindTexture(GL_TEXTURE_2D, 0);
         }
         
-//        glBindTexture(GL_TEXTURE_2D, 0);
+        //        glBindTexture(GL_TEXTURE_2D, 0);
         
         // Unlock the buffers
         CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
@@ -2926,7 +2926,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         NSLog(@"MASA -displayLinkCallback 4-");
         
         textureID = videoTextureIdGL;
-            //**** vuforiaで取得しているopenGL適用 end
+        //**** vuforiaで取得しているopenGL適用 end
         
         
         if (pixelBuffer != NULL) {
@@ -2935,6 +2935,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         
         [latestSampleBufferLock unlock];
     }
+        
 }
 
 @end

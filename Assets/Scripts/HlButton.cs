@@ -9,7 +9,7 @@ public class HlButton : MonoBehaviour {
 	/// ボタンをクリックした時の処理
 	public void OnClick() {
 		Debug.Log("Button click!");
-		Application.OpenURL("https://universe.hiliberate.biz/hlar/");
+		Application.OpenURL("https://universear.hiliberate.biz/");
 	}
 
 	// Use this for initialization
