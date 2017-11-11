@@ -107,6 +107,15 @@ public class PlayVideo : MonoBehaviour
 
 						currentVideo.HideIcon ();
 
+						//okamura add
+						// FoundLostUpdate
+						GameObject refObj = GameObject.Find("CloudRecoTarget");
+						Debug.Log ("refObj:" + refObj);
+						TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler>();
+						Debug.Log ("teh:" + teh);
+						teh.FoundLostUpdate();
+
+
 						//表示を最終的にセット 20170705
 						currentVideo.CheckIconPlaneVisibility();
 

@@ -14,6 +14,8 @@ countries.
 #import <OpenGLES/ES2/glext.h>
 #import <Metal/Metal.h>
 
+//void    UnitySendMessage(const char* obj, const char* method, const char* msg);
+
 // #import <AVFoundation/AVFoundation.h>
 // #import <MediaPlayer/MediaPlayer.h>
 // #import <OpenGLES/EAGL.h>
@@ -58,8 +60,20 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 
 @end
 
+
+@interface VideoPlayerHelper2 {
+@private
+    int cntNoRender;
+}
+@end
+
+
+
+
 @interface VideoPlayerHelper : NSObject {
 @private
+    int cntNoRender;
+    
     VideoPlaybackViewController *rootViewController;
     
     BOOL useMetal;
@@ -166,5 +180,13 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 - (BOOL)setVolume:(float)volume;
 - (BOOL)setVideoTexturePtr:(void*)texturePtr;
 - (void)onPause;
-
+- (void)outputMediaDataWillChange;
 @end
+
+//@protocol AVPlayerItemOutputPullDelegate <NSObject>
+//@optional
+//-(void)outputMediaDataWillChange:(id)arg1;
+//-(void)outputSequenceWasFlushed:(id)arg1;
+//
+//@end
+

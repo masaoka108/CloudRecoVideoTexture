@@ -24,11 +24,11 @@ public class ContentManager : MonoBehaviour, ITrackableEventHandler
     #region MONOBEHAVIOUR_METHODS
     void Start ()
     {
-        TrackableBehaviour trackableBehaviour = AugmentationObject.transform.parent.GetComponent<TrackableBehaviour>();
-        if (trackableBehaviour)
-        {
-            trackableBehaviour.RegisterTrackableEventHandler(this);
-        }
+//        TrackableBehaviour trackableBehaviour = AugmentationObject.transform.parent.GetComponent<TrackableBehaviour>();
+//        if (trackableBehaviour)
+//        {
+//            trackableBehaviour.RegisterTrackableEventHandler(this);
+//        }
         
         ShowObject(false);
     }

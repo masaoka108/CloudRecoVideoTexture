@@ -304,7 +304,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 // - (BOOL)load:(NSString*)videoURL playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
 - (BOOL)load:(NSString*)filename mediaType:(MEDIA_TYPE)requestedType playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
 {
-
+    cntNoRender = 0;
+    
     NSLog(@"indivestigate:load");
     
 	BOOL ret = NO;
@@ -564,6 +565,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 - (BOOL)loadMediaURL:(NSURL*)url
 {
+    cntNoRender = 0;
+    
     NSLog(@"indivestigate:loadMediaURL");
 
     
@@ -581,7 +584,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     // Setup CADisplayLink which will callback displayPixelBuffer: at every vsync.
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkCallback:)];
     [[self displayLink] addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];//run loop(処理の割り込みを受け付ける)と共にdisplay linkを登録する
-    [[self displayLink] setPaused:NO];//displayLinkをポーズするかどうか
+    [[self displayLink] setPaused:YES];//displayLinkをポーズするかどうか
 
     NSLog(@"MASA --loadMediaURL 3--");
 
@@ -694,10 +697,14 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
                             [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
                             
                             NSLog(@"--loadMediaURL--mediaState-2:%u",mediaState);
-                            
+
                             playAudio = YES;
-//                            [player play];
-                        
+                            
+                            [[self displayLink] setPaused:NO];//displayLinkをポーズするかどうか
+
+                            //[player play];
+                            
+                            
                         });
                         
                     }
@@ -1177,11 +1184,16 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     mediaState = PLAYING;
 
     if (YES == playVideo) {
+        NSLog(@"play -1-");
+
         // Start a timer to drive the frame pump (on a background
         // thread)
         [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
     }
     else {
+        NSLog(@"play -2-");
+        
+        //20171101 test
         // The asset contains no video.  Play the audio
         [[self displayLink] setPaused:NO];
         [player play];
@@ -1195,6 +1207,10 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     
     ret = YES;
 
+//    UnitySendMessage("gameObjectName", "callbackMethodName", "Message");
+    
+    NSLog(@"play -3- UnitySendMessage");
+//    UnitySendMessage("CloudRecoTarget", "CallbackFoundLostUpdate", "これは引数");
     
     
 //    BOOL ret = NO;
@@ -2739,6 +2755,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 //    }
 }
 
+
 - (void)displayLinkCallback:(CADisplayLink *)sender
 {
     NSLog(@"indivestigate:displayLinkCallback");
@@ -2755,8 +2772,13 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     
     outputItemTime = [[self videoOutput] itemTimeForHostTime:nextVSync];
     
+    NSLog(@"seconds = %f", CMTimeGetSeconds(outputItemTime));
+    NSLog(@"videoOutput = %@", [self videoOutput]);
+
     if ([[self videoOutput] hasNewPixelBufferForItemTime:outputItemTime]) {
         //outputする適切なデータがある場合
+        cntNoRender = 0;
+        NSLog(@"nctNoRender is set zero");
         
         [latestSampleBufferLock lock];
         
@@ -2934,8 +2956,63 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         }
         
         [latestSampleBufferLock unlock];
-    }
+    } else {
+        NSLog(@"MASA -displayLinkCallback -no-");
+        NSLog(@"MASA -displayLinkCallback -no- mediaState %u", mediaState);
+
+
         
+//        if (CMTimeGetSeconds(outputItemTime) > 0 || ((CMTimeGetSeconds(outputItemTime) == 0 || isnan(CMTimeGetSeconds(outputItemTime)) ) && (mediaState == READY || mediaState == PAUSED))) {
+//            NSLog(@"MASA -displayLinkCallback -no- seconds > 0");
+//
+//            if (mediaState == PLAYING || mediaState == READY || mediaState == PAUSED) {
+//                cntNoRender = cntNoRender + 1;
+//                NSLog(@"MASA -displayLinkCallback -no- count1 %u", cntNoRender);
+//            }
+//
+//            NSLog(@"MASA -displayLinkCallback -no- count2 %u", cntNoRender);
+//
+//            if ((mediaState == PLAYING || mediaState == READY || mediaState == PAUSED) && cntNoRender > 30) {
+//                NSLog(@"MASA -displayLinkCallback -no- stop");
+//
+//                // 一旦、ビデオはストップ。再度、video読み込む。
+//                (void)[self stop];
+//                mediaState = NOT_READY;
+//                [self loadMediaURL:mediaURL];
+//                //[self play:NO fromPosition:VIDEO_PLAYBACK_CURRENT_POSITION];
+//            }
+//        }
+
+    
+    }
+    
+
+    
+//    - (void)outputMediaDataWillChange:(AVPlayerItemOutput *)sender {
+//        if (![self.videoOutput hasNewPixelBufferForItemTime:CMTimeMake(1, 10)]) {
+//            [self.displayLink setPaused:YES];
+//            [self configVideoOutput];
+//        }
+//        [self.displayLink setPaused:NO];
+//    }
+
+    
+    
+}
+
+
+- (void)outputMediaDataWillChange:(AVPlayerItemOutput *)sender {
+    NSLog(@"indivestigate:outputMediaDataWillChange");
+    
+    if (![self.videoOutput hasNewPixelBufferForItemTime:CMTimeMake(1, 10)]) {
+        NSLog(@"indivestigate:outputMediaDataWillChange -1-");
+        
+        [self.displayLink setPaused:YES];
+        
+        //[self configVideoOutput];
+        [self loadMediaURL:mediaURL];
+    }
+    [self.displayLink setPaused:NO];
 }
 
 @end

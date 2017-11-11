@@ -6,7 +6,7 @@ using UnityEngine;
 public class TapEvent : MonoBehaviour {
 
 	public string targetURL = "https://universear.hiliberate.biz/hlar/";
-
+	public string fullScreenURL = "";
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("TapEvent start");
@@ -14,37 +14,6 @@ public class TapEvent : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-//		GameObject test = GameObject.Find("www_icon");
-//		Material m1 = test.GetComponent<Renderer> ().material;
-//
-//		Debug.Log ("alpha");
-//		Debug.Log (m1.color.a);
-
-//		//タップ回数が０を超えたら
-//		if (0 < Input.touchCount)
-//		{
-//			//タッチした回数までループする
-//			for (int i = 0; i < Input.touchCount; i++) {
-//
-//				// タッチ情報をコピー
-//				Touch t = Input.GetTouch(i);
-//				//タッチした座標を取得
-//				Vector2 worldPoint = Camera.main.ScreenToWorldPoint(t.position);
-//
-//				//タッチした座標にレイを飛ばす
-//				RaycastHit2D hit = Physics2D.Raycast (worldPoint, Vector2.zero);
-//
-//				//レイを飛ばしてオブジェクトがあったら
-//				if (hit.collider != null) {
-//
-//					//ゲームオブジェクトの名前表示
-//					Debug.Log(hit.collider.gameObject.name);
-//
-//					//ここにタップされた時の処理を書いていく
-//				}
-//			}
-//		}
 
 		GameObject obj = getClickObject ();
 		if (obj != null) {
@@ -76,21 +45,8 @@ public class TapEvent : MonoBehaviour {
 					Debug.Log (video);
 
 					if (video != null) {
-//						// Pause the video if it is currently playing
 						video.VideoPlayer.Pause ();
-//
-//						// Seek the video to the beginning();
-//						video.VideoPlayer.SeekTo(0.0f);
-//
-//						// Display the busy icon
-//						video.ShowBusyIcon();
-//
-//						// Play the video full screen
-//						StartCoroutine ( PlayVideo.PlayFullscreenVideoAtEndOfFrame(video) );
-//
-
-
-						Handheld.PlayFullScreenMovie (targetURL, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFit);
+						Handheld.PlayFullScreenMovie (fullScreenURL, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFit);
 					}
 
 				}
@@ -98,7 +54,8 @@ public class TapEvent : MonoBehaviour {
 				//twitter アイコン
 				if (getVisibleGameObject (obj)) {
 					//@ToDo ここでターゲット画像のURLを取得して添付する
-					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universear.hiliberate.biz/static/images/IMG_1272.JPG");
+//					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universear.hiliberate.biz/static/images/IMG_1272.JPG");
+					string tweetMsg = WWW.EscapeURL ("ARアプリ【UNIVERSE AR】画像と動画を登録するだけで誰でも簡単にオリジナルARコンテンツを作成可能！");
 					string tweetURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
 					//string tweetMsg = "ARアプリUNIVERSE";
 					Application.OpenURL ("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);
@@ -135,8 +92,8 @@ public class TapEvent : MonoBehaviour {
 				}
 			}
 		}
-	
 	}
+
 	public bool getVisibleGameObject(GameObject obj)
 	{
 		bool ret = false;
@@ -198,7 +155,6 @@ public class TapEvent : MonoBehaviour {
 		VideoPlaybackBehaviour[] behaviours = GameObject.FindObjectsOfType<VideoPlaybackBehaviour>();
 		foreach (VideoPlaybackBehaviour vb in behaviours)
 		{
-//			if (vb.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
 				return vb;
 		}
 		return null;
