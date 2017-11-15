@@ -427,7 +427,20 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 		if (mIsInited == true && mInitInProgess == false && state == VideoPlayerHelper.MediaState.READY) 
 		{
 			Debug.Log ("SetState:1");
-			this.VideoPlayer.Play(false, 0);	//native の　play を実行
+			//Volume 設定
+			GameObject refObjTMP = GameObject.Find("TargetMenuPlane");
+			TapEvent tapEvent = refObjTMP.GetComponent<TapEvent>();
+
+			Debug.Log("SetState:1.5:" + tapEvent.bVolumeFlg);
+
+			if (tapEvent.bVolumeFlg) {
+				this.VideoPlayer.VolumeOn();
+			} else {
+				this.VideoPlayer.VolumeOff();
+			} 
+
+			//native の　play を実行
+			this.VideoPlayer.Play(false, 0);	
 			Debug.Log ("SetState:2");
 			this.HideIcon ();
 			Debug.Log ("SetState:3");

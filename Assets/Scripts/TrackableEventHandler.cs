@@ -14,8 +14,9 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
     private bool mHasBeenFound = false;
     private bool mLostTracking;
     private float mSecondsSinceLost;
+	public GameObject MessageUI_err;
 
-	private VideoPlaybackBehaviour video;
+	public VideoPlaybackBehaviour video;
     #endregion // PRIVATE_MEMBERS
 
 
@@ -30,8 +31,38 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
             mTrackableBehaviour.RegisterTrackableEventHandler(this);
         }
 
+		Debug.Log("TrackableEventHandler:Start-0-:aaaaaaaaaaaaaaaa");
+
+//		//とりあえず MessageUI_err を保存しておいて非表示とする。
+//		MessageUI_err = GameObject.Find ("MessageUI_err");
+//
+//		Debug.Log("TrackableEventHandler:Start-1-:" + MessageUI_err);
+//
+//		//MessageUI_err.SetActive (false);
+//
+//		Debug.Log("TrackableEventHandler:Start-2-:" + MessageUI_err);
+
         OnTrackingLost();
     }
+
+	void Update()
+	{
+		if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING) {
+			Debug.Log("TrackableEventHandler:Update:-1-");
+
+			VideoPlayerHelper.MediaState state = video.VideoPlayer.GetStatus();
+			if (state == VideoPlayerHelper.MediaState.ERROR)
+			{
+				Debug.Log("TrackableEventHandler:Update:-2-");
+				Debug.Log("TrackableEventHandler:Update:-2.5-:" + MessageUI_err);
+
+				if (MessageUI_err != null && MessageUI_err.active == false) {
+					Debug.Log("TrackableEventHandler:Update:-3-");
+					MessageUI_err.SetActive (true);
+				}
+			}
+		}
+	}
 
 //    void Update()
 //    {

@@ -49,7 +49,6 @@ public class VideoPlayerHelper
     #endregion // NESTED
 
 
-
     #region PRIVATE_MEMBER_VARIABLES
 
     private string mFilename = null;
@@ -197,6 +196,24 @@ public class VideoPlayerHelper
         return (MediaState) videoPlayerGetStatus();
     }
 
+	public bool VolumeOn()
+	{
+		GameObject refObj = GameObject.Find("TargetMenuPlane");
+		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
+
+		tapEvent.bVolumeFlg = true;
+		return (bool) videoPlayerVolumeOn();
+	}
+
+	public bool VolumeOff()
+	{
+		GameObject refObj = GameObject.Find("TargetMenuPlane");
+		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
+
+		tapEvent.bVolumeFlg = false;
+		return (bool) videoPlayerVolumeOff();
+	}
+
 
     /// <summary>
     /// Returns the width of the video frame
@@ -247,6 +264,18 @@ public class VideoPlayerHelper
             // return videoPlayerPlay(fullScreen, seekPosition);
         // }
         Debug.Log(fullScreen);
+
+
+		GameObject refObj = GameObject.Find("TargetMenuPlane");
+		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
+
+		Debug.Log("VideoPlayerHelper:Play:-1-:" + tapEvent.bVolumeFlg);
+
+		if (tapEvent.bVolumeFlg) {
+			videoPlayerVolumeOn();
+		} else {
+			videoPlayerVolumeOff();
+		} 
 
         return videoPlayerPlay(false, seekPosition);
 
@@ -500,6 +529,12 @@ public class VideoPlayerHelper
     [DllImport("__Internal")]
     private static extern int videoPlayerGetStatusIOS(IntPtr videoPlayerPtr);
 
+	[DllImport("__Internal")]
+	private static extern bool videoPlayerVolumeOnIOS(IntPtr videoPlayerPtr);
+
+	[DllImport("__Internal")]
+	private static extern bool videoPlayerVolumeOffIOS(IntPtr videoPlayerPtr);
+
     [DllImport("__Internal")]
     private static extern int videoPlayerGetVideoWidthIOS(IntPtr videoPlayerPtr);
 
@@ -581,6 +616,17 @@ public class VideoPlayerHelper
     {
         return videoPlayerGetStatusIOS(mVideoPlayerPtr);
     }
+
+	private bool videoPlayerVolumeOn()
+	{
+		return videoPlayerVolumeOnIOS(mVideoPlayerPtr);
+	}
+
+	private bool videoPlayerVolumeOff()
+	{
+		return videoPlayerVolumeOffIOS(mVideoPlayerPtr);
+	}
+
 
     private int videoPlayerGetVideoWidth()
     {
@@ -759,6 +805,16 @@ public class VideoPlayerHelper
         return VideoPlayerGetStatusWSA(mVideoPlayerPtr);
     }
 
+	private bool videoPlayerVolumeOn()
+	{
+		return videoPlayerVolumeOnWSA(mVideoPlayerPtr);
+	}
+
+	private bool videoPlayerVolumeOff()
+	{
+		return videoPlayerVolumeOffWSA(mVideoPlayerPtr);
+	}
+
     private int videoPlayerGetVideoWidth()
     {
         return VideoPlayerGetVideoWidthWSA(mVideoPlayerPtr);
@@ -842,6 +898,10 @@ public class VideoPlayerHelper
     bool videoPlayerSetVideoTexturePtr(IntPtr texturePtr) { return false; }
 
     int videoPlayerGetStatus() { return 0; }
+
+	bool videoPlayerVolumeOn() { return true; }
+
+	bool videoPlayerVolumeOff() { return true; }
 
     int videoPlayerGetVideoWidth() { return 0; }
 

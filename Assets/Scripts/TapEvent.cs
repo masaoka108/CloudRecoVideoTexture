@@ -7,17 +7,36 @@ public class TapEvent : MonoBehaviour {
 
 	public string targetURL = "https://universear.hiliberate.biz/hlar/";
 	public string fullScreenURL = "";
+
+	public GameObject VolumeOnButton;
+	public GameObject VolumeOffButton;
+	public bool bVolumeFlg = true;
+
 	// Use this for initialization
-	void Start () {
+	void Start () {		
 		Debug.Log ("TapEvent start");
+
+		GameObject refObj = GameObject.Find("CloudRecoTarget");
+		TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler>();
+		teh.MessageUI_err = GameObject.Find ("MessageUI_err");
+		teh.MessageUI_err.SetActive (false);
+
+		VolumeOnButton = GameObject.Find ("VolumeOnButton");
+		VolumeOffButton = GameObject.Find ("VolumeOffButton");
+		VolumeOffButton.SetActive (false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
 		GameObject obj = getClickObject ();
+
+//		Debug.Log ("TapEvent updat-1-:" + obj);
+
 		if (obj != null) {
-			
+
+			Debug.Log ("TapEvent updat:" + obj);
+
 			if (obj.name == "TargetMenuPlane") {
 				GameObject www_icon = GameObject.Find ("www_icon");
 				GameObject fullscreen_icon = GameObject.Find ("fullscreen_icon");
@@ -80,7 +99,16 @@ public class TapEvent : MonoBehaviour {
 				if (getVisibleGameObject (obj)) {
 
 				}
+			} else if (obj.name == "VolumeOnButton") {
+				//VolumeOnButton アイコン
+				VolumeOnButton.SetActive (false);
+				VolumeOffButton.SetActive (true);
+			} else if (obj.name == "VolumeOffButton") {
+				//VolumeOffButton アイコン
+				VolumeOnButton.SetActive (true);
+				VolumeOffButton.SetActive (false);
 			}
+
 
 		} else {
 
@@ -90,6 +118,16 @@ public class TapEvent : MonoBehaviour {
 				if (MessageUI != null) {
 					MessageUI.SetActive (false);
 				}
+
+				Debug.Log ("error panel");
+
+				GameObject MessageUI_err = GameObject.Find ("MessageUI_err");
+				if (MessageUI_err != null) {
+					MessageUI_err.SetActive (false);
+				}
+
+
+
 			}
 		}
 	}
@@ -159,6 +197,5 @@ public class TapEvent : MonoBehaviour {
 		}
 		return null;
 	}
-
-
+		
 }

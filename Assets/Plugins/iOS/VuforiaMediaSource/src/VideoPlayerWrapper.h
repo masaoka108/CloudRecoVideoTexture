@@ -24,6 +24,8 @@ extern "C"
     bool videoPlayerSetVideoTexturePtrIOS(void* dataSetPtr, void* texturePtr);
     bool videoPlayerSetVideoTexturePtrIOS2(void* dataSetPtr, void* texturePtr);
     int videoPlayerGetStatusIOS(void* dataSetPtr);
+    bool videoPlayerVolumeOnIOS(void* dataSetPtr);
+    bool videoPlayerVolumeOffIOS(void* dataSetPtr);
     int videoPlayerGetVideoWidthIOS(void* dataSetPtr);
     int videoPlayerGetVideoHeightIOS(void* dataSetPtr);
     float videoPlayerGetLengthIOS(void* dataSetPtr);

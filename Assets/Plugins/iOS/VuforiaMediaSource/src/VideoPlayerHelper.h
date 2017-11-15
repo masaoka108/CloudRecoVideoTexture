@@ -27,6 +27,17 @@ countries.
 
 @class VideoPlaybackViewController;
 
+//
+//@protocol AVPlayerItemOutputPullDelegate <NSObject>
+//@optional
+//- (void)outputMediaDataWillChange:(AVPlayerItemOutput *)sender;
+//
+////-(void)outputMediaDataWillChange:(id)arg1;
+////-(void)outputSequenceWasFlushed:(id)arg1;
+////
+//@end
+
+
 
 // Media types
 typedef enum tagMEDIA_TYPE {
@@ -55,24 +66,31 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 // Use our own view controller instead of MPMoviePlayerViewController so we can
 // control its behaviour exactly as we want it
 @interface MovieViewController : UIViewController
-
+{
+    BOOL volumeFlg;
+}
 //@property (nonatomic, readonly) MPMoviePlayerController* moviePlayer;
 
+-(BOOL) volumeFlg;
+-(void) setVolumeFlg:(BOOL)value;
+
 @end
 
 
-@interface VideoPlayerHelper2 {
+//@interface NSObject:AVPlayerItemOutputPullDelegate {
+//@private
+//    int cntNoRender;
+//}
+//@end
+
+
+
+
+@interface VideoPlayerHelper : NSObject <AVPlayerItemOutputPullDelegate> {
 @private
     int cntNoRender;
-}
-@end
-
-
-
-
-@interface VideoPlayerHelper : NSObject {
-@private
-    int cntNoRender;
+    int cntNoRenderReady;
+    bool resetFlg;
     
     VideoPlaybackViewController *rootViewController;
     
@@ -117,6 +135,8 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
     // Playback status
     MEDIA_STATE mediaState;
 
+    BOOL volumeFlg;
+    
     // Class data lock
     NSLock* dataLock;
 
@@ -157,9 +177,11 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
         PLAYER_TYPE_ON_TEXTURE,
         PLAYER_TYPE_NATIVE
     } playerType;
+
 }
 
 @property (nonatomic, retain) AVPlayerItemVideoOutput *videoOutput;
+@property(nonatomic, weak)AVPlayerItemOutput <AVPlayerItemOutputPullDelegate>* delegate;
 
 - (id)initWithMetalRendering:(BOOL)isMetalRendering;
 - (void)deinit;
@@ -168,6 +190,8 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 - (BOOL)isPlayableOnTexture;
 - (BOOL)isPlayableFullscreen;
 - (MEDIA_STATE)getStatus;
+- (BOOL)VolumeOn;
+- (BOOL)VolumeOff;
 - (int)getVideoHeight;
 - (int)getVideoWidth;
 - (float)getLength;
@@ -180,13 +204,9 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 - (BOOL)setVolume:(float)volume;
 - (BOOL)setVideoTexturePtr:(void*)texturePtr;
 - (void)onPause;
-- (void)outputMediaDataWillChange;
+//- (void)outputMediaDataWillChange;
+//- (void)outputMediaDataWillChange:(AVPlayerItemOutput *)sender;
+
 @end
 
-//@protocol AVPlayerItemOutputPullDelegate <NSObject>
-//@optional
-//-(void)outputMediaDataWillChange:(id)arg1;
-//-(void)outputSequenceWasFlushed:(id)arg1;
-//
-//@end
 

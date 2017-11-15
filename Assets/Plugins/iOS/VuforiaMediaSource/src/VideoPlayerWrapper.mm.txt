@@ -98,10 +98,52 @@ int videoPlayerGetStatusIOS(void* dataSetPtr)
 {
     if (dataSetPtr == NULL)
     {
+        NSLog(@"MASA --videoPlayerGetStatusIOS-- dataSetPtr == NULL");
+
         return NOT_READY;
     }
     
     return [((VideoPlayerHelper *) dataSetPtr) getStatus];
+}
+
+bool videoPlayerVolumeOnIOS(void* dataSetPtr)
+{
+
+//    BOOL ret = [VideoPlayerHelper VolumeOn];
+    
+    if (dataSetPtr == NULL)
+    {
+        NSLog(@"MASA --videoPlayerVolumeOnIOS-- dataSetPtr == NULL");
+//        VideoPlayerHelper *VideoPlayerHelperClass = [[VideoPlayerHelper alloc] init];
+//        [VideoPlayerHelperClass VolumeOn];
+//        [VideoPlayerHelperClass release];
+
+//        [(VideoPlayerHelper *) VolumeOn];
+        
+        return NO;
+    }
+
+//    return YES;
+    return [((VideoPlayerHelper *) dataSetPtr) VolumeOn];
+}
+
+bool videoPlayerVolumeOffIOS(void* dataSetPtr)
+{
+    
+//    BOOL ret = [VideoPlayerHelper VolumeOff];
+    
+    if (dataSetPtr == NULL)
+    {
+        NSLog(@"MASA --videoPlayerVolumeOffIOS-- dataSetPtr == NULL");
+//        VideoPlayerHelper *VideoPlayerHelperClass = [[VideoPlayerHelper alloc] init];
+//        [VideoPlayerHelperClass VolumeOff];
+//        [VideoPlayerHelperClass release];
+        
+        return NO;
+    }
+    
+//    return YES;
+    return [((VideoPlayerHelper *) dataSetPtr) VolumeOff];
 }
 
 int videoPlayerGetVideoWidthIOS(void* dataSetPtr)

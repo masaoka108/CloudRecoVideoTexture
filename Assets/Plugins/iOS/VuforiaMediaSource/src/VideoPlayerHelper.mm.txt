@@ -48,7 +48,7 @@ static NSString* const kTracksKey = @"tracks";
 
 
 //@interface VideoPlayerHelper (PrivateMethods)
-@interface VideoPlayerHelper ()
+@interface VideoPlayerHelper () <AVPlayerItemOutputPullDelegate>
 - (void)resetData;
 - (BOOL)loadLocalMediaFromURL:(NSURL*)url;
 - (BOOL)prepareAssetForPlayback;
@@ -69,7 +69,12 @@ static NSString* const kTracksKey = @"tracks";
 //- (void)moviePlayerExitAtPosition:(NSTimeInterval)position;
 
 - (void)displayLinkCallback:(CADisplayLink *)sender;
+
+//- (void)outputMediaDataWillChange:(AVPlayerItemOutput *)sender;
 @property CADisplayLink *displayLink;
+//@property(nonatomic, weak) AVPlayerItemOutput <AVPlayerItemOutputPullDelegate> delegate;
+//@property AVPlayerItemOutput *videoOutput;
+
 
 @end
 
@@ -120,6 +125,19 @@ static NSString* const kTracksKey = @"tracks";
     return YES;
 }
 
+/*ゲッタ*/
+-(BOOL) volumeFlg
+{
+    return volumeFlg;
+}
+
+/*セッタ*/
+-(void) setVolumeFlg:(BOOL)value
+{
+    volumeFlg = value;
+}
+
+
 @end
 
 
@@ -128,6 +146,20 @@ static NSString* const kTracksKey = @"tracks";
 extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 @implementation VideoPlayerHelper
+
+
+//- (id)init
+//{
+////    self = [super init];
+//  
+//    NSLog(@"indivestigate:init");
+//    volumeFlg = YES;
+//    //    if (nil != self) {
+//    //        _moviePlayer = [[MPMoviePlayerController alloc] init];
+//    //    }
+//    
+//    return self;
+//}
 
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -147,9 +179,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     self = [super init];
 
     if (nil != self) {
-//        rootViewController = viewController; // okamura 4/23 add
-//        [rootViewController retain];
-
         useMetal = isMetalRendering;
         if (useMetal) {
             NSLog(@"VuforiaMedia: using METAL graphics");
@@ -235,73 +264,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-#pragma mark Class API
-// Load a movie
-// - (BOOL)load:(NSString*)filename mediaType:(MEDIA_TYPE)requestedType playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
-// {
-//     BOOL ret = NO;
-//
-//     videoType = requestedType;
-//
-//     // Load only if there is no media currently loaded
-//     if (NOT_READY != mediaState && ERROR != mediaState) {
-//         NSLog(@"Media already loaded.  Unload current media first.");
-//     }
-//     else {
-//         // ----- Info: additional player threads not running at this point -----
-//
-//         // Determine the type of file that has been requested (simply checking
-//         // for the presence of a "://" in filename for remote files)
-//         if (NSNotFound == [filename rangeOfString:@"://"].location  && (ON_TEXTURE == requestedType || ON_TEXTURE_FULLSCREEN == requestedType)) {
-//             // For on texture rendering, we need a local file
-//             localFile = YES;
-//             NSString* fullPath = nil;
-//
-//             // If filename is an absolute path (starts with a '/'), use it as is
-//             if (0 == [filename rangeOfString:@"/"].location) {
-//                 fullPath = [NSString stringWithString:filename];
-//             }
-//             else {
-//                 // filename is a relative path, play media from this app's
-//                 // resources folder
-//                 fullPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
-//             }
-//
-//             mediaURL = [[NSURL alloc] initFileURLWithPath:fullPath];
-//
-//             if (YES == playOnTextureImmediately) {
-//                 playImmediately = playOnTextureImmediately;
-//             }
-//
-//             if (0.0f <= seekPosition) {
-//                 // If a valid position has been requested, update the player
-//                 // cursor, which will allow playback to begin from the
-//                 // correct position
-//                 [self updatePlayerCursorPosition:seekPosition];
-//             }
-//
-//             ret = [self loadLocalMediaFromURL:mediaURL];
-//         }
-//         else {
-//             // FULLSCREEN only
-//             localFile = NO;
-//
-//             mediaURL = [[NSURL alloc] initWithString:filename];
-//
-//             // The media is actually loaded when we initialise the
-//             // MPMoviePlayerController, which happens when we start playback
-//             mediaState = READY;
-//
-//             ret = YES;
-//         }
-//     }
-//
-//     return ret;
-// }
-
-// - (BOOL)load:(NSString*)videoURL playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
 - (BOOL)load:(NSString*)filename mediaType:(MEDIA_TYPE)requestedType playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
 {
     cntNoRender = 0;
@@ -320,28 +282,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         
         NSString* fullPath = nil;
         fullPath = [NSString stringWithString:filename];
-        //NSURL *urltest = [NSURL URLWithString:fullPath];
-//        NSURL *urltest = [NSURL URLWithString:[fullPath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]]];
-        
-        
-        //url = [fullPath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
-        
-        
-//        mediaURL = [NSURL URLWithString:[fullPath stringByRemovingPercentEncoding]];
-        
-        
-//        mediaURL = [NSURL URLWithString:[fullPath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]]]; //これで一応セットできた！！！
-    
         mediaURL = [NSURL URLWithString:fullPath];
-        //mediaURL = [NSURL URLWithString:@"http://zine.hiliberate.biz/movie/hls/master.m3u8"];
-        
-        
-        
-        //mediaURL = [[NSURL alloc] initFileURLWithPath:fullPath];
-
-        //mediaURL = [[NSURL alloc] initWithString:filename];
-        
-
         
 		if (playOnTextureImmediately) {
 			playImmediately = playOnTextureImmediately;
@@ -364,204 +305,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
 	return ret;
 }
-
-
-// 20170429 buk
-//- (BOOL)loadMediaURL:(NSURL*)url
-//{
-//	BOOL ret = NO;
-//    asset = [[[AVURLAsset alloc] initWithURL:url options:nil] retain];
-//    
-//	if (nil != asset) {
-//		// We can now attempt to load the media, so report success.  We will
-//		// discover if the load actually completes successfully when we are
-//		// called back by the system
-//		ret = YES;
-//
-//		[asset loadValuesAsynchronouslyForKeys:@[kTracksKey] completionHandler: ^{
-//			// Completion handler block (dispatched on main queue when loading
-//			// completes)
-//			dispatch_async(dispatch_get_main_queue(),^{
-//				NSError* error = nil;
-//				AVKeyValueStatus status = [asset statusOfValueForKey:kTracksKey error:&error];
-//
-//				NSDictionary* settings = @{(id) kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)};
-//                AVPlayerItemVideoOutput *output = [[[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:settings] autorelease];
-//                self.videoOutput = output; //ここがエラーになる。
-//                
-////                //oka
-////                NSDictionary *pixBuffAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
-////                self.videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-//                
-//                //AVKeyValueStatusLoaded  0:unknown 1:loading 2:loaded 3:failed 4:cancelled
-//				if (status == AVKeyValueStatusLoaded) {
-//
-//                    NSLog(@"MASA --loadMediaURL 1--");
-//
-//                    
-//                    // Asset loaded, retrieve info and prepare
-//					// for playback
-//					if (![self prepareAssetForPlayback]) {
-//
-//                        NSLog(@"MASA --loadMediaURL 2--");
-//
-//                        mediaState = ERROR;
-//					}
-//				}
-//				else {
-//
-//                    NSLog(@"MASA --loadMediaURL 3--");
-//
-//                    // Error
-//					mediaState = ERROR;
-//				}
-//			});
-//		}];
-//	}
-//
-//	return ret;
-//}
-
-
-
-//- (BOOL)loadMediaURL:(NSURL*)url
-//{
-//    BOOL ret = NO;
-//    AVURLAsset *assetUrl = [[[AVURLAsset alloc] initWithURL:url options:nil] retain];
-//    
-//    if (nil != assetUrl) {
-//        //******** AVPlayerインスタンス作成
-//        player = [[AVPlayer alloc] init];
-//        //[self addTimeObserverToPlayer]; //タイムラベルを表示する為の関数
-//        
-//        //******** Vsyncの度に呼び出すコールバック関数を指定
-//        // Setup CADisplayLink which will callback displayPixelBuffer: at every vsync.
-//        self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkCallback:)];
-//        [[self displayLink] addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];//run loop(処理の割り込みを受け付ける)と共にdisplay linkを登録する
-//        [[self displayLink] setPaused:NO];//displayLinkをポーズするかどうか
-//        
-//        //******** AVPlayerItemVideoOutputを作成
-//        // Setup AVPlayerItemVideoOutput with the required pixelbuffer attributes.
-//        // @（アットマーク）は暗黙の型変換を行なってくれる。
-//        NSDictionary *pixBuffAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
-//        self.videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-//        
-//        //******** videoOutput のItemをclearする
-//        // Remove video output from old item, if any.
-//        [[player currentItem] removeOutput:self.videoOutput];
-//        
-//        //******** OpenGL セットアップ
-//        if ([player currentItem] == nil) {
-//            //        [[self playerView2] setupGL];
-//        }
-//        
-//        //******** URLからAVPlayerItem,AVAssetを作成
-//        NSURL *URL = [NSURL URLWithString:@"http://zine.hiliberate.biz/movie/lowvision.mp4"];
-//        AVPlayerItem *item = [AVPlayerItem playerItemWithURL:URL];
-//        //item = [AVPlayerItem playerItemWithURL:URL];
-//        asset = [item asset];
-//        
-//        if (nil != asset) {
-//            ret = YES;
-//        }
-//        
-//        [asset loadValuesAsynchronouslyForKeys:@[@"tracks"] completionHandler:^{
-//            
-//            //tracksのloadが成功した場合
-//            if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
-//                NSArray *tracks = [asset tracksWithMediaType:AVMediaTypeVideo]; //AVAssetのtracksのデータを配列で取得
-//                if ([tracks count] > 0) {
-//                    // Choose the first video track.
-//                    AVAssetTrack *videoTrack = [tracks objectAtIndex:0];
-//                    [videoTrack loadValuesAsynchronouslyForKeys:@[@"preferredTransform"] completionHandler:^{
-//                        
-//                        //preferredTransformのloadが成功した場合
-//                        if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] == AVKeyValueStatusLoaded) {
-//                            
-//                            //CGAffineTransformは移動、拡大、縮小などを行う事ができる。
-//                            //CGAffineTransform preferredTransform = [videoTrack preferredTransform];
-//                            
-//                            /*
-//                             The orientation of the camera while recording affects the orientation of the images received from an AVPlayerItemVideoOutput. Here we compute a rotation that is used to correctly orientate the video.
-//                             */
-//                            //self.playerView2.preferredRotation = -1 * atan2(preferredTransform.b, preferredTransform.a); //これ無くても再生はできた。
-//                            
-//                            //再生が終了した時の挙動を指定
-//                            //[self addDidPlayToEndTimeNotificationForPlayerItem:item];
-//                            
-//                            //非同期実行(非同期でdispatch(急進)する)
-//                            dispatch_async(dispatch_get_main_queue(), ^{
-//                                [item addOutput:self.videoOutput];
-//                                [player replaceCurrentItemWithPlayerItem:item];
-//                                [self.videoOutput requestNotificationOfMediaDataChangeWithAdvanceInterval:ONE_FRAME_DURATION];
-//                                [player play];
-//                            });
-//                            
-//                        }
-//                        
-//                    }];
-//                }
-//            }
-//            
-//        }];
-//    }
-//    
-//    return ret;
-//   
-//    
-//    
-////    BOOL ret = NO;
-////    asset = [[[AVURLAsset alloc] initWithURL:url options:nil] retain];
-////    
-////    if (nil != asset) {
-////        // We can now attempt to load the media, so report success.  We will
-////        // discover if the load actually completes successfully when we are
-////        // called back by the system
-////        ret = YES;
-////        
-////        [asset loadValuesAsynchronouslyForKeys:@[kTracksKey] completionHandler: ^{
-////            // Completion handler block (dispatched on main queue when loading
-////            // completes)
-////            dispatch_async(dispatch_get_main_queue(),^{
-////                NSError* error = nil;
-////                AVKeyValueStatus status = [asset statusOfValueForKey:kTracksKey error:&error];
-////                
-////                NSDictionary* settings = @{(id) kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)};
-////                AVPlayerItemVideoOutput *output = [[[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:settings] autorelease];
-////                self.videoOutput = output; //ここがエラーになる。
-////                
-////                //                //oka
-////                //                NSDictionary *pixBuffAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
-////                //                self.videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-////                
-////                //AVKeyValueStatusLoaded  0:unknown 1:loading 2:loaded 3:failed 4:cancelled
-////                if (status == AVKeyValueStatusLoaded) {
-////                    
-////                    NSLog(@"MASA --loadMediaURL 1--");
-////                    
-////                    
-////                    // Asset loaded, retrieve info and prepare
-////                    // for playback
-////                    if (![self prepareAssetForPlayback]) {
-////                        
-////                        NSLog(@"MASA --loadMediaURL 2--");
-////                        
-////                        mediaState = ERROR;
-////                    }
-////                }
-////                else {
-////                    
-////                    NSLog(@"MASA --loadMediaURL 3--");
-////                    
-////                    // Error
-////                    mediaState = ERROR;
-////                }
-////            });
-////        }];
-////    }
-////    
-////    return ret;
-//}
 
 - (BOOL)loadMediaURL:(NSURL*)url
 {
@@ -606,7 +349,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     if ([player currentItem] == nil) {
         //        [[self playerView2] setupGL];
 
-        
+    
             //試しに追加してみた
 //            videoTextureIdGL = [self createVideoTextureGL];
 //            glBindTexture(GL_TEXTURE_2D, videoTextureIdGL);
@@ -703,8 +446,16 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
                             [[self displayLink] setPaused:NO];//displayLinkをポーズするかどうか
 
                             //[player play];
-                            
-                            
+                            if (resetFlg) {
+                                playImmediately = YES;
+                                mediaState = PLAYING;
+                                [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
+
+                                NSLog(@"resetFlg=yes");
+                                playAudio = YES;
+                                [player play];
+                            }
+                            resetFlg = NO;
                         });
                         
                     }
@@ -730,13 +481,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     return YES;
 }
 
-
-// // Indicates whether the movie is playable on texture
-// - (BOOL)isPlayableOnTexture
-// {
-//     // We can render local files on texture
-//     return localFile && (videoType == ON_TEXTURE || videoType == ON_TEXTURE_FULLSCREEN);
-// }
 
 // Indicates whether the movie is playable on texture
 - (BOOL)isPlayableOnTexture
@@ -767,66 +511,58 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 }
 
 
-// // Get the height of the video (on-texture player only)
-// - (int)getVideoHeight
-// {
-//     int ret = -1;
-//
-//     // Return information only for local files
-//     if ([self isPlayableOnTexture]) {
-//         if (NOT_READY > mediaState) {
-//             ret = videoSize.height;
-//         }
-//         else {
-//             NSLog(@"Video height not available in current state");
-//         }
-//     }
-//     else {
-//         NSLog(@"Video height available only for video that is playable on texture");
-//     }
-//
-//     return ret;
-// }
+
+- (BOOL)VolumeOn
+{
+    NSLog(@"indivestigate:VolumeOn");
+
+    volumeFlg = YES;
+    player.volume = 1.0;
+    
+    return YES;
+}
+
+- (BOOL)VolumeOff
+{
+    NSLog(@"indivestigate:VolumeOff");
+    
+    volumeFlg = NO;
+    player.volume = 0.0;
+    
+    return YES;
+}
 
 
-
-//// Get the height of the video (on-texture player only)
-//- (int)getVideoHeight
+//- (BOOL)VolumeOn
 //{
-//    int ret = -1;
-//    ret = videoSize.height;
+//    NSLog(@"indivestigate:VolumeOn");
 //
-////    // Return information only for local files
-////	if (NOT_READY > mediaState) {
-////		ret = videoSize.height;
-////	}
+//    MovieViewController *MovieViewControllerClass = [[MovieViewController alloc] init];
+//    [MovieViewControllerClass setVolumeFlg:YES];
+//    player.volume = 1.0;
+//    BOOL ret = [MovieViewControllerClass volumeFlg];
+//    //[MovieViewControllerClass release];
 //
-//    return ret;
+//    NSLog(@"indivestigate:VolumeOn -2-:%u", ret);
+//
+//    return YES;
 //}
 //
-//
-//// Get the width of the video (on-texture player only)
-//- (int)getVideoWidth
+//- (BOOL)VolumeOff
 //{
-//    int ret = -1;
+//    NSLog(@"indivestigate:VolumeOff");
 //
-//    ret = videoSize.width;
-//    
-////    // Return information only for local files
-////    if ([self isPlayableOnTexture]) {
-////        if (NOT_READY > mediaState) {
-////            ret = videoSize.width;
-////        }
-////        else {
-////            NSLog(@"Video width not available in current state");
-////        }
-////    }
-////    else {
-////        NSLog(@"Video width available only for video that is playable on texture");
-////    }
+//    MovieViewController *MovieViewControllerClass = [[MovieViewController alloc] init];
+//    [MovieViewControllerClass setVolumeFlg:NO];
+//    player.volume = 0.0;
+//    BOOL ret = [MovieViewControllerClass volumeFlg];
+//    //[MovieViewControllerClass release];
 //
-//    return ret;
+//    NSLog(@"indivestigate:VolumeOff -2-:%u", ret);
+//
+//    return YES;
 //}
+
 
 // Get the height of the video (on-texture player only)
 - (int)getVideoHeight
@@ -897,276 +633,11 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     return ret;
 }
 
-
-//// Play the asset (maybe default)
-//- (BOOL)play:(BOOL)fullscreen fromPosition:(float)seekPosition
-//{
-//    BOOL ret = NO;
-//
-//    int requestedPlayerType = YES == fullscreen ? PLAYER_TYPE_NATIVE : PLAYER_TYPE_ON_TEXTURE;
-//
-//    // If switching player type or not currently playing, and not in an unknown
-//    // or error state
-//    if ((PLAYING != mediaState || playerType != requestedPlayerType) && NOT_READY > mediaState) {
-//        if (PLAYER_TYPE_NATIVE == requestedPlayerType) {
-//            BOOL playingOnTexture = NO;
-//
-//            if (PLAYING == mediaState) {
-//                // Pause the on-texture player
-//                [self pause];
-//                playingOnTexture = YES;
-//            }
-//
-//            // ----- Info: additional player threads not running at this point -----
-//
-//            // Use an MPMoviePlayerController to play the media
-//            moviePlayer = [[MPMoviePlayerController alloc] init];
-//
-//            // Set up observations
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerPlaybackDidFinish:)
-//                                                         name:MPMoviePlayerPlaybackDidFinishNotification
-//                                                       object:moviePlayer];
-//
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerLoadStateChanged:)
-//                                                         name:MPMoviePlayerLoadStateDidChangeNotification
-//                                                       object:moviePlayer];
-//
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerDidExitFullscreen:)
-//                                                         name:MPMoviePlayerDidExitFullscreenNotification
-//                                                       object:moviePlayer];
-//
-//            // The native iOS sample enforces continuous play state and seek position between on-texture
-//            // and full screen. For Unity we skip this to be consistent with the Android functionality.
-//            /*
-//            if (YES == localFile) {
-//                // Playback state will reflect the current on-texture playback
-//                // state (playback will be started, if required, when the media
-//                // has loaded)
-//                [moviePlayer setShouldAutoplay:NO];
-//
-//                if (0.0f <= seekPosition) {
-//                    // If a valid position has been requested, update the player
-//                    // cursor, which will allow playback to begin from the
-//                    // correct position (it will be set when the media has
-//                    // loaded)
-//                    [self updatePlayerCursorPosition:seekPosition];
-//                }
-//
-//                if (YES == playingOnTexture) {
-//                    // Store the fact that video was playing on texture when
-//                    // fullscreen playback was requested
-//                    resumeOnTexturePlayback = YES;
-//                }
-//            }
-//            else {
-//                // Always start playback of remote files from the beginning
-//                [self updatePlayerCursorPosition:PLAYER_CURSOR_POSITION_MEDIA_START];
-//
-//                // Play as soon as enough data is buffered
-//                [moviePlayer setShouldAutoplay:YES];
-//            }
-//             */
-//
-//            // Always start playback of remote files from the beginning
-//            [self updatePlayerCursorPosition:PLAYER_CURSOR_POSITION_MEDIA_START];
-//
-//            // Play as soon as enough data is buffered
-//            [moviePlayer setShouldAutoplay:YES];
-//
-//
-//            // Set the movie player's content URL and prepare to play
-//            [moviePlayer setContentURL:mediaURL];
-//            [moviePlayer prepareToPlay];
-//
-//            // Add the MPMoviePlayerController's view to the
-//            // arParentViewController's view
-//            [[[UIApplication sharedApplication] keyWindow] addSubview:moviePlayer.view];
-//
-//            mediaState = PLAYING_FULLSCREEN;
-//
-//            ret = YES;
-//        }
-//        // On texture playback available only for local files
-////        else if (YES == localFile) {  //okamura mod
-//        else if (YES) {
-//            // ----- Info: additional player threads not running at this point -----
-//
-//            // Seek to the current playback cursor time (this causes the start
-//            // and current times to be synchronised as well as starting AVPlayer
-//            // playback)
-//            seekRequested = YES;
-//
-//            if (0.0f <= seekPosition) {
-//                // If a valid position has been requested, update the player
-//                // cursor, which will allow playback to begin from the
-//                // correct position
-//                [self updatePlayerCursorPosition:seekPosition];
-//            }
-//
-//            mediaState = PLAYING;
-//
-//            if (nil != assetReader) {
-//                // If we have an asset reader, the asset contains video.  Start
-//                // a timer to drive the frame pump (on a background thread)
-//                [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
-//            }
-//            else {
-//                // The asset contains no video.  Play the audio
-//                [player play];
-//            }
-// 
-//            
-//            ret = YES;
-//        }
-//    }
-//
-//    if (YES == ret) {
-//        playerType = (tagPLAYER_TYPE)requestedPlayerType;
-//    }
-//
-//    // ----- Info: additional player threads now running (if ret is YES) -----
-//
-//    return ret;
-//}
-
-
-// bak 20170510
-//// Play the asset
-//- (BOOL)play:(BOOL)fullscreen fromPosition:(float)seekPosition
-//{
-//    
-//    BOOL ret = NO;
-//    
-//    int requestedPlayerType = YES == fullscreen ? PLAYER_TYPE_NATIVE : PLAYER_TYPE_ON_TEXTURE;
-//    
-//    // If switching player type or not currently playing, and not in an unknown
-//    // or error state
-//    if ((PLAYING != mediaState || playerType != requestedPlayerType) && NOT_READY > mediaState) {
-//        if (PLAYER_TYPE_NATIVE == requestedPlayerType) {
-//            BOOL playingOnTexture = NO;
-//            
-//            if (PLAYING == mediaState) {
-//                // Pause the on-texture player
-//                [self pause];
-//                playingOnTexture = YES;
-//            }
-//            
-//            // ----- Info: additional player threads not running at this point -----
-//            
-//            // Use an MPMoviePlayerController to play the media, owned by our
-//            // own MovieViewContrllerClass
-//            movieViewController = [[MovieViewController alloc] init];
-////            movieViewController = [[MPMoviePlayerController alloc] init];
-//            
-//            // Set up observations
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerPlaybackDidFinish:)
-//                                                         name:MPMoviePlayerPlaybackDidFinishNotification
-//                                                       object:movieViewController.moviePlayer];
-//            
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerLoadStateChanged:)
-//                                                         name:MPMoviePlayerLoadStateDidChangeNotification
-//                                                       object:movieViewController.moviePlayer];
-//            
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerDidExitFullscreen:)
-//                                                         name:MPMoviePlayerDidExitFullscreenNotification
-//                                                       object:movieViewController.moviePlayer];
-//            
-//            if (YES == localFile) {
-//                // Playback state will reflect the current on-texture playback
-//                // state (playback will be started, if required, when the media
-//                // has loaded)
-//                [movieViewController.moviePlayer setShouldAutoplay:YES];
-//                
-//                if (0.0f <= seekPosition) {
-//                    // If a valid position has been requested, update the player
-//                    // cursor, which will allow playback to begin from the
-//                    // correct position (it will be set when the media has
-//                    // loaded)
-//                    [self updatePlayerCursorPosition:seekPosition];
-//                }
-//                
-//                if (YES == playingOnTexture) {
-//                    // Store the fact that video was playing on texture when
-//                    // fullscreen playback was requested
-//                    resumeOnTexturePlayback = YES;
-//                }
-//            }
-//            else {
-//                // Always start playback of remote files from the beginning
-//                [self updatePlayerCursorPosition:PLAYER_CURSOR_POSITION_MEDIA_START];
-//                
-//                // Play as soon as enough data is buffered
-//                [movieViewController.moviePlayer setShouldAutoplay:YES];
-//            }
-//            
-//            // Set the movie player's content URL and prepare to play
-//            [movieViewController.moviePlayer setContentURL:mediaURL];
-//            [movieViewController.moviePlayer prepareToPlay];
-//            
-//            // Present the MovieViewController in the root view controller
-//            [rootViewController rootViewControllerPresentViewController:movieViewController inContext:NO];
-//            
-//            mediaState = PLAYING_FULLSCREEN;
-//            
-//            ret = YES;
-//        }
-//        // On texture playback available only for local files
-//        else if (YES) {
-//            // ----- Info: additional player threads not running at this point -----
-//            
-//            // Seek to the current playback cursor time (this causes the start
-//            // and current times to be synchronised as well as starting AVPlayer
-//            // playback)
-//            seekRequested = YES;
-//            
-//            if (0.0f <= seekPosition) {
-//                // If a valid position has been requested, update the player
-//                // cursor, which will allow playback to begin from the
-//                // correct position
-//                [self updatePlayerCursorPosition:seekPosition];
-//            }
-//            
-//            mediaState = PLAYING;
-//            
-//            if (YES == playVideo) {
-//                // Start a timer to drive the frame pump (on a background
-//                // thread)
-//                [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
-//            }
-//            else {
-//                // The asset contains no video.  Play the audio
-//                [player play];
-//            }
-//            
-//            ret = YES;
-//        }
-//    }
-//    
-//    if (YES == ret) {
-//        playerType = (enum tagPLAYER_TYPE)requestedPlayerType;
-//    }
-//    
-//    // ----- Info: additional player threads now running (if ret is YES) -----
-//    
-//    return ret;
-//}
-//
-
 // Play the asset
 - (BOOL)play:(BOOL)fullscreen fromPosition:(float)seekPosition
 {
     NSLog(@"indivestigate:play");
 
-
-//    [player play];
-////    mediaState = PLAYING;
-//    mediaState = PLAYING;
     BOOL ret = NO;
 
     // Seek to the current playback cursor time (this causes the start
@@ -1198,7 +669,18 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         [[self displayLink] setPaused:NO];
         [player play];
     }
-    
+
+    //MovieViewController *MovieViewControllerClass = [[MovieViewController alloc] init];
+//    [MovieViewControllerClass setVolumeFlg:NO];
+
+    NSLog(@"play -3- : %u", volumeFlg);
+    if (volumeFlg == NO) {
+        player.volume = 0.0;
+    } else {
+        player.volume = 1.0;
+    }
+    //[MovieViewControllerClass release];
+
     //動画再生終了時 onVideoEnd を実行する。
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onVideoEnd)
@@ -1208,127 +690,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     ret = YES;
 
 //    UnitySendMessage("gameObjectName", "callbackMethodName", "Message");
-    
-    NSLog(@"play -3- UnitySendMessage");
-//    UnitySendMessage("CloudRecoTarget", "CallbackFoundLostUpdate", "これは引数");
-    
-    
-//    BOOL ret = NO;
-//
-//    int requestedPlayerType = YES == fullscreen ? PLAYER_TYPE_NATIVE : PLAYER_TYPE_ON_TEXTURE;
-//    
-//    // If switching player type or not currently playing, and not in an unknown
-//    // or error state
-//    if ((PLAYING != mediaState || playerType != requestedPlayerType) && NOT_READY > mediaState) {
-//        if (PLAYER_TYPE_NATIVE == requestedPlayerType) {
-//            BOOL playingOnTexture = NO;
-//            
-//            if (PLAYING == mediaState) {
-//                // Pause the on-texture player
-//                [self pause];
-//                playingOnTexture = YES;
-//            }
-//            
-//            // ----- Info: additional player threads not running at this point -----
-//            
-//            // Use an MPMoviePlayerController to play the media, owned by our
-//            // own MovieViewContrllerClass
-//            movieViewController = [[MovieViewController alloc] init];
-//            //            movieViewController = [[MPMoviePlayerController alloc] init];
-//            
-//            // Set up observations
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerPlaybackDidFinish:)
-//                                                         name:MPMoviePlayerPlaybackDidFinishNotification
-//                                                       object:movieViewController.moviePlayer];
-//            
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerLoadStateChanged:)
-//                                                         name:MPMoviePlayerLoadStateDidChangeNotification
-//                                                       object:movieViewController.moviePlayer];
-//            
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(moviePlayerDidExitFullscreen:)
-//                                                         name:MPMoviePlayerDidExitFullscreenNotification
-//                                                       object:movieViewController.moviePlayer];
-//            
-//            if (YES == localFile) {
-//                // Playback state will reflect the current on-texture playback
-//                // state (playback will be started, if required, when the media
-//                // has loaded)
-//                [movieViewController.moviePlayer setShouldAutoplay:YES];
-//                
-//                if (0.0f <= seekPosition) {
-//                    // If a valid position has been requested, update the player
-//                    // cursor, which will allow playback to begin from the
-//                    // correct position (it will be set when the media has
-//                    // loaded)
-//                    [self updatePlayerCursorPosition:seekPosition];
-//                }
-//                
-//                if (YES == playingOnTexture) {
-//                    // Store the fact that video was playing on texture when
-//                    // fullscreen playback was requested
-//                    resumeOnTexturePlayback = YES;
-//                }
-//            }
-//            else {
-//                // Always start playback of remote files from the beginning
-//                [self updatePlayerCursorPosition:PLAYER_CURSOR_POSITION_MEDIA_START];
-//                
-//                // Play as soon as enough data is buffered
-//                [movieViewController.moviePlayer setShouldAutoplay:YES];
-//            }
-//            
-//            // Set the movie player's content URL and prepare to play
-//            [movieViewController.moviePlayer setContentURL:mediaURL];
-//            [movieViewController.moviePlayer prepareToPlay];
-//            
-//            // Present the MovieViewController in the root view controller
-//            [rootViewController rootViewControllerPresentViewController:movieViewController inContext:NO];
-//            
-//            mediaState = PLAYING_FULLSCREEN;
-//            
-//            ret = YES;
-//        }
-//        // On texture playback available only for local files
-//        else if (YES) {
-//            // ----- Info: additional player threads not running at this point -----
-//            
-//            // Seek to the current playback cursor time (this causes the start
-//            // and current times to be synchronised as well as starting AVPlayer
-//            // playback)
-//            seekRequested = YES;
-//            
-//            if (0.0f <= seekPosition) {
-//                // If a valid position has been requested, update the player
-//                // cursor, which will allow playback to begin from the
-//                // correct position
-//                [self updatePlayerCursorPosition:seekPosition];
-//            }
-//            
-//            mediaState = PLAYING;
-//            
-//            if (YES == playVideo) {
-//                // Start a timer to drive the frame pump (on a background
-//                // thread)
-//                [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
-//            }
-//            else {
-//                // The asset contains no video.  Play the audio
-//                [player play];
-//            }
-//            
-//            ret = YES;
-//        }
-//    }
-//    
-//    if (YES == ret) {
-//        playerType = (enum tagPLAYER_TYPE)requestedPlayerType;
-//    }
-//    
-    // ----- Info: additional player threads now running (if ret is YES) -----
-    
+//    NSLog(@"play -3- UnitySendMessage");
+
     return ret;
 }
 
@@ -1395,88 +758,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     resumeOnTexturePlayback = NO;
     mediaState = REACHED_END;
     (void)[self stop];
-    
-    
-    
-//    player = [[[AVPlayer alloc] initWithPlayerItem:self.playerItem] autorelease];
-
-    //    self.videoPlayer = [[[AVPlayer alloc] initWithPlayerItem:self.playerItem] autorelease];
-    
-//    AVPlayerLayer* layer = ( AVPlayerLayer* )self.videoPlayerView.layer;
-//    layer.videoGravity = AVLayerVideoGravityResizeAspect;
-//    layer.player       = self.videoPlayer;
-    
-    
-//
-//        
-//        DEBUGLOG(@"moviePlayerPlaybackDidFinish");
-//        // Determine the reason the playback finished
-//        NSDictionary* dict = [notification userInfo];
-//        NSNumber* reason = (NSNumber*)[dict objectForKey:@"MPMoviePlayerPlaybackDidFinishReasonUserInfoKey"];
-//    
-//        CFTimeInterval cursorPosition = PLAYER_CURSOR_POSITION_MEDIA_START;
-//    
-//        switch ([reason intValue]) {
-//            case MPMovieFinishReasonPlaybackEnded:
-//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackEnded");
-//                break;
-//            case MPMovieFinishReasonPlaybackError:
-//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonPlaybackError");
-//                break;
-//            case MPMovieFinishReasonUserExited:
-//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> MPMovieFinishReasonUserExited");
-//                cursorPosition = [movieViewController.moviePlayer currentPlaybackTime];
-//                break;
-//            default:
-//                DEBUGLOG(@"moviePlayerPlaybackDidFinish -> Unknown");
-//                break;
-//        }
-//    
-//        // no need to resume player if going back to texture
-//        resumeOnTexturePlayback = NO;
-//        [self moviePlayerExitAtPosition:cursorPosition];
-    
 }
 
-// Stop playback (on-texture player only)
-//- (BOOL)stop
-//{
-//    BOOL ret = NO;
-//
-//    NSLog(@"stop-0:mediaState:%u",mediaState);
-//    NSLog(@"stop-0");
-//    
-//    // Control available only when playing on texture (not the native player)
-//    if (PLAYING == mediaState) {
-//        if (PLAYER_TYPE_ON_TEXTURE == playerType) {
-//            [dataLock lock];
-//
-//            // Stop the audio (if there is any)
-//            if (YES == playAudio) {
-//                [player pause];
-//            }
-//
-//
-//            // Stop the frame pump thread
-//            [self waitForFrameTimerThreadToEnd];
-//            mediaState = STOPPED;
-//
-//        NSLog(@"stop-1:mediaState:%u",mediaState);
-//        NSLog(@"stop-1");
-//
-//            // Reset the playback cursor position
-//  //          [self updatePlayerCursorPosition:PLAYER_CURSOR_POSITION_MEDIA_START];
-//
-//            [dataLock unlock];
-//            ret = YES;
-//        }
-//        else {
-//            NSLog(@"Stop control available only when playing video on texture");
-//        }
-//    }
-//
-//    return ret;
-//}
 
 - (BOOL)stop
 {
@@ -1585,207 +868,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
     return ret;
 }
-
-
-// // Update the OpenGL video texture with the latest available video data
-// - (MEDIA_STATE)updateVideoData
-// {
-//     // If currently playing on texture
-//     if (PLAYING == mediaState && PLAYER_TYPE_ON_TEXTURE == playerType) {
-//         [latestSampleBufferLock lock];
-//
-//         unsigned char* pixelBufferBaseAddress = NULL;
-//         CVImageBufferRef pixelBuffer;
-//
-//         // If we have a valid buffer, lock the base address of its pixel buffer
-//         if (NULL != latestSampleBuffer) {
-//             pixelBuffer = CMSampleBufferGetImageBuffer(latestSampleBuffer);
-//             CVPixelBufferLockBaseAddress(pixelBuffer, 0);
-//             pixelBufferBaseAddress = (unsigned char*)CVPixelBufferGetBaseAddress(pixelBuffer);
-//         }
-//         else {
-//             // No video sample buffer available: we may have been asked to
-//             // provide one before any are available, or we may have read all
-//             // available frames
-//             DEBUGLOG(@"No video sample buffer available");
-//         }
-//
-//         if (NULL != pixelBufferBaseAddress) {
-//             // If we haven't created the video texture, do so now
-//             if (useMetal) {
-//                 if (nil == videoTextureMetal) {
-//                     videoTextureMetal = [self createVideoTextureMetal];
-//                 }
-//             }
-//             else {
-//                 // OpenGL ES
-//                 if (0 == videoTextureIdGL) {
-//                     videoTextureIdGL = [self createVideoTextureGL];
-//                 }
-//                 glBindTexture(GL_TEXTURE_2D, videoTextureIdGL);
-//             }
-//
-//             const size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
-//
-//             if (bytesPerRow / BYTES_PER_TEXEL == videoSize.width) {
-//                 // No padding between lines of decoded video
-//                 if (useMetal) {
-//                     MTLRegion videoRegion = MTLRegionMake2D(0, 0, videoSize.width, videoSize.height);
-//                     [videoTextureMetal replaceRegion:videoRegion mipmapLevel:0 withBytes:pixelBufferBaseAddress bytesPerRow:bytesPerRow];
-//                 }
-//                 else {
-//                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, videoSize.width, videoSize.height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixelBufferBaseAddress);
-//                 }
-//             }
-//             else {
-//                 // Decoded video contains padding between lines.  We must not
-//                 // upload it to graphics memory as we do not want to display it
-//                 if (useMetal) {
-//                     for (int i = 0; i < videoSize.height; ++i) {
-//                         unsigned char* line = pixelBufferBaseAddress + i * bytesPerRow;
-//                         MTLRegion lineRegion = MTLRegionMake2D(0, 0, videoSize.width, 1);
-//                         [videoTextureMetal replaceRegion:lineRegion mipmapLevel:0 withBytes:line bytesPerRow:bytesPerRow];
-//                     }
-//                 }
-//                 else {
-//                     // Allocate storage for the OpenGL texture (correctly sized)
-//                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, videoSize.width, videoSize.height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-//
-//                     // Now upload each line of texture data as a sub-image
-//                     for (int i = 0; i < videoSize.height; ++i) {
-//                         GLubyte* line = pixelBufferBaseAddress + i * bytesPerRow;
-//                         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, i, videoSize.width, 1, GL_BGRA, GL_UNSIGNED_BYTE, line);
-//                     }
-//                 }
-//             }
-//
-//             if (!useMetal) {
-//                 // Unbind OpenGL texture
-//                 glBindTexture(GL_TEXTURE_2D, 0);
-//             }
-//
-//             // Unlock the buffers
-//             CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-//         }
-//
-//         [latestSampleBufferLock unlock];
-//     }
-//
-//     return mediaState;
-// }
-
-// 20170430_bak
-//// Update the OpenGL video texture with the latest available video data
-//- (GLuint)updateVideoData
-//{
-//    NSLog(@"MASA -updateVideoData 1-");
-//    
-//	GLuint textureID = 0;
-//
-//	// If currently playing on texture
-//	if (PLAYING == mediaState && PLAYER_TYPE_ON_TEXTURE == playerType) {
-//
-//        NSLog(@"MASA -updateVideoData 2-");
-//        
-//        [latestSampleBufferLock lock];
-//
-//		playerCursorPosition = CACurrentMediaTime() - mediaStartTime;
-////		self.playerCursorCurrentCMTIME = self.player.currentTime;
-//		//		CMTime caCurrentTime = CMTimeMake(self.playerCursorPosition * TIMESCALE, TIMESCALE);
-//
-//		unsigned char* pixelBufferBaseAddress = NULL;
-//		CVPixelBufferRef pixelBuffer;
-//
-//        //NSLog(@"%@",pixelBuffer); //これをやるとXcodeにこのファイルが表示される！！！！
-//
-//		// If we have a valid buffer, lock the base address of its pixel buffer
-//		//        if (NULL != latestSampleBuffer) {
-//		//            pixelBuffer = CMSampleBufferGetImageBuffer(latestSampleBuffer);
-//		//pixelBuffer = [[self videoOutput] copyPixelBufferForItemTime:player.currentItem.currentTime itemTimeForDisplay:nil];  //oka
-//        
-//
-////        int valTimeScale;
-////        valTimeScale = 1000;
-////        CMTime caCurrentTime = CMTimeMake(1 * valTimeScale, valTimeScale);
-////        CMTime time = CMTimeMake(1800, 600);
-////        double seconds = CMTimeGetSeconds([player currentTime]);    //実はcurrentTime取れてるんじゃないの疑惑
-//        //pixelBuffer = [self.videoOutput copyPixelBufferForItemTime:time itemTimeForDisplay:nil];
-//        pixelBuffer = [self.videoOutput copyPixelBufferForItemTime:player.currentItem.currentTime itemTimeForDisplay:nil];
-//
-//        
-//		CVPixelBufferLockBaseAddress(pixelBuffer, 0);
-//		pixelBufferBaseAddress = (unsigned char*)CVPixelBufferGetBaseAddress(pixelBuffer);
-//		//        }
-//		//        else {
-//		// No video sample buffer available: we may have been asked to
-//		// provide one before any are available, or we may have read all
-//		// available frames
-//		//            DEBUGLOG(@"No video sample buffer available");
-//		//        }
-//
-//        NSLog(@"MASA -updateVideoData 3-");
-//
-//        videoLengthSeconds = CMTimeGetSeconds([asset duration]);
-//        
-//		if (NULL != pixelBufferBaseAddress) {
-//
-//            NSLog(@"MASA -updateVideoData 4-");
-//            
-//            // If we haven't created the video texture, do so now
-//			if (0 == videoTextureIdGL) {
-//
-//                NSLog(@"MASA -updateVideoData 5-");
-//                
-//                videoTextureIdGL = [self createVideoTexture];
-//			}
-//
-//			glBindTexture(GL_TEXTURE_2D, videoTextureIdGL);
-//			const size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
-//
-//			if (bytesPerRow / BYTES_PER_TEXEL == videoSize.width) {
-//                NSLog(@"MASA -updateVideoData 6-");
-//                
-//                // No padding between lines of decoded video
-//				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) videoSize.width, (GLsizei) videoSize.height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixelBufferBaseAddress);
-//			}
-//			else {
-//                NSLog(@"MASA -updateVideoData 7-");
-//                
-//                // Decoded video contains padding between lines.  We must not
-//				// upload it to graphics memory as we do not want to display it
-//
-//				// Allocate storage for the texture (correctly sized)
-//				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) videoSize.width, (GLsizei) videoSize.height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-//
-//				// Now upload each line of texture data as a sub-image
-//				for (int i = 0; i < videoSize.height; ++i) {
-//					GLubyte* line = pixelBufferBaseAddress + i * bytesPerRow;
-//					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, i, (GLsizei) videoSize.width, 1, GL_BGRA, GL_UNSIGNED_BYTE, line);
-//				}
-//			}
-//
-//			glBindTexture(GL_TEXTURE_2D, 0);
-//
-//			// Unlock the buffers
-//			CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-//
-//            NSLog(@"MASA -updateVideoData 8-");
-//            
-//			textureID = videoTextureIdGL;
-// 		}
-//
-//		if (pixelBuffer) {
-//			CFRelease(pixelBuffer);
-//		}
-//
-//        NSLog(@"MASA -updateVideoData 9-");
-//
-//
-//		[latestSampleBufferLock unlock];
-// 	}
-//
-//	return textureID;
-//}
 
 
 // Update the OpenGL video texture with the latest available video data
@@ -2128,31 +1210,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
     [mediaURL release];
     mediaURL = nil;
-    
-    //ダメだった。
-//    [self.displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-//    [self.displayLink release];
-//    self.displayLink = nil;
-//    videoTextureMetal = nil;
-
-    
-    
-    
-//    [dataLock lock];
-    
-    // Stop the audio (if there is any)
-//    [player pause];
-    
-//    // Stop the frame pump thread
-//    [self waitForFrameTimerThreadToEnd];
-//    mediaState = STOPPED;
-    
-    // Reset the playback cursor position
-//    [self updatePlayerCursorPosition:PLAYER_CURSOR_POSITION_MEDIA_START];
-    
-//    [dataLock unlock];
-
-
 }
 
 
@@ -2231,111 +1288,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
      return ret;
  }
-//
-//
-// // Prepare the AVURLAsset for reading so we can obtain video frame data from it
-// - (BOOL)prepareAssetForReading:(CMTime)startTime
-// {
-//     BOOL ret = YES;
-//     NSError* error = nil;
-//
-//     // ===== Video =====
-//     // Get the first video track
-//     AVAssetTrack* assetTrackVideo = nil;
-//     NSArray* arrayTracks = [asset tracksWithMediaType:AVMediaTypeVideo];
-//     if (0 < [arrayTracks count]) {
-//         assetTrackVideo = [arrayTracks objectAtIndex:0];
-//         videoFrameRate = [assetTrackVideo nominalFrameRate];
-//
-//         // Release any existing asset reader-related resources]
-//         [assetReader release];
-//         [assetReaderTrackOutputVideo release];
-//
-//         // Create an asset reader for the video track
-//         assetReader = [[AVAssetReader alloc] initWithAsset:asset error:&error];
-//
-//         // Create an output for the video track
-//         NSDictionary* outputSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
-//         assetReaderTrackOutputVideo = [[AVAssetReaderTrackOutput alloc] initWithTrack:assetTrackVideo outputSettings:outputSettings];
-//
-//         // Add the video output to the asset reader
-//         if ([assetReader canAddOutput:assetReaderTrackOutputVideo]) {
-//             [assetReader addOutput:assetReaderTrackOutputVideo];
-//         }
-//
-//         // Set the time range
-//         CMTimeRange requiredTimeRange = CMTimeRangeMake(startTime, kCMTimePositiveInfinity);
-//         [assetReader setTimeRange:requiredTimeRange];
-//
-//         // Start reading the track
-//         [assetReader startReading];
-//
-//         if (AVAssetReaderStatusReading != [assetReader status]) {
-//             NSLog(@"Error - AVAssetReader not in reading state");
-//             ret = NO;
-//         }
-//     }
-//     else {
-//         NSLog(@"***** No video tracks in asset *****");
-//     }
-//
-//     // ===== Audio =====
-//     // Get the first audio track
-//     arrayTracks = [asset tracksWithMediaType:AVMediaTypeAudio];
-//     if (0 < [arrayTracks count]) {
-//         playAudio = YES;
-//         AVAssetTrack* assetTrackAudio = [arrayTracks objectAtIndex:0];
-//
-//         AVMutableAudioMixInputParameters* audioInputParams = [AVMutableAudioMixInputParameters audioMixInputParameters];
-//         [audioInputParams setVolume:currentVolume atTime:playerCursorStartPosition];
-//         [audioInputParams setTrackID:[assetTrackAudio trackID]];
-//
-//         NSArray* audioParams = [NSArray arrayWithObject:audioInputParams];
-//         AVMutableAudioMix* audioMix = [AVMutableAudioMix audioMix];
-//         [audioMix setInputParameters:audioParams];
-//
-//         AVPlayerItem* item = [player currentItem];
-//         [item setAudioMix:audioMix];
-//     }
-//     else {
-//         NSLog(@"***** No audio tracks in asset *****");
-//     }
-//
-//     return ret;
-// }
-
-
-
-//// Prepare the AVURLAsset for playback
-//- (BOOL)prepareAssetForPlayback
-//{
-//    // BOOL ret = YES;
-//
-//    // Get video properties
-//    NSArray* videoTracks = [asset tracksWithMediaType:AVMediaTypeVideo];
-//	AVAssetTrack* videoTrack = videoTracks[0];
-//    videoSize = videoTrack.naturalSize;
-//
-//    videoLengthSeconds = CMTimeGetSeconds([asset duration]);
-//
-//    // Start playback at time 0.0
-//    playerCursorStartPosition = kCMTimeZero;
-//
-//    // Start playback at full volume (audio mix level, not system volume level)
-//    currentVolume = PLAYER_VOLUME_DEFAULT;
-//
-//    // Create asset tracks for reading
-//    BOOL ret = [self prepareAssetForReading:playerCursorStartPosition];
-//
-//    if (ret) {
-//        // Prepare the AVPlayer to play the audio
-//        [self prepareAVPlayer];
-//        // Inform our client that the asset is ready to play
-//        mediaState = READY;
-//    }
-//
-//    return ret;
-//}
 
 
 // Prepare the AVURLAsset for reading so we can obtain video frame data from it
@@ -2765,6 +1717,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
      Using the display link's timestamp and duration we can compute the next time the screen will be refreshed, and copy the pixel buffer for that time
      This pixel buffer can then be processed and later rendered on screen.
      */
+//    NSLog(@"kCMTimeInvalid = %f", kCMTimeInvalid);
     CMTime outputItemTime = kCMTimeInvalid;
     
     // Calculate the nextVsync time which is when the screen will be refreshed next.
@@ -2778,6 +1731,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     if ([[self videoOutput] hasNewPixelBufferForItemTime:outputItemTime]) {
         //outputする適切なデータがある場合
         cntNoRender = 0;
+        cntNoRenderReady = 0;
         NSLog(@"nctNoRender is set zero");
         
         [latestSampleBufferLock lock];
@@ -2960,7 +1914,66 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
         NSLog(@"MASA -displayLinkCallback -no-");
         NSLog(@"MASA -displayLinkCallback -no- mediaState %u", mediaState);
 
+        if (CMTimeGetSeconds(outputItemTime) >= 0 && mediaState == PLAYING) {
+            cntNoRender = cntNoRender + 1;
+            NSLog(@"MASA -displayLinkCallback -no- count1 %u", cntNoRender);
+        }
+        
+        if (cntNoRender > 100) {
+            NSLog(@"MASA -displayLinkCallback -no- stop");
 
+            [self.displayLink setPaused:YES];
+
+            // 一旦、ビデオはストップ。再度、video読み込む。
+            (void)[self stop];
+//            mediaState = NOT_READY;
+//            resetFlg = YES;
+            //[self loadMediaURL:mediaURL];
+
+
+            mediaState = ERROR;
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            //[self play:NO fromPosition:VIDEO_PLAYBACK_CURRENT_POSITION];
+            
+//            videoSize.height = 0.0f;
+//            videoSize.width = 0.0f;
+//
+//            MTLTextureDescriptor *texDesc = [MTLTextureDescriptorClass texture2DDescriptorWithPixelFormat:MTLPixelFormatB5G6R5Unorm
+//                                                width:videoSize.width
+//                                               height:videoSize.height
+//                                            mipmapped:NO];
+
+        
+//            UIFont *font = [UIFont fontWithName:@"AmericanTypewriter-Bold" size:26.0f];
+//            UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 320, 100)];
+//            label2.text = @"hogehoge";
+//            label2.font = font;
+//            label2.textColor = [UIColor whiteColor];
+//            label2.backgroundColor = [UIColor redColor];
+//            label2.textAlignment = NSTextAlignmentRight;
+//            [self..view addSubview:label2];
+        }
+        
+        if (mediaState == READY) {
+            cntNoRenderReady = cntNoRenderReady + 1;
+        }
+        if (cntNoRenderReady > 500) {
+            NSLog(@"MASA -displayLinkCallback ready stop");
+            [self.displayLink setPaused:YES];
+            cntNoRenderReady = 0;
+            
+            mediaState = ERROR;
+        }
         
 //        if (CMTimeGetSeconds(outputItemTime) > 0 || ((CMTimeGetSeconds(outputItemTime) == 0 || isnan(CMTimeGetSeconds(outputItemTime)) ) && (mediaState == READY || mediaState == PAUSED))) {
 //            NSLog(@"MASA -displayLinkCallback -no- seconds > 0");
@@ -2985,21 +1998,10 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
     
     }
-    
-
-    
-//    - (void)outputMediaDataWillChange:(AVPlayerItemOutput *)sender {
-//        if (![self.videoOutput hasNewPixelBufferForItemTime:CMTimeMake(1, 10)]) {
-//            [self.displayLink setPaused:YES];
-//            [self configVideoOutput];
-//        }
-//        [self.displayLink setPaused:NO];
-//    }
 
     
     
 }
-
 
 - (void)outputMediaDataWillChange:(AVPlayerItemOutput *)sender {
     NSLog(@"indivestigate:outputMediaDataWillChange");
