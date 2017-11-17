@@ -14,8 +14,9 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
     private bool mHasBeenFound = false;
     private bool mLostTracking;
     private float mSecondsSinceLost;
+	public GameObject MessageUI_err;
 
-	private VideoPlaybackBehaviour video;
+	public VideoPlaybackBehaviour video;
     #endregion // PRIVATE_MEMBERS
 
 
@@ -30,68 +31,172 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
             mTrackableBehaviour.RegisterTrackableEventHandler(this);
         }
 
+		Debug.Log("TrackableEventHandler:Start-0-:aaaaaaaaaaaaaaaa");
+
+//		//とりあえず MessageUI_err を保存しておいて非表示とする。
+//		MessageUI_err = GameObject.Find ("MessageUI_err");
+//
+//		Debug.Log("TrackableEventHandler:Start-1-:" + MessageUI_err);
+//
+//		//MessageUI_err.SetActive (false);
+//
+//		Debug.Log("TrackableEventHandler:Start-2-:" + MessageUI_err);
+
         OnTrackingLost();
     }
 
-    void Update()
-    {
-		//return;	//@ToDo パフォーマンス テスト
+	void Update()
+	{
+		if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING) {
+			Debug.Log("TrackableEventHandler:Update:-1-");
 
+			VideoPlayerHelper.MediaState state = video.VideoPlayer.GetStatus();
+			if (state == VideoPlayerHelper.MediaState.ERROR)
+			{
+				Debug.Log("TrackableEventHandler:Update:-2-");
+				Debug.Log("TrackableEventHandler:Update:-2.5-:" + MessageUI_err);
+
+				if (MessageUI_err != null && MessageUI_err.active == false) {
+					Debug.Log("TrackableEventHandler:Update:-3-");
+					MessageUI_err.SetActive (true);
+				}
+			}
+		}
+	}
+
+//    void Update()
+//    {
+//		//return;	//@ToDo パフォーマンス テスト
+//
 //		Debug.Log("TrackableEventHandler:Update-0");
-
-		Debug.Log ("Update:0");
-
-		video.SetState();
-
-//		Debug.Log("TrackableEventHandler:Update-0-1");
-
-		// Pause the video if tracking is lost for more than two seconds
-        if (mHasBeenFound && mLostTracking)
-        {
-
-			Debug.Log("TrackableEventHandler:Update-1");
-
-			//if (mSecondsSinceLost > 2.0f)
-			if (mSecondsSinceLost > 0.01f)
-            {
-				Debug.Log("TrackableEventHandler:Update-2");
-
-//				VideoPlaybackBehaviour video = GetComponentInChildren<VideoPlaybackBehaviour>();
-
-				Debug.Log("video:" + video);
-				Debug.Log("video.CurrentState:" + video.CurrentState);
-
-//				if (video != null &&
-//                    video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
-//                {
+//
+//		video.SetState();
+//
+//
+//		// Pause the video if tracking is lost for more than two seconds
+//        if (mHasBeenFound && mLostTracking)
+//        {
+//
+//			Debug.Log("TrackableEventHandler:Update-1");
+//
+//			//if (mSecondsSinceLost > 2.0f)
+//			if (mSecondsSinceLost > 0.01f)
+//            {
+//				Debug.Log("TrackableEventHandler:Update-2");
+//				Debug.Log("video:" + video);
+//				Debug.Log("video.CurrentState:" + video.CurrentState);
+//
+//				if (video != null)
+//				{
 //					Debug.Log("TrackableEventHandler:Update-3");
 //					video.VideoPlayer.Pause();
-//                }
-				if (video != null)
-				{
-					Debug.Log("TrackableEventHandler:Update-3");
-					video.VideoPlayer.Pause();
-				}
-
-                mLostTracking = false;
-
-				// Start finder again if we lost the current trackable
-				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-				if (objectTracker != null)
-				{
-					objectTracker.TargetFinder.ClearTrackables(false);
-					objectTracker.TargetFinder.StartRecognition();
-				}
-
-
-            }
-
-            mSecondsSinceLost += Time.deltaTime;
-        }
-    }
+//				}
+//
+//                mLostTracking = false;
+//
+//				// Start finder again if we lost the current trackable
+//				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+//				if (objectTracker != null)
+//				{
+//					objectTracker.TargetFinder.ClearTrackables(false);
+//					objectTracker.TargetFinder.StartRecognition();
+//				}
+//			}
+//
+//            mSecondsSinceLost += Time.deltaTime;
+//        }
+//    }
 
     #endregion //MONOBEHAVIOUR_METHODS
 
+	public void FoundLostUpdate()
+	{
+		//return;	//@ToDo パフォーマンス テスト
+
+		Debug.Log("TrackableEventHandler:FoundLostUpdate-0");
+
+		StartCoroutine(video.SetState());
+
+
+//		// Pause the video if tracking is lost for more than two seconds
+//		if (mHasBeenFound && mLostTracking)
+//		{
+//
+//			Debug.Log("TrackableEventHandler:FoundLostUpdate-1");
+//
+//			//if (mSecondsSinceLost > 2.0f)
+//			if (mSecondsSinceLost > 0.01f)
+//			{
+//				Debug.Log("TrackableEventHandler:FoundLostUpdate-2");
+//				Debug.Log("video:" + video);
+//				Debug.Log("video.CurrentState:" + video.CurrentState);
+//
+//				if (video != null)
+//				{
+//					Debug.Log("TrackableEventHandler:FoundLostUpdate-3");
+//					video.VideoPlayer.Pause();
+//				}
+//
+//				mLostTracking = false;
+//
+//				// Start finder again if we lost the current trackable
+//				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+//				if (objectTracker != null)
+//				{
+//					objectTracker.TargetFinder.ClearTrackables(false);
+//					objectTracker.TargetFinder.StartRecognition();
+//				}
+//			}
+//
+//			mSecondsSinceLost += Time.deltaTime;
+//		}
+	}
+
+	public void FoundLostUpdate2 () {
+	
+//		// Pause the video if tracking is lost for more than two seconds
+//		if (mHasBeenFound && mLostTracking)
+//		{
+//
+//			Debug.Log("TrackableEventHandler:FoundLostUpdate-1");
+//
+//			if (mLostTracking) {
+//				//if (mSecondsSinceLost > 2.0f)
+//				//			if (mSecondsSinceLost > 0.01f)
+//				//			{
+//				Debug.Log("TrackableEventHandler:FoundLostUpdate-2");
+//				Debug.Log("video:" + video);
+//				Debug.Log("video.CurrentState:" + video.CurrentState);
+//
+//				if (video != null)
+//				{
+//					Debug.Log("TrackableEventHandler:FoundLostUpdate-3");
+//					video.VideoPlayer.Pause();
+//				}
+//
+//				mLostTracking = false;
+//
+//				// Start finder again if we lost the current trackable
+//				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+//				if (objectTracker != null)
+//				{
+//					objectTracker.TargetFinder.ClearTrackables(false);
+//					objectTracker.TargetFinder.StartRecognition();
+//				}
+//				//			}
+//			}
+//
+//
+//			mSecondsSinceLost += Time.deltaTime;
+//		}	
+	}
+
+
+//	public void CallbackFoundLostUpdate (string statusStr) {
+//		Debug.Log("CallbackFoundLostUpdate:-1");
+//		FoundLostUpdate ();
+//	}
+		
 
     #region PUBLIC_METHODS
     /// <summary>
@@ -229,6 +334,22 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
         mLostTracking = true;
         mSecondsSinceLost = 0;
+
+
+		//okamura add 
+		video.VideoPlayer.Pause();
+
+		// Start finder again if we lost the current trackable
+		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+		if (objectTracker != null)
+		{
+			objectTracker.TargetFinder.ClearTrackables(false);
+			objectTracker.TargetFinder.StartRecognition();
+		}
+
+		//FoundLostUpdate okamura add
+		FoundLostUpdate();
+
     }
 
     // Pause all videos except this one

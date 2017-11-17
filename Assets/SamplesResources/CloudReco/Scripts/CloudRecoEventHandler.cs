@@ -159,6 +159,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	{
 		public string  title;
 		public string  url;
+		public string  linkUrl;
 	}
 		
 	public IEnumerator timeStop(){
@@ -218,11 +219,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			}
 
 			//新しいVideoを再生するのでinitフラグをfalseにするなど操作。okamura 2017/5/14
-//			video.VideoPlayer.Pause ();			//video をpause
-//			PauseOtherVideos (video);			//video 以外のものをpauseする
 			video.OnApplicationPause (true);	//init flgなどの制御
-
-			//StartCoroutine("timeStop");	//時間を停止させる
 
 			Debug.Log ("targetSearchResult.MetaData" + targetSearchResult.MetaData);
 
@@ -230,7 +227,8 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 			Debug.Log("We got a target metadata title: " + data2.title);
 			Debug.Log("We got a target metadata url: " + data2.url);
-			targetMenuURL = data2.url; 
+			Debug.Log("We got a target metadata linkUrl: " + data2.linkUrl);
+			targetMenuURL = data2.linkUrl; 
 			video.m_path = data2.url;
 
 			if(video != null) {
@@ -253,10 +251,13 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		ImageTargetBehaviour imageTargetBehaviour = mObjectTracker.TargetFinder.EnableTracking(targetSearchResult, mParentOfImageTargetTemplate) as ImageTargetBehaviour;
 
 
-
+		if (targetMenuURL == "") {
+			targetMenuURL = "https://universear.hiliberate.biz/";
+		} 
 
 
 		//20170704 okamura add
+		Debug.Log ("OnNewSearchResult:video.VideoRender()");
 		video.VideoRender();
 
 		// ターゲットのメニューを設定
@@ -265,6 +266,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		Debug.Log ("TargetMenuPlane:" + TargetMenuPlane);
 		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
 		tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
+		tap.fullScreenURL = video.m_path;
 
 		//ターゲットメニュー はメイン以外は初期は非表示
 		GameObject www_icon = GameObject.Find("www_icon");
@@ -286,6 +288,15 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 //		if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled()) {
 //			imageTargetBehaviour.ImageTarget.StartExtendedTracking();
 //		}
+
+
+
+		// FoundLostUpdate
+		GameObject refObj = GameObject.Find("CloudRecoTarget");
+		Debug.Log ("refObj:" + refObj);
+		TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler>();
+		Debug.Log ("teh:" + teh);
+		teh.FoundLostUpdate();
 	}
 
 

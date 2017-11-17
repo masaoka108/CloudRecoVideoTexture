@@ -385,24 +385,72 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 //		}
 	}
 
-	public void SetState() {
+//	public IEnumerator WhileStateCheck(VideoPlayerHelper.MediaState state)
+//	{
+//		while(state == VideoPlayerHelper.MediaState.NOT_READY) {
+//			state = mVideoPlayer.UpdateVideoData();
+//
+//			Debug.Log("WhileStateCheck:-1- : " + state);
+//
+//			if (state == VideoPlayerHelper.MediaState.NOT_READY) {
+//				yield return null; //次のフレームに送る
+//			}
+//		}
+//
+//		Debug.Log("WhileStateCheck:-2-");
+//
+//		yield break; //coroutine 終了(再開なし)
+//	}
+
+
+	public IEnumerator SetState() {
 
 		// Update the video texture with the latest video frame
-		VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
+//		VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
+		VideoPlayerHelper.MediaState state = VideoPlayerHelper.MediaState.NOT_READY;
 
-		Debug.Log ("SetState:0:" + state);
+
+		while(state == VideoPlayerHelper.MediaState.NOT_READY) {
+			state = mVideoPlayer.UpdateVideoData();
+
+			Debug.Log("WhileStateCheck:-1- : " + state);
+
+			if (state == VideoPlayerHelper.MediaState.NOT_READY) {
+				yield return null; //次のフレームに送る
+			}
+		}
+
+		state = mVideoPlayer.UpdateVideoData();
+
+		Debug.Log ("SetState:0:" + state + "  mIsInited:" + mIsInited + " mInitInProgess:" + mInitInProgess);
 
 		if (mIsInited == true && mInitInProgess == false && state == VideoPlayerHelper.MediaState.READY) 
 		{
 			Debug.Log ("SetState:1");
-			this.VideoPlayer.Play(false, 0);
+			//Volume 設定
+			GameObject refObjTMP = GameObject.Find("TargetMenuPlane");
+			TapEvent tapEvent = refObjTMP.GetComponent<TapEvent>();
+
+			Debug.Log("SetState:1.5:" + tapEvent.bVolumeFlg);
+
+			if (tapEvent.bVolumeFlg) {
+				this.VideoPlayer.VolumeOn();
+			} else {
+				this.VideoPlayer.VolumeOff();
+			} 
+
+			//native の　play を実行
+			this.VideoPlayer.Play(false, 0);	
 			Debug.Log ("SetState:2");
 			this.HideIcon ();
 			Debug.Log ("SetState:3");
 			this.CheckIconPlaneVisibility ();
 			Debug.Log ("SetState:4");
-		}
 
+			//test ここでplayにしちゃう。
+			state = VideoPlayerHelper.MediaState.PLAYING;
+		}
+			
 		if (state == VideoPlayerHelper.MediaState.PLAYING)
 		{
 			#if UNITY_WSA_10_0 && !UNITY_EDITOR
@@ -421,8 +469,8 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 		}
 
 
-//		Debug.Log ("OnRenderObject:state:" + state);
-//		Debug.Log ("OnRenderObject:3:" + mCurrentState);
+		Debug.Log ("OnRenderObject:state:" + state);
+		Debug.Log ("OnRenderObject:mCurrentState:" + mCurrentState);
 
 		// Check for playback state change
 		if (state != mCurrentState)
@@ -435,6 +483,14 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 			mCurrentState = state;
 		}
 	
+
+
+		GameObject refObj = GameObject.Find("CloudRecoTarget");
+		Debug.Log ("SetState:refObj:" + refObj);
+		TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler>();
+		Debug.Log ("SetState:teh:" + teh);
+		teh.FoundLostUpdate2();
+
 	}
 
 
@@ -470,6 +526,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
             // Now we can proceed to load the video
             StartCoroutine(LoadVideo());
+
 //        }
 //        else
 //        {
@@ -720,6 +777,10 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
 		mInitInProgess = false;
 		yield return new WaitForEndOfFrame();
+
+		// okamura add
+		StartCoroutine(SetState());
+
 	}
 
 	//oka public を付け足した。
@@ -818,18 +879,24 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     // Handle video playback state changes
     private void HandleStateChange(VideoPlayerHelper.MediaState newState)
     {
-        // If the movie is playing or paused render the video texture
+		Debug.Log("HandleStateChange -1-");
+
+		// If the movie is playing or paused render the video texture
         // Otherwise render the keyframe
         if (newState == VideoPlayerHelper.MediaState.PLAYING ||
             newState == VideoPlayerHelper.MediaState.PAUSED)
         {
+			Debug.Log("HandleStateChange -2-");
+
             Material mat = GetComponent<Renderer>().material;
             mat.mainTexture = mVideoTexture;
             mat.mainTextureScale = new Vector2(1, 1);
         }
         else
         {
-            if (mKeyframeTexture != null)
+			Debug.Log("HandleStateChange -3-");
+
+			if (mKeyframeTexture != null)
             {
                 Material mat = GetComponent<Renderer>().material;
                 mat.mainTexture = mKeyframeTexture;
