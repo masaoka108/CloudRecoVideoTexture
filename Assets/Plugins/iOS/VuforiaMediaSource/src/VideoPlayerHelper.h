@@ -65,7 +65,7 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 
 // Use our own view controller instead of MPMoviePlayerViewController so we can
 // control its behaviour exactly as we want it
-@interface MovieViewController : UIViewController
+@interface MovieViewController : UIViewController<AVPlayerItemOutputPullDelegate>
 {
     BOOL volumeFlg;
 }
@@ -87,11 +87,16 @@ static const float VIDEO_PLAYBACK_CURRENT_POSITION = -1.0f;
 
 
 @interface VideoPlayerHelper : NSObject <AVPlayerItemOutputPullDelegate> {
+
+    dispatch_queue_t outputQueue;
+
 @private
     int cntNoRender;
     int cntNoRenderReady;
+    int cntRestartVideo;
     bool resetFlg;
-    
+    bool restartFlg;
+
     VideoPlaybackViewController *rootViewController;
     
     BOOL useMetal;
