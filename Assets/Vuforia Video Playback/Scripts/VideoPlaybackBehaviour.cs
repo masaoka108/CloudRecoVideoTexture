@@ -932,6 +932,12 @@ public class VideoPlaybackBehaviour : MonoBehaviour
                 break;
         }
 
+//		if (newState == VideoPlayerHelper.MediaState.PAUSED) {
+//			//okamura add 
+//			this.VideoPlayer.Pause ();
+//		}
+
+
         if (newState == VideoPlayerHelper.MediaState.PLAYING_FULLSCREEN)
         {
             // Switching to full screen, disable VuforiaBehaviour (only applicable for iOS)

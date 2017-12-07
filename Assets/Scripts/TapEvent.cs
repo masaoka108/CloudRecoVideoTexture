@@ -12,6 +12,8 @@ public class TapEvent : MonoBehaviour {
 	public GameObject VolumeOffButton;
 	public bool bVolumeFlg = true;
 
+	public GameObject MessageUI_menu;
+
 	// Use this for initialization
 	void Start () {		
 		Debug.Log ("TapEvent start");
@@ -20,6 +22,10 @@ public class TapEvent : MonoBehaviour {
 		TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler>();
 		teh.MessageUI_err = GameObject.Find ("MessageUI_err");
 		teh.MessageUI_err.SetActive (false);
+
+		MessageUI_menu = GameObject.Find ("MessageUI_menu");
+		Debug.Log ("TapEvent MessageUI_menu:" + MessageUI_menu);
+		MessageUI_menu.SetActive (false);
 
 		VolumeOnButton = GameObject.Find ("VolumeOnButton");
 		VolumeOffButton = GameObject.Find ("VolumeOffButton");
@@ -38,17 +44,25 @@ public class TapEvent : MonoBehaviour {
 			Debug.Log ("TapEvent updat:" + obj);
 
 			if (obj.name == "TargetMenuPlane") {
-				GameObject www_icon = GameObject.Find ("www_icon");
-				GameObject fullscreen_icon = GameObject.Find ("fullscreen_icon");
-				GameObject twitter_icon = GameObject.Find ("twitter_icon");
-				GameObject fb_icon = GameObject.Find ("fb_icon");
-				//GameObject insta_icon = GameObject.Find("insta_icon");
 
-				showHideGameObject (www_icon);
-				showHideGameObject (fullscreen_icon);
-				showHideGameObject (twitter_icon);
-				showHideGameObject (fb_icon);
-				//showHideGameObject (insta_icon);
+//				GameObject MessageUI_menu = GameObject.Find ("MessageUI_menu");
+				if (MessageUI_menu != null) {
+					Debug.Log ("TapEvent updat:MessageUI_menu:true");
+					MessageUI_menu.SetActive (true);
+				}
+
+
+//				GameObject www_icon = GameObject.Find ("www_icon");
+//				GameObject fullscreen_icon = GameObject.Find ("fullscreen_icon");
+//				GameObject twitter_icon = GameObject.Find ("twitter_icon");
+//				GameObject fb_icon = GameObject.Find ("fb_icon");
+//				//GameObject insta_icon = GameObject.Find("insta_icon");
+//
+//				showHideGameObject (www_icon);
+//				showHideGameObject (fullscreen_icon);
+//				showHideGameObject (twitter_icon);
+//				showHideGameObject (fb_icon);
+//				//showHideGameObject (insta_icon);
 
 			} else if (obj.name == "www_icon") {
 				//www アイコン
@@ -126,8 +140,11 @@ public class TapEvent : MonoBehaviour {
 					MessageUI_err.SetActive (false);
 				}
 
-
-
+//				GameObject MessageUI_menu = GameObject.Find ("MessageUI_menu");
+//				if (MessageUI_menu != null) {
+//					Debug.Log ("TapEvent updat:MessageUI_menu:false");
+//					MessageUI_menu.SetActive (false);
+//				}
 			}
 		}
 	}
@@ -179,6 +196,8 @@ public class TapEvent : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit = new RaycastHit();
 
+			Debug.Log ("TapEvent updat-1-:" + hit);
+
 			if (Physics.Raycast(ray, out hit)){
 				result = hit.collider.gameObject;
 			}
@@ -197,5 +216,13 @@ public class TapEvent : MonoBehaviour {
 		}
 		return null;
 	}
-		
+
+	public void DidReceiveMemoryWarning (string message)
+	{
+		Debug.Log ("メモリやばいってよ:" + message);
+		Debug.Log ("GCするよ");
+		System.GC.Collect ();
+		Debug.Log ("使ってなさそうなアセットを開放するよ");
+		Resources.UnloadUnusedAssets ();
+	}
 }

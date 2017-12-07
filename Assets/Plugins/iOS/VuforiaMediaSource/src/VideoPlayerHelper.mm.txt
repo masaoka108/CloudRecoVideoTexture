@@ -15,6 +15,8 @@ countries.
 #import <AVFoundation/AVPlayer.h>
 #import <AVFoundation/AVPlayerItem.h>
 #import <AVFoundation/AVAsset.h>
+#import <AVFoundation/AVFoundation.h>
+
 
 # define ONE_FRAME_DURATION 0.03
 
@@ -83,6 +85,8 @@ static NSString* const kTracksKey = @"tracks";
 #pragma mark - MovieViewController
 
 @implementation MovieViewController
+
+//@synthesize delegate = _delegate;
 
 //------------------------------------------------------------------------------
 #pragma mark - Lifecycle
@@ -168,7 +172,6 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 {
     NSLog(@"indivestigate:isMetalRendering");
 
-    
     //    //この1セットでXcodeでデバック可能となる。
 //    CVPixelBufferRef pixelBuffer;
 //    NSLog(@"あああああ");
@@ -267,6 +270,8 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 - (BOOL)load:(NSString*)filename mediaType:(MEDIA_TYPE)requestedType playImmediately:(BOOL)playOnTextureImmediately fromPosition:(float)seekPosition
 {
     cntNoRender = 0;
+    cntRestartVideo = 0;
+    restartFlg = NO;
     
     NSLog(@"indivestigate:load");
     
@@ -338,9 +343,16 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     NSDictionary *pixBuffAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_32BGRA)};
     self.videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
     
+    //******** self.videoOutput のDelegateを設定
+    outputQueue = dispatch_queue_create("videoOutputQueue", DISPATCH_QUEUE_SERIAL);
+    [((AVPlayerItemVideoOutput *)self.videoOutput) setDelegate:self queue:outputQueue];
+
+    
+    
     //******** videoOutput のItemをclearする
     // Remove video output from old item, if any.
     [[player currentItem] removeOutput:self.videoOutput];
+    
 
     NSLog(@"MASA --loadMediaURL 4--");
 
@@ -419,7 +431,10 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
                             NSLog(@"MASA --loadMediaURL 10--");
                             [item addOutput:self.videoOutput];
                             [player replaceCurrentItemWithPlayerItem:item];
-                            [self.videoOutput requestNotificationOfMediaDataChangeWithAdvanceInterval:ONE_FRAME_DURATION];
+//                            [self.videoOutput requestNotificationOfMediaDataChangeWithAdvanceInterval:ONE_FRAME_DURATION];
+                            [self.videoOutput requestNotificationOfMediaDataChangeWithAdvanceInterval:0.03];
+                            
+                            
                             
 //                            //**** とりあえず、即再生する。 start
 //                            playImmediately = YES;
@@ -443,17 +458,24 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 
                             playAudio = YES;
                             
-                            [[self displayLink] setPaused:NO];//displayLinkをポーズするかどうか
+                            //[[self displayLink] setPaused:NO];//displayLinkをポーズするかどうか
 
+                            NSLog(@"--loadMediaURL--resetFlg:%u",resetFlg);
+                            
                             //[player play];
                             if (resetFlg) {
                                 playImmediately = YES;
-                                mediaState = PLAYING;
                                 [self performSelectorInBackground:@selector(createFrameTimer) withObject:nil];
 
                                 NSLog(@"resetFlg=yes");
+                                mediaState = PLAYING;
+                                [[self displayLink] setPaused:NO];//displayLinkをポーズするかどうか
+                                NSLog(@"--loadMediaURL--mediaState-3:%u",mediaState);
                                 playAudio = YES;
                                 [player play];
+                                NSLog(@"--loadMediaURL--mediaState-4:%u",mediaState);
+
+                            
                             }
                             resetFlg = NO;
                         });
@@ -506,6 +528,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 - (MEDIA_STATE)getStatus
 {
     NSLog(@"indivestigate:getStatus");
+    NSLog(@"indivestigate:getStatus:%u", mediaState);
 
     return mediaState;
 }
@@ -712,19 +735,20 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     
     
     // Control available only when playing on texture (not the native player)
-    if (PLAYING == mediaState) {
+//    if (PLAYING == mediaState) {
+
 //        if (PLAYER_TYPE_ON_TEXTURE == playerType) {
             [dataLock lock];
 
             // Stop the audio (if there is any)
-            if (YES == playAudio) {
+//            if (YES == playAudio) {
                 [player pause];
                 [[self displayLink] setPaused:YES];
 
                 NSLog(@"pause-1:mediaState:%u",mediaState);
                 NSLog(@"pause-1");
-
-            }
+//
+//            }
 
             // Stop the frame pump thread
             //[self waitForFrameTimerThreadToEnd];
@@ -739,7 +763,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
 //        else {
 //            NSLog(@"Pause control available only when playing video on texture");
 //        }
-    }
+    //}
 
     return ret;
 }
@@ -1282,6 +1306,7 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
          }
          else {
              // Inform our client that the asset is ready to play
+             NSLog(@"indivestigate:prepareAssetForPlayback:READY");
              mediaState = READY;
          }
      }
@@ -1728,10 +1753,16 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     NSLog(@"seconds = %f", CMTimeGetSeconds(outputItemTime));
     NSLog(@"videoOutput = %@", [self videoOutput]);
 
+//    CVPixelBufferRef pixelBuffer_test = NULL;
+//    pixelBuffer_test = [[self videoOutput] copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
+//    NSLog(@"pixelBuffer_test = %@", pixelBuffer_test);
+    
     if ([[self videoOutput] hasNewPixelBufferForItemTime:outputItemTime]) {
         //outputする適切なデータがある場合
         cntNoRender = 0;
         cntNoRenderReady = 0;
+        cntRestartVideo = 0;
+        
         NSLog(@"nctNoRender is set zero");
         
         [latestSampleBufferLock lock];
@@ -1919,84 +1950,51 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
             NSLog(@"MASA -displayLinkCallback -no- count1 %u", cntNoRender);
         }
         
-        if (cntNoRender > 100) {
-            NSLog(@"MASA -displayLinkCallback -no- stop");
-
+        if (restartFlg == YES) {
+            NSLog(@"MASA -displayLinkCallback -no- restartFlg");
             [self.displayLink setPaused:YES];
-
-            // 一旦、ビデオはストップ。再度、video読み込む。
             (void)[self stop];
-//            mediaState = NOT_READY;
-//            resetFlg = YES;
-            //[self loadMediaURL:mediaURL];
-
-
-            mediaState = ERROR;
-
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            //[self play:NO fromPosition:VIDEO_PLAYBACK_CURRENT_POSITION];
-            
-//            videoSize.height = 0.0f;
-//            videoSize.width = 0.0f;
-//
-//            MTLTextureDescriptor *texDesc = [MTLTextureDescriptorClass texture2DDescriptorWithPixelFormat:MTLPixelFormatB5G6R5Unorm
-//                                                width:videoSize.width
-//                                               height:videoSize.height
-//                                            mipmapped:NO];
-
-        
-//            UIFont *font = [UIFont fontWithName:@"AmericanTypewriter-Bold" size:26.0f];
-//            UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 320, 100)];
-//            label2.text = @"hogehoge";
-//            label2.font = font;
-//            label2.textColor = [UIColor whiteColor];
-//            label2.backgroundColor = [UIColor redColor];
-//            label2.textAlignment = NSTextAlignmentRight;
-//            [self..view addSubview:label2];
+            mediaState = NOT_READY;
+            resetFlg = YES;
+            restartFlg = NO;
+            [self loadMediaURL:mediaURL];
         }
         
-        if (mediaState == READY) {
-            cntNoRenderReady = cntNoRenderReady + 1;
-        }
-        if (cntNoRenderReady > 500) {
-            NSLog(@"MASA -displayLinkCallback ready stop");
-            [self.displayLink setPaused:YES];
-            cntNoRenderReady = 0;
-            
-            mediaState = ERROR;
+        
+        if (cntNoRender > 500) {
+//            NSLog(@"MASA -displayLinkCallback -no- stop");
+//
+//            [self.displayLink setPaused:YES];
+//
+//            // 一旦、ビデオはストップ。再度、video読み込む。
+//            (void)[self stop];
+//            mediaState = ERROR;
+//
+////            if (cntRestartVideo > 1) {
+////                NSLog(@"MASA -displayLinkCallback cntRestartVideo error");
+////                mediaState = ERROR;
+////            } else {
+////                NSLog(@"MASA -displayLinkCallback cntRestartVideo restart");
+////
+////                mediaState = NOT_READY;
+////                resetFlg = YES;
+////                [self loadMediaURL:mediaURL];
+////
+////                cntRestartVideo = cntRestartVideo + 1;
+////            }
         }
         
-//        if (CMTimeGetSeconds(outputItemTime) > 0 || ((CMTimeGetSeconds(outputItemTime) == 0 || isnan(CMTimeGetSeconds(outputItemTime)) ) && (mediaState == READY || mediaState == PAUSED))) {
-//            NSLog(@"MASA -displayLinkCallback -no- seconds > 0");
+//        if (mediaState == READY) {
+//            cntNoRenderReady = cntNoRenderReady + 1;
+//        }
+//        if (cntNoRenderReady > 500) {
+//            NSLog(@"MASA -displayLinkCallback ready stop");
+//            [self.displayLink setPaused:YES];
+//            cntNoRenderReady = 0;
 //
-//            if (mediaState == PLAYING || mediaState == READY || mediaState == PAUSED) {
-//                cntNoRender = cntNoRender + 1;
-//                NSLog(@"MASA -displayLinkCallback -no- count1 %u", cntNoRender);
-//            }
-//
-//            NSLog(@"MASA -displayLinkCallback -no- count2 %u", cntNoRender);
-//
-//            if ((mediaState == PLAYING || mediaState == READY || mediaState == PAUSED) && cntNoRender > 30) {
-//                NSLog(@"MASA -displayLinkCallback -no- stop");
-//
-//                // 一旦、ビデオはストップ。再度、video読み込む。
-//                (void)[self stop];
-//                mediaState = NOT_READY;
-//                [self loadMediaURL:mediaURL];
-//                //[self play:NO fromPosition:VIDEO_PLAYBACK_CURRENT_POSITION];
-//            }
+//            mediaState = ERROR;
 //        }
 
-    
     }
 
     
@@ -2009,12 +2007,24 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     if (![self.videoOutput hasNewPixelBufferForItemTime:CMTimeMake(1, 10)]) {
         NSLog(@"indivestigate:outputMediaDataWillChange -1-");
         
-        [self.displayLink setPaused:YES];
         
-        //[self configVideoOutput];
-        [self loadMediaURL:mediaURL];
+//        [self.displayLink setPaused:YES];
+//        (void)[self stop];
+//        mediaState = ERROR;
+        restartFlg = YES;
+
+        
+//        (void)[self stop];
+//        [self.displayLink setPaused:YES];
+//        mediaState = NOT_READY;
+//        resetFlg = YES;
+//        [self loadMediaURL:mediaURL];
+
+    
+    } else {
+        NSLog(@"indivestigate:outputMediaDataWillChange -2-");
+        //[self.displayLink setPaused:NO];
     }
-    [self.displayLink setPaused:NO];
 }
 
 @end
