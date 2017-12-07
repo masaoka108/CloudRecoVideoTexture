@@ -258,7 +258,7 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
 //		//ToDo とりあえず全部のVideoを止める
 //		Debug.Log ("StopOtherVideos:start");
-//		StopOtherVideos (video);
+		//		PauseOtherVideos (video);
 //
 
 // 
@@ -335,8 +335,8 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
         mLostTracking = true;
         mSecondsSinceLost = 0;
 
-
 		//okamura add 
+		PauseOtherVideos (video);
 		video.VideoPlayer.Pause();
 
 		// Start finder again if we lost the current trackable

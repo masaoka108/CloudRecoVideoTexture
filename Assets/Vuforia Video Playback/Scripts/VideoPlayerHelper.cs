@@ -281,6 +281,10 @@ public class VideoPlayerHelper
 
     }
 
+	public bool PlayFullScreen()
+	{
+		return videoPlayerPlay(true, 0);
+	}
 
     /// <summary>
     /// Pauses the current movie being played

@@ -268,18 +268,19 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
 		tap.fullScreenURL = video.m_path;
 
-		//ターゲットメニュー はメイン以外は初期は非表示
-		GameObject www_icon = GameObject.Find("www_icon");
-		GameObject fullscreen_icon = GameObject.Find("fullscreen_icon");
-		GameObject twitter_icon = GameObject.Find("twitter_icon");
-		GameObject fb_icon = GameObject.Find("fb_icon");
-		//GameObject insta_icon = GameObject.Find("insta_icon");
-
-		showHideGameObject (www_icon);
-		showHideGameObject (fullscreen_icon);
-		showHideGameObject (twitter_icon);
-		showHideGameObject (fb_icon);
-		//showHideGameObject (insta_icon);
+		//20171117 メニューボタンの位置を変更
+//		//ターゲットメニュー はメイン以外は初期は非表示
+//		GameObject www_icon = GameObject.Find("www_icon");
+//		GameObject fullscreen_icon = GameObject.Find("fullscreen_icon");
+//		GameObject twitter_icon = GameObject.Find("twitter_icon");
+//		GameObject fb_icon = GameObject.Find("fb_icon");
+//		//GameObject insta_icon = GameObject.Find("insta_icon");
+//
+//		showHideGameObject (www_icon);
+//		showHideGameObject (fullscreen_icon);
+//		showHideGameObject (twitter_icon);
+//		showHideGameObject (fb_icon);
+//		//showHideGameObject (insta_icon);
 
 
 
