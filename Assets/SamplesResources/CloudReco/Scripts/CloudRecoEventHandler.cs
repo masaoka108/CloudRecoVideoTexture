@@ -185,9 +185,14 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 //		ParticleSystem PS = Particle_video.GetComponent<ParticleSystem> ();
 //		PS.Play ();
 
-		GameObject SimpleFlame2 = GameObject.Find("SimpleFlame2(Green)");
-		ParticleSystem PS = SimpleFlame2.GetComponent<ParticleSystem> ();
-		PS.Play ();
+//		GameObject SimpleFlame2 = GameObject.Find("SimpleFlame2(Green)");
+//		ParticleSystem PS = SimpleFlame2.GetComponent<ParticleSystem> ();
+//		PS.Play ();
+
+		GameObject SimpleFlame3 = GameObject.Find("Flare02-MultiColor");
+		ParticleSystem PS2 = SimpleFlame3.GetComponent<ParticleSystem> ();
+		PS2.Play ();
+
 
 
 
