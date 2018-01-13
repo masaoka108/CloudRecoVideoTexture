@@ -243,13 +243,12 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
         Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
 
 
-//		// Stop finder since we have now a result, finder will be restarted again when we lose track of the result
-//		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-//		if (objectTracker != null)
-//		{
-//			objectTracker.TargetFinder.Stop();
-//		}
-
+		// Stop finder since we have now a result, finder will be restarted again when we lose track of the result
+		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+		if (objectTracker != null)
+		{
+			objectTracker.TargetFinder.Stop();
+		}
 
 
         // Optionally play the video automatically when the target is found
@@ -339,6 +338,9 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 		PauseOtherVideos (video);
 		video.VideoPlayer.Pause();
 
+		Debug.Log("OnTrackingLost:video.mCurrentState:1");
+		Debug.Log(video.mCurrentState);
+
 		// Start finder again if we lost the current trackable
 		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 		if (objectTracker != null)
@@ -350,6 +352,8 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 		//FoundLostUpdate okamura add
 		FoundLostUpdate();
 
+		Debug.Log("OnTrackingLost:video.mCurrentState:2");
+		Debug.Log(video.mCurrentState);
     }
 
     // Pause all videos except this one

@@ -66,7 +66,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     private VideoPlayerHelper.MediaType mMediaType =
             VideoPlayerHelper.MediaType.ON_TEXTURE_FULLSCREEN;
 
-    private VideoPlayerHelper.MediaState mCurrentState =
+    public VideoPlayerHelper.MediaState mCurrentState =
             VideoPlayerHelper.MediaState.NOT_READY;
 
     private float mSeekPosition = 0.0f;
