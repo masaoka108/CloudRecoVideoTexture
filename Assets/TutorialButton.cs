@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TutorialButton : MonoBehaviour {
 
@@ -32,6 +33,16 @@ public class TutorialButton : MonoBehaviour {
 	public void OnClickAccessHomepage() {
 		Debug.Log("OnAccessHomepage click!");
 		Application.OpenURL("https://universear.hiliberate.biz/");
+	}
+
+	public void OnClickMoveTutorialScene() {
+		Debug.Log("OnClickMoveTutorialScene click!");
+		SceneManager.LoadScene ("TutorialScene");
+	}
+
+	public void OnClickMoveMainCameraScene() {
+		Debug.Log("OnClickMoveMainCameraScene click!");
+		SceneManager.LoadScene ("Vuforia-3-CloudReco");
 	}
 
 }
