@@ -10,9 +10,11 @@ public class TapEvent : MonoBehaviour {
 
 	public GameObject VolumeOnButton;
 	public GameObject VolumeOffButton;
-	public bool bVolumeFlg = true;
+	public bool bVolumeFlg = false;	//Volume on/off のデフォルト
 
 	public GameObject MessageUI_menu;
+	public GameObject TutorialUI;
+	public GameObject MessageUI;
 
 	// Use this for initialization
 	void Start () {		
@@ -29,7 +31,26 @@ public class TapEvent : MonoBehaviour {
 
 		VolumeOnButton = GameObject.Find ("VolumeOnButton");
 		VolumeOffButton = GameObject.Find ("VolumeOffButton");
-		VolumeOffButton.SetActive (false);
+		if (bVolumeFlg == true) {
+			VolumeOffButton.SetActive (false);
+		} else {
+			VolumeOnButton.SetActive (false);
+		}
+
+		TutorialUI = GameObject.Find ("TutorialUI");
+		MessageUI = GameObject.Find ("MessageUI");
+
+		if(!PlayerPrefs.HasKey("Init")){ 
+			// "Init"のキーが存在しない場合はチュートリアルパネルを表示
+//			SaveDataInitialize(); // セーブデータを初期化
+//			Imagehow1.SetActive (true);
+			TutorialUI.SetActive(true);
+			MessageUI.SetActive (false);
+		} else {
+			TutorialUI.SetActive(false);
+			MessageUI.SetActive (true);
+		}
+
 	}
 	
 	// Update is called once per frame

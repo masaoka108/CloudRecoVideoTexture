@@ -42,6 +42,16 @@ public class HlButton : MonoBehaviour {
 		teh.video.VideoPlayer.VolumeOn ();
 	}
 
+	/// ボタンをクリックした時の処理
+	public void OnTutorial() {
+		Debug.Log("OnTutorial click!");
+
+		GameObject refObj = GameObject.Find("TargetMenuPlane");
+		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
+
+		tapEvent.TutorialUI.SetActive (true);
+	}
+
 
 	// Use this for initialization
 	void Start () {
