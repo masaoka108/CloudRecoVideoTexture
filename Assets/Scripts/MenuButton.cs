@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class MenuButton : MonoBehaviour {
 
+
+
 	// Use this for initialization
 	void Start () {
 //		//透過処理
@@ -68,7 +70,10 @@ public class MenuButton : MonoBehaviour {
 	
 		Debug.Log ("fb_icon --1--");
 
-		string fbURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
+		GameObject CloudRecognition = GameObject.Find ("CloudRecognition");
+		CloudRecoEventHandler creh = CloudRecognition.GetComponent<CloudRecoEventHandler> ();
+
+		string fbURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/target/preview_img/" + creh.targetFileName);
 		Debug.Log ("fb_icon --2--");
 		Debug.Log (fbURL);
 
@@ -80,11 +85,14 @@ public class MenuButton : MonoBehaviour {
 
 	public void OnClickTwitter() {
 		Debug.Log("OnClickFullTwitter click!");
-	
+
+		GameObject CloudRecognition = GameObject.Find ("CloudRecognition");
+		CloudRecoEventHandler creh = CloudRecognition.GetComponent<CloudRecoEventHandler> ();
+
 		//@ToDo ここでターゲット画像のURLを取得して添付する
 		//					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universear.hiliberate.biz/static/images/IMG_1272.JPG");
-		string tweetMsg = WWW.EscapeURL ("ARアプリ【UNIVERSE AR】画像と動画を登録するだけで誰でも簡単にオリジナルARコンテンツを作成可能！");
-		string tweetURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
+		string tweetMsg = WWW.EscapeURL ("ARアプリ【UNIVERSE AR】でこの画像を読み取ってみましょう！ #universear");
+		string tweetURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/target/preview_img/" + creh.targetFileName);
 		//string tweetMsg = "ARアプリUNIVERSE";
 		Application.OpenURL ("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);
 	}

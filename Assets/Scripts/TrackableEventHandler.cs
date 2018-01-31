@@ -349,6 +349,12 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 			objectTracker.TargetFinder.StartRecognition();
 		}
 
+		//メニュー非表示
+		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+		tap.MessageUI_menu.SetActive (false);
+
+
 		//FoundLostUpdate okamura add
 		FoundLostUpdate();
 

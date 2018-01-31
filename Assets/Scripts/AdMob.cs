@@ -51,6 +51,14 @@ public class AdMob : MonoBehaviour {
 
 		// Load the banner with the request.
 		bannerView.LoadAd(request);
-		}
-
 	}
+
+	public void BannerShow() {
+		bannerView.Show ();
+	}
+
+	public void BannerHide() {
+		bannerView.Hide ();
+	}
+
+}

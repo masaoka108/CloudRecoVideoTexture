@@ -27,6 +27,10 @@ public class TutorialButton : MonoBehaviour {
 
 		//チュートリアル終了 フラグ
 		PlayerPrefs.SetInt("Init", 1); 
+
+		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
+
 	}
 
 	public void OnClickAccessHomepage() {

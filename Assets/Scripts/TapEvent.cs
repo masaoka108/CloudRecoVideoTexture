@@ -46,6 +46,11 @@ public class TapEvent : MonoBehaviour {
 //			Imagehow1.SetActive (true);
 			TutorialUI.SetActive(true);
 			MessageUI.SetActive (false);
+			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+//			GameObject.Find("MessageUI_menu").GetComponent<Canvas>().enabled = false;
+			GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+
+
 		} else {
 			TutorialUI.SetActive(false);
 			MessageUI.SetActive (true);

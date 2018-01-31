@@ -49,6 +49,8 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
     public Canvas cloudErrorCanvas;
     public UnityEngine.UI.Text cloudErrorTitle;
     public UnityEngine.UI.Text cloudErrorText;
+
+	public string targetFileName;
     #endregion //PUBLIC_MEMBERS
 
 
@@ -158,9 +160,10 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	[Serializable]
 	class CloudMetaData
 	{
-		public string  title;
-		public string  url;
-		public string  linkUrl;
+		public string title;
+		public string url;
+		public string linkUrl;
+		public string targetImageUrl;
 	}
 		
 	public IEnumerator timeStop(){
@@ -245,6 +248,24 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 				Debug.Log ("We got a target metadata linkUrl: " + data2.linkUrl);
 				targetMenuURL = data2.linkUrl; 
 				video.m_path = data2.url;
+				Debug.Log ("We got a target metadata targetImageUrl: " + data2.targetImageUrl);
+				
+
+				//ファイル名の拡張子 以前を取得
+				try {
+					string[] arImageUrl = data2.targetImageUrl.Split('/');
+					string imageFileName = arImageUrl [arImageUrl.Length - 1];
+					string[] arFileName = imageFileName.Split('.');
+					string fileName = arFileName [0];
+					Debug.Log (fileName);					
+					targetFileName = fileName;
+	
+				} catch {
+					Debug.Log ("ファイル名 取得エラー");
+				}
+
+
+
 
 				if (video != null) {
 					Debug.Log ("Unload:0");
@@ -283,6 +304,16 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
 			tap.fullScreenURL = video.m_path;
 
+			//Rec中で無ければメニューを表示
+			GameObject Utility = GameObject.Find ("Utility");
+			ScreenshotController ssc = Utility.GetComponent<ScreenshotController> ();
+			
+			if (ssc.recording == false) {
+				tap.MessageUI_menu.SetActive (true);
+			}
+			
+
+			
 			//20171117 メニューボタンの位置を変更
 			//		//ターゲットメニュー はメイン以外は初期は非表示
 			//		GameObject www_icon = GameObject.Find("www_icon");
