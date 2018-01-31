@@ -35,7 +35,7 @@ public class ScreenshotController : MonoBehaviour {
 	public GameObject VideoRecText;
 
 	// Used for video recording
-	private bool recording;
+	public bool recording;
 	private bool videoPressed;
 
 	private GameObject VideoCaptureFinishMsgPanel;
@@ -135,14 +135,30 @@ public class ScreenshotController : MonoBehaviour {
 
 			VideoRecText.SetActive(true);
 			Debug.Log ("I am starting a recording");
+
+			//無駄なUIを非表示にする
+			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
+			GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+			TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+			tap.MessageUI_menu.SetActive (false);
+
+
 			ReplayKit.StartRecording(true);	//1st arg = enable microphone
 		}
 		else {
 			Debug.Log ("VideoShotClick -7-");
 
-			VideoRecText.SetActive(false);
 			Debug.Log ("I am ending a recording");
 			ReplayKit.StopRecording();
+
+			VideoRecText.SetActive(false);
+
+			//非表示にしたUIを再表示
+			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
+			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
 		}
 		#endif
 	}

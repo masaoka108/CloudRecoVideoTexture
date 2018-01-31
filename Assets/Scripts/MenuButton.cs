@@ -91,7 +91,7 @@ public class MenuButton : MonoBehaviour {
 
 		//@ToDo ここでターゲット画像のURLを取得して添付する
 		//					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universear.hiliberate.biz/static/images/IMG_1272.JPG");
-		string tweetMsg = WWW.EscapeURL ("ARアプリ【UNIVERSE AR】でこの画像を読み取りましょう！");
+		string tweetMsg = WWW.EscapeURL ("ARアプリ【UNIVERSE AR】でこの画像を読み取ってみましょう！ #universear");
 		string tweetURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/target/preview_img/" + creh.targetFileName);
 		//string tweetMsg = "ARアプリUNIVERSE";
 		Application.OpenURL ("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);

@@ -304,6 +304,16 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
 			tap.fullScreenURL = video.m_path;
 
+			//Rec中で無ければメニューを表示
+			GameObject Utility = GameObject.Find ("Utility");
+			ScreenshotController ssc = Utility.GetComponent<ScreenshotController> ();
+			
+			if (ssc.recording == false) {
+				tap.MessageUI_menu.SetActive (true);
+			}
+			
+
+			
 			//20171117 メニューボタンの位置を変更
 			//		//ターゲットメニュー はメイン以外は初期は非表示
 			//		GameObject www_icon = GameObject.Find("www_icon");

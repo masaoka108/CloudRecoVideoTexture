@@ -50,6 +50,11 @@ public class HlButton : MonoBehaviour {
 		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
 
 		tapEvent.TutorialUI.SetActive (true);
+		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+		tap.MessageUI_menu.SetActive (false);
 	}
 
 

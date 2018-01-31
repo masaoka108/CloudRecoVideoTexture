@@ -15,7 +15,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 	private GameObject SuccessMsgPanel;
 	private GameObject FailureMsgPanel;
 
-
+	private bool bMenuActive;
 
 	void Start()
 	{
@@ -73,6 +73,17 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 	private IEnumerator _CaptureScreenShot() {
 		//canvasGroup.alpha = 0; //みたいな処理を入れておくと撮影時にUIを外すといった事が出来ます
+
+		//無駄なUIを非表示にする
+		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+		GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
+		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+		bMenuActive = tap.MessageUI_menu.active;
+		tap.MessageUI_menu.SetActive (false);
+
+
 		yield return new WaitForEndOfFrame();
 
 		var width = Screen.width;
@@ -96,6 +107,16 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 		}else{
 			OnFailCapture.Invoke();
 		}
+
+
+		//UIを再表示にする
+		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
+		GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
+		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+		tap.MessageUI_menu.SetActive (bMenuActive);
+
 	}
 
 
