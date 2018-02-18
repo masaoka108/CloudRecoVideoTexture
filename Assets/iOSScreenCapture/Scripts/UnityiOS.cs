@@ -36,20 +36,37 @@ public class UnityiOS : MonoBehaviour {
 	}
 
 	public static void RequestPermissions() {
+		Debug.Log ("RequestPermissions -1-");
+
 		AVAuthorizationStatus avstatus = HasCameraPermission();
 		PHAuthorizationStatus phstatus = HasCameraRollPermission();
 
-		//アクセス許可のリクエストを出していない場合はリクエストを送る
-		if (avstatus == AVAuthorizationStatus.NotDetermined) {
+		Debug.Log ("RequestPermissions avstatus:" + avstatus);
+		Debug.Log ("RequestPermissions phstatus:" + phstatus);
+
+
+//		//アクセス許可のリクエストを出していない場合はリクエストを送る
+//		if (avstatus == AVAuthorizationStatus.NotDetermined) {
+//			_RequestCameraPermission();
+//		}
+//		if(phstatus == PHAuthorizationStatus.NotDetermined) {
+//			_RequestCameraRollPermission();
+//		}
+
+
+		if (avstatus != AVAuthorizationStatus.Authorized) {
+			Debug.Log ("RequestPermissions -2-");
 			_RequestCameraPermission();
 		}
 
-		if(phstatus == PHAuthorizationStatus.NotDetermined) {
+		if(phstatus != PHAuthorizationStatus.Authorized) {
+			Debug.Log ("RequestPermissions -3-");
 			_RequestCameraRollPermission();
 		}
 	}
 
 	public void RequestPermissions_forUGUI() {
+		Debug.Log ("RequestPermissions_forUGUI -1-");
 		RequestPermissions();
 	}
 

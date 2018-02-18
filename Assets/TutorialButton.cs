@@ -33,6 +33,19 @@ public class TutorialButton : MonoBehaviour {
 
 	}
 
+	public void OnClickCloseTurorialMenu() {
+		Debug.Log("OnClickCloseTurorialMenu click!");
+//		GameObject TutorialUI = GameObject.Find ("TutorialUI");
+//		TutorialUI.SetActive (false);
+
+		GameObject.Find("TutoriaMenulUI").GetComponent<Canvas>().enabled = false;
+
+
+		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
+
+	}
+
 	public void OnClickAccessHomepage() {
 		Debug.Log("OnAccessHomepage click!");
 		Application.OpenURL("https://universear.hiliberate.biz/");

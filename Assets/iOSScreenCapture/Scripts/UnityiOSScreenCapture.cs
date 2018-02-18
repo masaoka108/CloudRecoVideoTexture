@@ -27,6 +27,10 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 		SuccessMsgPanel.SetActive(false);
 		FailureMsgPanel.SetActive (false);
+
+		#if !UNITY_EDITOR
+		UnityiOS.RequestPermissions();
+		#endif
 	}
 
 
@@ -54,18 +58,19 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 		PHAuthorizationStatus phstatus = (PHAuthorizationStatus)Enum.ToObject(
 			typeof(PHAuthorizationStatus), UnityiOS.HasCameraRollPermission());
 
-		//カメラ、カメラロールへのアクセス許可確認
-		UiOS.RequestPermissions_forUGUI ();
-
-		//シャッター音
-		UnityiOS.PlaySystemShutterSound();
-
 		//キャプチャ
 		if(phstatus == PHAuthorizationStatus.Authorized) {
+			//シャッター音
+			UnityiOS.PlaySystemShutterSound();
+
 			Handheld.SetActivityIndicatorStyle(UnityEngine.iOS.ActivityIndicatorStyle.Gray);
 			Handheld.StartActivityIndicator();
 			StartCoroutine(_CaptureScreenShot());
 		} else {
+			//カメラ、カメラロールへのアクセス許可確認
+			UiOS.RequestPermissions_forUGUI ();
+			//UnityiOS.RequestPermissions();
+
 			OnFailCapture.Invoke();
 		}
 #endif

@@ -14,6 +14,7 @@ public class TapEvent : MonoBehaviour {
 
 	public GameObject MessageUI_menu;
 	public GameObject TutorialUI;
+	public GameObject TutorialMenuUI;
 	public GameObject MessageUI;
 
 	// Use this for initialization
@@ -42,20 +43,21 @@ public class TapEvent : MonoBehaviour {
 
 		if(!PlayerPrefs.HasKey("Init")){ 
 			// "Init"のキーが存在しない場合はチュートリアルパネルを表示
-//			SaveDataInitialize(); // セーブデータを初期化
-//			Imagehow1.SetActive (true);
-			TutorialUI.SetActive(true);
-			MessageUI.SetActive (false);
-			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
-//			GameObject.Find("MessageUI_menu").GetComponent<Canvas>().enabled = false;
-			GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+//			TutorialUI.SetActive(true);
+//			MessageUI.SetActive (false);
+//			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+//			GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+
+			TutorialUI.SetActive(false);	//不要のため
 
 
 		} else {
 			TutorialUI.SetActive(false);
-			MessageUI.SetActive (true);
+			//MessageUI.SetActive (true);
+//			MessageUI.SetActive (false);	//不要のため
 		}
 
+		GameObject.Find("TutoriaMenulUI").GetComponent<Canvas>().enabled = false;
 	}
 	
 	// Update is called once per frame
