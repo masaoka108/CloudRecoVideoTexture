@@ -138,6 +138,8 @@ public class ScreenshotController : MonoBehaviour {
 
 			//無駄なUIを非表示にする
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+
+
 			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
 			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
 			GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
