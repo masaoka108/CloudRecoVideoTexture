@@ -329,7 +329,16 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			//		//showHideGameObject (insta_icon);
 
 
+		Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
 
+		//チュートリアル画面が表示されているなら非表示にして普通の画面に戻す
+		if (GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled == true) {
+			GameObject TutorialUI = GameObject.Find ("TutorialUI");
+			TutorialUI.SetActive (false);
+
+			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+			GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
+		}
 
 			//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
 			//		if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled()) {

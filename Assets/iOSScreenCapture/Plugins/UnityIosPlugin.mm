@@ -21,6 +21,7 @@ extern "C" void _RequestCameraPermission()
 
 extern "C" void _RequestCameraRollPermission()
 {
+    NSLog(@"_RequestCameraRollPermission -1-");
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) { }];
 }
 
@@ -40,4 +41,3 @@ extern "C" void _GoToSettings()
 {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
 }
-

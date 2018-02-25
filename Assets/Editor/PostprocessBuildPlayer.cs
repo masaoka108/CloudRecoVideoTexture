@@ -22,7 +22,8 @@ public class PostprocessBuildPlayer {
 			var plistPath = Path.Combine(path, "Info.plist");
 			var plist = new PlistDocument();
 			plist.ReadFromFile(plistPath);
-			plist.root.SetString("Privacy - Photo Library Usage Description", "Allow access camera roll");
+//			plist.root.SetString("Privacy - Photo Library Usage Description", "Allow access camera roll");
+			plist.root.SetString("NSPhotoLibraryUsageDescription", "You can save the photo that is screenshot to the camera roll.if you want,Please allow access camera roll");
 			plist.WriteToFile(plistPath);
 		}
 	}

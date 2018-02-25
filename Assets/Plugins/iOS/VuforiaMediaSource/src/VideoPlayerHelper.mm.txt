@@ -1215,7 +1215,10 @@ extern "C" typedef id<MTLDevice> (*MTLCreateSystemDefaultDeviceFunc)();
     videoFrameRate = 0.0f;
 
     // Remove KVO observers
-    [[player currentItem] removeObserver:self forKeyPath:kStatusKey];
+//    [[player currentItem] removeObserver:self forKeyPath:kStatusKey];
+//20180208 エラーが発生したのでコメントアウト
+//Uncaught exception: NSRangeException: Cannot remove an observer <VideoPlayerHelper 0x104fc3820> for the key path "status" from <AVPlayerItem 0x1c00145a0> because it is not registered as an observer.
+    
     
     // Release AVPlayer, AVAsset, etc.
 //    [player release];

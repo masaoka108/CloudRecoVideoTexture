@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 
 public class HlButton : MonoBehaviour {
 
@@ -46,12 +46,47 @@ public class HlButton : MonoBehaviour {
 	public void OnTutorial() {
 		Debug.Log("OnTutorial click!");
 
+		//全非表示
+		HideMenu();
+
+		//TutorialMenuUl を表示
+		GameObject.Find("TutoriaMenulUI").GetComponent<Canvas>().enabled = true;
+
+//		//TutorialUI を表示
+//		GameObject refObj = GameObject.Find("TargetMenuPlane");
+//		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
+//		tapEvent.TutorialUI.SetActive (true);
+
+	}
+
+	// サンプルを試す ボタン クリック時
+	public void OnTutorialSample() {
+		Debug.Log("OnTutorialSample click!");
+
+		//全非表示
+		HideMenu ();
+
+		//TutorialUI を表示
 		GameObject refObj = GameObject.Find("TargetMenuPlane");
 		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
-
 		tapEvent.TutorialUI.SetActive (true);
+
+	}
+
+	// オリジナルAR作成 ボタン クリック時
+	public void OnClickHowToMakeOriginalAR() {
+		Debug.Log("OnClickHowToMakeOriginalAR click!");
+
+		//HowToMakeOriginalAR scene を表示
+		SceneManager.LoadScene ("HowToMakeOriginalAR");
+
+	}
+
+	//その他の余分なものを非表示
+	public void HideMenu() {
 		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
 		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+		GameObject.Find("TutoriaMenulUI").GetComponent<Canvas>().enabled = false;
 		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
 		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
 		tap.MessageUI_menu.SetActive (false);
@@ -95,6 +130,15 @@ public class HlButton : MonoBehaviour {
 
 	}
 
+
+	// オリジナルAR作成のチュートリアル でcloseボタン クリック時
+	public void OnClickHowToMakeOriginalARClose() {
+		Debug.Log("OnClickHowToMakeOriginalARClose click!");
+
+		//HowToMakeOriginalAR scene を表示
+		SceneManager.LoadScene ("Vuforia-3-CloudReco");
+
+	}
 
 
 //	// Update is called once per frame
