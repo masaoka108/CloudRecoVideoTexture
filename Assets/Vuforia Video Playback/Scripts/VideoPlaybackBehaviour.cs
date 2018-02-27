@@ -44,6 +44,8 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     /// </summary>
     public bool m_autoPlay = false;
 
+
+	public int textureW = 0;
     #endregion // PUBLIC_MEMBER_VARIABLES
 
 
@@ -318,7 +320,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 ////        }
 //    }
 
-	public void VideoRender()
+	public void VideoRender(string url)
 	{
 		//Iconの表示/非表示を設定。(多分)
 		CheckIconPlaneVisibility();
@@ -347,6 +349,22 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
 				Debug.Log ("OnRenderObject:0-4");
 			}
+
+//			while(mIsInited == false && mInitInProgess == false) {
+//				Debug.Log ("OnRenderObject:while-1-");
+//
+//				VideoPlayer.Load (url, VideoPlayerHelper.MediaType.ON_TEXTURE, true, 0);
+//
+//				Debug.Log ("OnRenderObject:while-2-");
+//
+//				mInitInProgess = true;
+//
+//				//ここから展開していく InitVideoPlayer -> LoadVideo -> PrepareVideo
+//				StartCoroutine(InitVideoPlayer()); 
+//
+//				Debug.Log ("OnRenderObject:while-3-");
+//			}
+
 
 			return;
 		}
@@ -487,9 +505,9 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
 		GameObject refObj = GameObject.Find("CloudRecoTarget");
 		Debug.Log ("SetState:refObj:" + refObj);
-		TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler>();
-		Debug.Log ("SetState:teh:" + teh);
-		teh.FoundLostUpdate2();
+		//TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler>();
+		//Debug.Log ("SetState:teh:" + teh);
+		//teh.FoundLostUpdate2();
 
 	}
 
@@ -723,7 +741,14 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 
 			//Texture 初期化
 			Debug.Log("isOpenGLRendering:" + isOpenGLRendering);
-			InitVideoTexture(isOpenGLRendering);
+			bool InitTextureRet = InitVideoTexture(isOpenGLRendering);
+			if (!InitTextureRet) {
+				// textureの準備が出来ていないと判断
+				Debug.Log("InitTextureRet:false");
+				Debug.Log("InitTextureRet:mIsInited" + mIsInited);
+				mInitInProgess = false;
+				yield break;
+			}
 
 			// Can we play this video on a texture?
 			isPlayableOnTexture = mVideoPlayer.IsPlayableOnTexture();
@@ -847,6 +872,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
 	//oka add 20170510
 	public void HideIcon()
 	{
+		Debug.Log ("HideIcon -1-");
 		mIconPlaneActive = false;	
 	}
 
@@ -857,7 +883,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     #region PRIVATE_METHODS
 
     // Initialize the video texture
-    private void InitVideoTexture(bool isOpenGLRendering)
+    private bool InitVideoTexture(bool isOpenGLRendering)
     {
         // Create texture whose content will be updated in native plugin code.
         // Note: width and height don't matter and may be zero for OpenGL textures,
@@ -874,6 +900,14 @@ public class VideoPlaybackBehaviour : MonoBehaviour
             new Texture2D(w, h, TextureFormat.BGRA32, false);
         mVideoTexture.filterMode = FilterMode.Bilinear;
         mVideoTexture.wrapMode = TextureWrapMode.Clamp;
+
+		textureW = w;
+
+		if (w == 0 && h == 0) {
+			return false;
+		} else {
+			return true;
+		}
     }
 
     // Handle video playback state changes
