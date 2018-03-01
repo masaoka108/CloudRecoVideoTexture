@@ -14,7 +14,10 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
     private bool mHasBeenFound = false;
     private bool mLostTracking;
     private float mSecondsSinceLost;
+	private CloudRecoEventHandler CREH;
+
 	public GameObject MessageUI_err;
+	public GameObject CloudRecognition;
 
 	public VideoPlaybackBehaviour video;
     #endregion // PRIVATE_MEMBERS
@@ -41,6 +44,11 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 //		//MessageUI_err.SetActive (false);
 //
 //		Debug.Log("TrackableEventHandler:Start-2-:" + MessageUI_err);
+
+		CREH = CloudRecognition.GetComponent<CloudRecoEventHandler> ();
+
+		Debug.Log ("TrackableEventHandler:Start -1-");
+		Debug.Log (CREH);
 
         OnTrackingLost();
     }
@@ -207,7 +215,10 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
                                     TrackableBehaviour.Status previousStatus,
                                     TrackableBehaviour.Status newStatus)
     {
-        if (newStatus == TrackableBehaviour.Status.DETECTED ||
+		Debug.Log ("OnTrackableStateChanged -1- :" + newStatus);
+		Debug.Log ("OnTrackableStateChanged -2- :" + previousStatus);
+
+		if (newStatus == TrackableBehaviour.Status.DETECTED ||
             newStatus == TrackableBehaviour.Status.TRACKED ||
             newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
         {
@@ -215,7 +226,12 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
         }
         else
         {
-            OnTrackingLost();
+			//前後どちらからUNKNOWNの場合は処理なし、とする。
+			if (previousStatus == TrackableBehaviour.Status.UNKNOWN ||
+			    newStatus == TrackableBehaviour.Status.UNKNOWN) {
+			} else {
+				OnTrackingLost();
+			}
         }
     }
     #endregion //PUBLIC_METHODS
@@ -255,6 +271,7 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
         VideoPlaybackBehaviour video = GetComponentInChildren<VideoPlaybackBehaviour>();
 
+
 //		//ToDo とりあえず全部のVideoを止める
 //		Debug.Log ("StopOtherVideos:start");
 		//		PauseOtherVideos (video);
@@ -272,29 +289,65 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 				Debug.Log("OnTrackingFound:1");
 
 				VideoPlayerHelper.MediaState state = video.VideoPlayer.GetStatus();
-                if (state == VideoPlayerHelper.MediaState.PAUSED ||
-                    state == VideoPlayerHelper.MediaState.READY ||
-                    state == VideoPlayerHelper.MediaState.STOPPED)
-                {
-					Debug.Log("OnTrackingFound:2");
+			if (state == VideoPlayerHelper.MediaState.PAUSED ||
+			                 state == VideoPlayerHelper.MediaState.READY ||
+			                 state == VideoPlayerHelper.MediaState.STOPPED) {
+				Debug.Log ("OnTrackingFound:2");
 
-					// Pause other videos before playing this one
-                    PauseOtherVideos(video);
+				// Pause other videos before playing this one
+				PauseOtherVideos (video);
 
-                    // Play this video on texture where it left off
-                    video.VideoPlayer.Play(false, video.VideoPlayer.GetCurrentPosition());
-                }
-                else if (state == VideoPlayerHelper.MediaState.REACHED_END)
-                {
-					Debug.Log("OnTrackingFound:3");
+				Debug.Log ("OnTrackingFound:video.VideoPlayer.GetCurrentPosition();" + video.VideoPlayer.GetCurrentPosition ());
 
-					// Pause other videos before playing this one
-                    PauseOtherVideos(video);
+				// Play this video on texture where it left off
+				video.VideoPlayer.Play (false, video.VideoPlayer.GetCurrentPosition ());
 
-                    // Play this video from the beginning
-                    video.VideoPlayer.Play(false, 0);
-                }
+				// アイコン非表示
+				video.HideIcon();
+				video.CheckIconPlaneVisibility();
+
+			} else if (state == VideoPlayerHelper.MediaState.REACHED_END) {
+				Debug.Log ("OnTrackingFound:3");
+
+				// Pause other videos before playing this one
+				PauseOtherVideos (video);
+
+				// Play this video from the beginning
+				video.VideoPlayer.Play (false, 0);
+			} else {
+				Debug.Log ("OnTrackingFound:3.1");
+				Debug.Log (state);
+
+//				video.mCurrentState = VideoPlayerHelper.MediaState.PLAYING;
+
+//				// Play this video on texture where it left off
+//				video.VideoPlayer.Play (false, video.VideoPlayer.GetCurrentPosition ());
+			}
 //            }
+
+
+			//******** メニューを表示
+			GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+			TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+
+			//Rec中で無ければメニューを表示
+			GameObject Utility = GameObject.Find ("Utility");
+			ScreenshotController ssc = Utility.GetComponent<ScreenshotController> ();
+
+			if (ssc.recording == false) {
+				tap.MessageUI_menu.SetActive (true);
+			}
+
+			Debug.Log("OnTrackingFound:3.5");
+
+			//******** 認識時は自動再生させる仕様とするので、アイコンはここで絶対非表示とする。
+			//video.HideIcon();
+
+			//******** カウントアップ
+			CREH.CountUpReplay();
+
+			Debug.Log("OnTrackingFound:4");
+
         }
 
         mHasBeenFound = true;
@@ -345,7 +398,7 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 		if (objectTracker != null)
 		{
-			objectTracker.TargetFinder.ClearTrackables(false);
+			//objectTracker.TargetFinder.ClearTrackables(false);
 			objectTracker.TargetFinder.StartRecognition();
 		}
 

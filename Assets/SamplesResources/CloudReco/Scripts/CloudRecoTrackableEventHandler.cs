@@ -124,7 +124,7 @@ public class CloudRecoTrackableEventHandler : MonoBehaviour, ITrackableEventHand
             objectTracker.TargetFinder.StartRecognition();
 
             // Start showing the scan-line
-            ShowScanLine(true);
+//            ShowScanLine(true);
         }
 
         Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");

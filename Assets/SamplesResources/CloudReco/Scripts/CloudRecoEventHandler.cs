@@ -30,7 +30,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
     // the parent gameobject of the referenced ImageTargetTemplate - reused for all target search results
     private GameObject mParentOfImageTargetTemplate;
-	private string mNowTrackingId;
+	private string mUniqueTargetId;
     #endregion // PRIVATE_MEMBERS
 
 
@@ -70,7 +70,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
         if (cloudRecoBehaviour)
         {
             cloudRecoBehaviour.RegisterEventHandler(this);
-        }
+        }			
     }
     #endregion //MONOBEHAVIOUR_METHODS
 
@@ -186,13 +186,32 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 		var metaData = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
 
-//		if (video.m_path == metaData.url && 
-//			mNowTrackingId != targetSearchResult.UniqueTargetId && 
-//			video.mCurrentState == VideoPlayerHelper.MediaState.PAUSED) {
-//			Debug.Log ("OnNewSearchResult:same-video");
+
+		//******** 一旦全てのvideoを止める
+		PauseAllVideos ();
+
+
+		//******** カウントアップはOnTrackingFound で行うこととした。
+		mUniqueTargetId = targetSearchResult.UniqueTargetId;
+//		//******** カウンターUP
+//		if (video.mCurrentState != VideoPlayerHelper.MediaState.NOT_READY) {
+//			//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
+//			Debug.Log("targetSearchResult.UniqueTargetId: " + targetSearchResult.UniqueTargetId);
+//			//		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
+//			CountUp (targetSearchResult.UniqueTargetId);
+//
+//			//HLARのaccess logにinsert
+//			InsAccessLog (targetSearchResult.UniqueTargetId);
+//		}
+		
+		var targetMenuURL = "";
+
+		var data2 = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
+
+//		Debug.Log ("OnNewSearchResult:video.textureW:" + video.textureW);
+//		if (data2.url == video.m_path && video.textureW == 0) {
+//			Debug.Log ("same video!");
 //		} else {
-			//******** 一旦全てのvideoを止める
-			PauseAllVideos ();
 
 			//******** video表示エフェクト particle systemを表示
 			GameObject Particle_video = GameObject.Find("Particle_video");
@@ -202,26 +221,6 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			ParticleSystem PS2 = SimpleFlame3.GetComponent<ParticleSystem> ();
 			PS2.Play ();
 
-
-			//******** カウンターUP
-			if (video.mCurrentState != VideoPlayerHelper.MediaState.NOT_READY) {
-				//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
-				Debug.Log("targetSearchResult.UniqueTargetId: " + targetSearchResult.UniqueTargetId);
-				//		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
-				CountUp (targetSearchResult.UniqueTargetId);
-
-				//HLARのaccess logにinsert
-				InsAccessLog (targetSearchResult.UniqueTargetId);
-			}
-			
-			var targetMenuURL = "";
-
-//		if (video.m_path == metaData.url &&
-//		     mNowTrackingId != targetSearchResult.UniqueTargetId &&
-//		     video.mCurrentState == VideoPlayerHelper.MediaState.PAUSED) {
-//
-//			Debug.Log ("OnNewSearchResult:same-video");
-//		} else {
 
 			if (targetSearchResult.MetaData == null) {
 				return;
@@ -241,7 +240,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 				Debug.Log ("targetSearchResult.MetaData" + targetSearchResult.MetaData);
 
-				var data2 = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
+				//var data2 = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
 
 				Debug.Log ("We got a target metadata title: " + data2.title);
 				Debug.Log ("We got a target metadata url: " + data2.url);
@@ -249,7 +248,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 				targetMenuURL = data2.linkUrl; 
 				video.m_path = data2.url;
 				Debug.Log ("We got a target metadata targetImageUrl: " + data2.targetImageUrl);
-				
+
 
 				//ファイル名の拡張子 以前を取得
 				try {
@@ -259,13 +258,10 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 					string fileName = arFileName [0];
 					Debug.Log (fileName);					
 					targetFileName = fileName;
-	
+
 				} catch {
 					Debug.Log ("ファイル名 取得エラー");
 				}
-
-
-
 
 				if (video != null) {
 					Debug.Log ("Unload:0");
@@ -294,7 +290,8 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 			//20170704 okamura add
 			Debug.Log ("OnNewSearchResult:video.VideoRender()");
-			video.VideoRender ();
+			video.VideoRender (data2.url);
+
 
 			// ターゲットのメニューを設定
 			//ターゲット メニューボタンのURLを設定
@@ -307,13 +304,13 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			//Rec中で無ければメニューを表示
 			GameObject Utility = GameObject.Find ("Utility");
 			ScreenshotController ssc = Utility.GetComponent<ScreenshotController> ();
-			
+
 			if (ssc.recording == false) {
 				tap.MessageUI_menu.SetActive (true);
 			}
-			
 
-			
+
+
 			//20171117 メニューボタンの位置を変更
 			//		//ターゲットメニュー はメイン以外は初期は非表示
 			//		GameObject www_icon = GameObject.Find("www_icon");
@@ -329,35 +326,35 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			//		//showHideGameObject (insta_icon);
 
 
-		Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
+			Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
 
-		//チュートリアル画面が表示されているなら非表示にして普通の画面に戻す
-		if (GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled == true) {
-			GameObject TutorialUI = GameObject.Find ("TutorialUI");
-			TutorialUI.SetActive (false);
-
-			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
-			GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
-		}
-
-			//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
-			//		if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled()) {
-			//			imageTargetBehaviour.ImageTarget.StartExtendedTracking();
-			//		}
-
-
-
-			// FoundLostUpdate
-			GameObject refObj = GameObject.Find ("CloudRecoTarget");
-			Debug.Log ("refObj:" + refObj);
-			TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler> ();
-			Debug.Log ("teh:" + teh);
-			teh.FoundLostUpdate ();
-//		}
 //		}
 
-		mNowTrackingId = targetSearchResult.UniqueTargetId;
 
+
+
+//		//チュートリアル画面が表示されているなら非表示にして普通の画面に戻す
+//		if (GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled == true) {
+//			GameObject TutorialUI = GameObject.Find ("TutorialUI");
+//			TutorialUI.SetActive (false);
+//
+//			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+//			GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
+//		}
+
+		//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
+		//		if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled()) {
+		//			imageTargetBehaviour.ImageTarget.StartExtendedTracking();
+		//		}
+
+
+
+		// FoundLostUpdate
+		GameObject refObj = GameObject.Find ("CloudRecoTarget");
+		Debug.Log ("refObj:" + refObj);
+		TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler> ();
+		Debug.Log ("teh:" + teh);
+		teh.FoundLostUpdate ();
 	}
 
 
@@ -704,19 +701,6 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		//form.AddField ("jsondata", jsondata);
 		var www = new WWW (url, form);
 		yield return www;
-//		print (www.text);
-
-
-
-//		userData.name = "Yamada";
-//		userData.age = 20;
-//		string jsondata = JsonMapper.ToJson (userData);
-//		print (jsondata);
-//		WWWForm form = new WWWForm ();
-//		form.AddField ("jsondata", jsondata);
-//		var www = new WWW (url, form);
-//		yield return www;
-//		print (www.text);
 	}
 
 
@@ -742,6 +726,20 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	public void fadeOutGameObject(GameObject obj)
 	{
 		iTween.FadeTo(obj, iTween.Hash("alpha", 0, "time", 1));
+	}
+
+	public void CountUpReplay()
+	{
+		//******** カウンターUP
+		if (mUniqueTargetId != null) {
+			//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
+			Debug.Log("CountUpReplay:mUniqueTargetId: " + mUniqueTargetId);
+			//		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
+			CountUp (mUniqueTargetId);
+
+			//HLARのaccess logにinsert
+			InsAccessLog (mUniqueTargetId);
+		} 
 	}
 
     #endregion //PRIVATE_METHODS
