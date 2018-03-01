@@ -326,7 +326,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 			//		//showHideGameObject (insta_icon);
 
 
-			Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
+			//Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
 
 //		}
 

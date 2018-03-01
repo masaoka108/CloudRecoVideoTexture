@@ -55,6 +55,7 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
 	void Update()
 	{
+		//play中にエラーが発生した場合。
 		if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING) {
 			Debug.Log("TrackableEventHandler:Update:-1-");
 
@@ -70,6 +71,91 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 				}
 			}
 		}
+
+		// Pause the video if tracking is lost for more than two seconds
+        if (mHasBeenFound && mLostTracking)
+        {
+
+			Debug.Log("TrackableEventHandler:Update-1");
+
+			if (mSecondsSinceLost > 2.0f)
+			//if (mSecondsSinceLost > 0.01f)
+            {
+//				Debug.Log("TrackableEventHandler:Update-2");
+//				Debug.Log("video:" + video);
+//				Debug.Log("video.CurrentState:" + video.CurrentState);
+//
+//				if (video != null)
+//				{
+//					Debug.Log("TrackableEventHandler:Update-3");
+//					video.VideoPlayer.Pause();
+//				}
+//
+//                mLostTracking = false;
+//
+//				// Start finder again if we lost the current trackable
+//				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+//				if (objectTracker != null)
+//				{
+//					objectTracker.TargetFinder.ClearTrackables(false);
+//					objectTracker.TargetFinder.StartRecognition();
+//				}
+
+				Renderer[] rendererComponents = GetComponentsInChildren<Renderer>();
+				Collider[] colliderComponents = GetComponentsInChildren<Collider>();
+
+				// Disable rendering:
+				foreach (Renderer component in rendererComponents)
+				{
+					component.enabled = false;
+				}
+
+				// Disable colliders:
+				foreach (Collider component in colliderComponents)
+				{
+					component.enabled = false;
+				}
+
+				Debug.Log("OnTrackingLost:0");
+				Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
+
+				mLostTracking = true;
+				mSecondsSinceLost = 0;
+
+				//okamura add 
+				PauseOtherVideos (video);
+				video.VideoPlayer.Pause();
+
+				Debug.Log("OnTrackingLost:video.mCurrentState:1");
+				Debug.Log(video.mCurrentState);
+
+				// Start finder again if we lost the current trackable
+				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+				if (objectTracker != null)
+				{
+					//objectTracker.TargetFinder.ClearTrackables(false);
+					objectTracker.TargetFinder.StartRecognition();
+				}
+
+				//メニュー非表示
+				GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+				TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+				tap.MessageUI_menu.SetActive (false);
+
+
+				//FoundLostUpdate okamura add
+				FoundLostUpdate();
+
+				Debug.Log("OnTrackingLost:video.mCurrentState:2");
+				Debug.Log(video.mCurrentState);
+
+
+
+			}
+
+            mSecondsSinceLost += Time.deltaTime;
+        }
+
 	}
 
 //    void Update()
@@ -370,49 +456,39 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
         {
             component.enabled = false;
         }
-
-		Debug.Log("OnTrackingLost:0");
-        Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
-
-
+//
+//		Debug.Log("OnTrackingLost:0");
+//        Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
+//
+        mLostTracking = true;
+        mSecondsSinceLost = 0;
+//
+//		//okamura add 
+//		PauseOtherVideos (video);
+//		video.VideoPlayer.Pause();
+//
+//		Debug.Log("OnTrackingLost:video.mCurrentState:1");
+//		Debug.Log(video.mCurrentState);
+//
 //		// Start finder again if we lost the current trackable
 //		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 //		if (objectTracker != null)
 //		{
-//			objectTracker.TargetFinder.ClearTrackables(false);
+//			//objectTracker.TargetFinder.ClearTrackables(false);
 //			objectTracker.TargetFinder.StartRecognition();
 //		}
-
-
-        mLostTracking = true;
-        mSecondsSinceLost = 0;
-
-		//okamura add 
-		PauseOtherVideos (video);
-		video.VideoPlayer.Pause();
-
-		Debug.Log("OnTrackingLost:video.mCurrentState:1");
-		Debug.Log(video.mCurrentState);
-
-		// Start finder again if we lost the current trackable
-		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-		if (objectTracker != null)
-		{
-			//objectTracker.TargetFinder.ClearTrackables(false);
-			objectTracker.TargetFinder.StartRecognition();
-		}
-
-		//メニュー非表示
-		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
-		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-		tap.MessageUI_menu.SetActive (false);
-
-
-		//FoundLostUpdate okamura add
-		FoundLostUpdate();
-
-		Debug.Log("OnTrackingLost:video.mCurrentState:2");
-		Debug.Log(video.mCurrentState);
+//
+//		//メニュー非表示
+//		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+//		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+//		tap.MessageUI_menu.SetActive (false);
+//
+//
+//		//FoundLostUpdate okamura add
+//		FoundLostUpdate();
+//
+//		Debug.Log("OnTrackingLost:video.mCurrentState:2");
+//		Debug.Log(video.mCurrentState);
     }
 
     // Pause all videos except this one
