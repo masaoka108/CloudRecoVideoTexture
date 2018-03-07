@@ -192,7 +192,9 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
 
 		//******** カウントアップはOnTrackingFound で行うこととした。
+		//				-> やはりココで行う
 		mUniqueTargetId = targetSearchResult.UniqueTargetId;
+		CountUpReplay ();
 //		//******** カウンターUP
 //		if (video.mCurrentState != VideoPlayerHelper.MediaState.NOT_READY) {
 //			//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)

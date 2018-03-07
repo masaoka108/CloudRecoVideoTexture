@@ -51,4 +51,9 @@ public class TutorialButton : MonoBehaviour {
 		Application.OpenURL("https://universear.hiliberate.biz/");
 	}
 
+	public void OnClickCopyURL() {
+		Debug.Log("OnClickCopyURL -1-");
+		UniClipboard.SetText ("https://universear.hiliberate.biz/");
+		Debug.Log(UniClipboard.GetText ());
+	}
 }

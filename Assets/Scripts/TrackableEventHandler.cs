@@ -343,8 +343,8 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 			//******** 認識時は自動再生させる仕様とするので、アイコンはここで絶対非表示とする。
 			//video.HideIcon();
 
-			//******** カウントアップ
-			CREH.CountUpReplay();
+//			//******** カウントアップ
+//			CREH.CountUpReplay();
 
 			Debug.Log("OnTrackingFound:4");
 
