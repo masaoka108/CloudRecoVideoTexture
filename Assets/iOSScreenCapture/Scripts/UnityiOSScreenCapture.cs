@@ -20,7 +20,6 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 	void Start()
 	{
 		Utility = GameObject.Find("Utility");
-		UiOS = Utility.GetComponent<UnityiOS> ();
 
 		SuccessMsgPanel = GameObject.Find("SuccessMsgPanel");
 		FailureMsgPanel = GameObject.Find("FailureMsgPanel");
@@ -28,7 +27,8 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 		SuccessMsgPanel.SetActive(false);
 		FailureMsgPanel.SetActive (false);
 
-		#if !UNITY_EDITOR
+		#if UNITY_IPHONE
+		UiOS = Utility.GetComponent<UnityiOS> ();
 		UnityiOS.RequestPermissions();
 		#endif
 	}
@@ -54,7 +54,8 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 //		Debug.Log (SuccessScript);
 //		SuccessScript.ShowAndHide ();
 
-		#if !UNITY_EDITOR
+		#if UNITY_IPHONE
+
 		PHAuthorizationStatus phstatus = (PHAuthorizationStatus)Enum.ToObject(
 			typeof(PHAuthorizationStatus), UnityiOS.HasCameraRollPermission());
 
@@ -73,7 +74,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 			OnFailCapture.Invoke();
 		}
-#endif
+		#endif
 	}
 
 	private IEnumerator _CaptureScreenShot() {
