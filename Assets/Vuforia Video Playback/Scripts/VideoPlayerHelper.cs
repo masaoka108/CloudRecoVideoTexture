@@ -505,6 +505,18 @@ public class VideoPlayerHelper
         // nothing to do for Android
     }
 
+	private bool videoPlayerVolumeOn()
+	{
+		return false;
+	}
+
+	private bool videoPlayerVolumeOff()
+	{
+		return false;
+	}
+
+
+
 #elif (UNITY_IPHONE || UNITY_IOS)
 
     private IntPtr mVideoPlayerPtr = IntPtr.Zero;
