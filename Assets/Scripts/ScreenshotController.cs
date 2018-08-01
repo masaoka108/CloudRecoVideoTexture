@@ -90,7 +90,8 @@ public class ScreenshotController : MonoBehaviour {
 	public void VideoShotClick() {
 		Debug.Log ("start VideoShotClick -1-");
 
-		#if UNITY_IPHONE
+
+#if UNITY_IPHONE
 		if (!ReplayKit.APIAvailable) {
 			Debug.Log ("API not available! ");
 			return;
@@ -138,6 +139,7 @@ public class ScreenshotController : MonoBehaviour {
 
 			//無駄なUIを非表示にする
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+            GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = false;
 
 
 			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
@@ -159,11 +161,13 @@ public class ScreenshotController : MonoBehaviour {
 
 			//非表示にしたUIを再表示
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+            GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = true;
 			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
 			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
 		}
-		#endif
-	}
+#endif
+
+    }
 
 	public void VideoConfirm(){
 		#if UNITY_IPHONE
