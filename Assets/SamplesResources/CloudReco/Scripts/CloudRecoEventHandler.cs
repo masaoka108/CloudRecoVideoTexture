@@ -169,10 +169,10 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	public IEnumerator timeStop(){
 
 		Debug.Log("timeStop:start");
-		yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(3);
 		Debug.Log("5秒経ちました");
 
-	}
+    }
 
 	public void OnNewSearchResult(TargetFinder.TargetSearchResult targetSearchResult)
 	{

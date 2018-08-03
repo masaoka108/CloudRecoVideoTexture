@@ -19,18 +19,18 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 	void Start()
 	{
-		Utility = GameObject.Find("Utility");
+        Utility = GameObject.Find("Utility");
 
-		SuccessMsgPanel = GameObject.Find("SuccessMsgPanel");
-		FailureMsgPanel = GameObject.Find("FailureMsgPanel");
+        SuccessMsgPanel = GameObject.Find("SuccessMsgPanel");
+        FailureMsgPanel = GameObject.Find("FailureMsgPanel");
 
-		SuccessMsgPanel.SetActive(false);
-		FailureMsgPanel.SetActive (false);
+        SuccessMsgPanel.SetActive(false);
+        FailureMsgPanel.SetActive(false);
 
-		#if UNITY_IPHONE
-		UiOS = Utility.GetComponent<UnityiOS> ();
-		UnityiOS.RequestPermissions();
-		#endif
+#if UNITY_IPHONE
+        UiOS = Utility.GetComponent<UnityiOS>();
+        UnityiOS.RequestPermissions();
+#endif
 	}
 
 
@@ -54,8 +54,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 //		Debug.Log (SuccessScript);
 //		SuccessScript.ShowAndHide ();
 
-		#if UNITY_IPHONE
-
+		#if !UNITY_EDITOR
 		PHAuthorizationStatus phstatus = (PHAuthorizationStatus)Enum.ToObject(
 			typeof(PHAuthorizationStatus), UnityiOS.HasCameraRollPermission());
 
@@ -74,7 +73,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 			OnFailCapture.Invoke();
 		}
-		#endif
+#endif
 	}
 
 	private IEnumerator _CaptureScreenShot() {
@@ -82,6 +81,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 		//無駄なUIを非表示にする
 		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = false;
 		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
 		GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
 		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
@@ -117,6 +117,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 		//UIを再表示にする
 		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+        GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = true;
 		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
 		GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
 		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");

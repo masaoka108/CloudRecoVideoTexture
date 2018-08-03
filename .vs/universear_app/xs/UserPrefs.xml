@@ -1,0 +1,37 @@
+﻿<Properties StartupConfiguration="{7DA78413-93CE-4DA1-3C0E-A3528CE043CD}|">
+  <MonoDevelop.Ide.ItemProperties.universear__app PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/HlButton.cs">
+    <Files>
+      <File FileName="Assets/SamplesResources/CloudReco/Scripts/CloudRecoTrackableEventHandler.cs" Line="143" Column="52" />
+      <File FileName="Assets/Vuforia Video Playback/Scripts/VideoPlaybackBehaviour.cs" Line="1" Column="1" />
+      <File FileName="Assets/SamplesResources/CloudReco/Scripts/CloudRecoEventHandler.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/ScreenshotController.cs" Line="253" Column="1" />
+      <File FileName="Assets/iOSScreenCapture/Scripts/UnityiOSScreenCapture.cs" Line="84" Column="39" />
+      <File FileName="Assets/Vuforia Video Playback/Scripts/VideoPlayerHelper.cs" Line="640" Column="37" />
+      <File FileName="Assets/Scripts/Paint.cs" Line="132" Column="53" />
+      <File FileName="Assets/Scripts/HlButton.cs" Line="232" Column="1" />
+      <File FileName="Assets/Scripts/MenuButton.cs" Line="121" Column="14" />
+      <File FileName="Assets/Scripts/TapEvent.cs" Line="51" Column="1" />
+      <File FileName="Assets/Scripts/PlayVideo.cs" Line="235" Column="54" />
+      <File FileName="Assets/SamplesResources/UserDefinedTargets/Scripts/UDTEventHandler.cs" Line="161" Column="58" />
+      <File FileName="Assets/SamplesResources/UserDefinedTargets/Editor/UDTEventHandlerEditor.cs" Line="26" Column="15" />
+      <File FileName="Assets/SamplesResources/CloudReco/Editor/CloudRecoEventHandlerEditor.cs" Line="34" Column="14" />
+      <File FileName="Assets/SamplesResources/CloudReco/Scripts/ContentManager.cs" Line="76" Column="1" />
+      <File FileName="Assets/LineDraw/Documentation/Read Me.txt" Line="1" Column="1" />
+      <File FileName="Assets/LineDraw/Scripts/LineFactory.cs" Line="1" Column="1" />
+      <File FileName="Assets/LineDraw/_Demo/LineDemo.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/AppUtil.cs" Line="8" Column="1" />
+      <File FileName="Assets/Common/SplashAbout/AboutScreen.cs" Line="45" Column="1" />
+      <File FileName="Assets/Scripts/TrackableEventHandler.cs" Line="408" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/user/Documents/develop/universear_app/Assets/LineDraw/Scripts/LineFactory.cs" relfile="Assets/LineDraw/Scripts/LineFactory.cs" line="46" column="1" />
+      <Breakpoint file="/Users/user/Documents/develop/universear_app/Assets/Scripts/HlButton.cs" relfile="Assets/Scripts/HlButton.cs" line="232" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>

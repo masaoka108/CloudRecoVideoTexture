@@ -97,7 +97,8 @@ public class ScreenshotController : MonoBehaviour {
 	public void VideoShotClick() {
 		Debug.Log ("start VideoShotClick -1-");
 
-		#if UNITY_IPHONE
+
+#if UNITY_IPHONE
 		if (!ReplayKit.APIAvailable) {
 			Debug.Log ("API not available! ");
 			return;
@@ -148,6 +149,7 @@ public class ScreenshotController : MonoBehaviour {
 
 			//無駄なUIを非表示にする
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+            GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = false;
 
 
 			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
@@ -178,94 +180,95 @@ public class ScreenshotController : MonoBehaviour {
 
 			//非表示にしたUIを再表示
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+            GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = true;
 			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
 			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
 		}
-		#endif
-	}
+#endif
 
-	public void VideoConfirm(){
-		#if UNITY_IPHONE
+    }
 
-		Debug.Log ("VideoConfirm");
-		Debug.Log ("ReplayKit.recordingAvailable:" + ReplayKit.recordingAvailable);
+    public void VideoConfirm()
+    {
+#if UNITY_IPHONE
 
-		StartCoroutine ("waitProcessThenPreview");
+        Debug.Log("VideoConfirm");
+        Debug.Log("ReplayKit.recordingAvailable:" + ReplayKit.recordingAvailable);
 
-		Debug.Log ("after StartCoroutine:" + ReplayKit.recordingAvailable);
+        StartCoroutine("waitProcessThenPreview");
 
-//		if (ReplayKit.recordingAvailable) {
-//			Debug.Log ("VideoConfirm -1-");
-//			ReplayKit.Preview();
-//		}
-//
-//		Debug.Log ("VideoConfirm -2-");
-//
-//		// Go back to normal GUI operation
-//		confirmVideoButton.SetActive (false);
-////		cameraButton.SetActive (true);
-//		videoButton.SetActive (true);
-//
-//		Debug.Log ("VideoConfirm -3-");
-//		Debug.Log ("before VideoCaptureFinishMsgPanel:" + ReplayKit.recordingAvailable);
-//
-//		VideoCaptureFinishMsgPanel.SetActive(false);
-//
-//		Debug.Log ("VideoConfirm -4-");
+        Debug.Log("after StartCoroutine:" + ReplayKit.recordingAvailable);
 
-		#endif
-	}
+        //      if (ReplayKit.recordingAvailable) {
+        //          Debug.Log ("VideoConfirm -1-");
+        //          ReplayKit.Preview();
+        //      }
+        //
+        //      Debug.Log ("VideoConfirm -2-");
+        //
+        //      // Go back to normal GUI operation
+        //      confirmVideoButton.SetActive (false);
+        ////        cameraButton.SetActive (true);
+        //      videoButton.SetActive (true);
+        //
+        //      Debug.Log ("VideoConfirm -3-");
+        //      Debug.Log ("before VideoCaptureFinishMsgPanel:" + ReplayKit.recordingAvailable);
+        //
+        //      VideoCaptureFinishMsgPanel.SetActive(false);
+        //
+        //      Debug.Log ("VideoConfirm -4-");
 
-	public void VideoCaptureFinishMsgPanelHide(){
-		VideoCaptureFinishMsgPanel.SetActive(false);
-	}
+#endif
+    }
 
-
-	private IEnumerator waitProcessThenPreview() {  
-
-
-		#if UNITY_IPHONE
-
-		while(ReplayKit.recordingAvailable == false) {
-		Debug.Log("while recordingAvailable");
-
-		Debug.Log("while recordingAvailable:" + ReplayKit.recordingAvailable);
-		yield return null;
-		}
-
-		Debug.Log("recordingAvailable before break:" + ReplayKit.recordingAvailable);
+    public void VideoCaptureFinishMsgPanelHide(){
+        VideoCaptureFinishMsgPanel.SetActive(false);
+    }
 
 
+    private IEnumerator waitProcessThenPreview() {  
 
 
+        #if UNITY_IPHONE
 
-		if (ReplayKit.recordingAvailable) {
-		Debug.Log ("VideoConfirm -1-");
-		ReplayKit.Preview();
-		}
+        while(ReplayKit.recordingAvailable == false) {
+        Debug.Log("while recordingAvailable");
 
-		Debug.Log ("VideoConfirm -2-");
+        Debug.Log("while recordingAvailable:" + ReplayKit.recordingAvailable);
+        yield return null;
+        }
 
-		// Go back to normal GUI operation
-		confirmVideoButton.SetActive (false);
-		//		cameraButton.SetActive (true);
-		videoButton.SetActive (true);
-
-		Debug.Log ("VideoConfirm -3-");
-		Debug.Log ("before VideoCaptureFinishMsgPanel:" + ReplayKit.recordingAvailable);
-
-		VideoCaptureFinishMsgPanel.SetActive(false);
-
-		Debug.Log ("VideoConfirm -4-");
-
-
-		#endif
+        Debug.Log("recordingAvailable before break:" + ReplayKit.recordingAvailable);
 
 
 
 
-		yield break;  
 
-	}  
+        if (ReplayKit.recordingAvailable) {
+        Debug.Log ("VideoConfirm -1-");
+        ReplayKit.Preview();
+        }
+
+        Debug.Log ("VideoConfirm -2-");
+
+        // Go back to normal GUI operation
+        confirmVideoButton.SetActive (false);
+        //      cameraButton.SetActive (true);
+        videoButton.SetActive (true);
+
+        Debug.Log ("VideoConfirm -3-");
+        Debug.Log ("before VideoCaptureFinishMsgPanel:" + ReplayKit.recordingAvailable);
+
+        VideoCaptureFinishMsgPanel.SetActive(false);
+
+        Debug.Log ("VideoConfirm -4-");
+
+
+        #endif
+
+        yield break;  
+
+    }  
+
 
 }
