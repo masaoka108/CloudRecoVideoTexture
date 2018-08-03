@@ -505,6 +505,7 @@ public class VideoPlayerHelper
         // nothing to do for Android
     }
 
+<<<<<<< HEAD
     private bool videoPlayerVolumeOn()
     {
         return false;
@@ -514,6 +515,18 @@ public class VideoPlayerHelper
     {
         return false;
     }
+=======
+	private bool videoPlayerVolumeOn()
+	{
+		return false;
+	}
+
+	private bool videoPlayerVolumeOff()
+	{
+		return false;
+	}
+
+>>>>>>> develop
 
 
 #elif (UNITY_IPHONE || UNITY_IOS)

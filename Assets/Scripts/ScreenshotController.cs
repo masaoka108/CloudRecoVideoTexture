@@ -50,6 +50,13 @@ public class ScreenshotController : MonoBehaviour {
 		VideoCaptureFinishMsgPanel.SetActive(false);
 	}
 
+	void Update()
+	{
+		#if UNITY_IPHONE
+		Debug.Log ("ReplayKit.recordingAvailable-update:" + ReplayKit.recordingAvailable);
+		#endif
+	}
+
 
 	// Camera Button Event Trigger on Pointer Down
 	public void Screenshot_PointerDown() {
@@ -103,7 +110,7 @@ public class ScreenshotController : MonoBehaviour {
 
 		if (videoPressed) {
 			Debug.Log ("VideoShotClick -3-");
-            //レコーディングを既にしていて、これから終了させる時
+			//レコーディングを既にしていて、これから終了させる時
 
 			videoPressed = false;
 
@@ -118,7 +125,7 @@ public class ScreenshotController : MonoBehaviour {
 
 		} else {
 			Debug.Log ("VideoShotClick -4-");
-            //これからレコーディングをスタートする時
+			//これからレコーディングをスタートする時
 
 			videoPressed = true;
 
@@ -135,7 +142,7 @@ public class ScreenshotController : MonoBehaviour {
 		recording = !recording;
 		if (recording) {
 			Debug.Log ("VideoShotClick -6-");
-            //これからレコーディングをスタートする時
+			//これからレコーディングをスタートする時
 
 			VideoRecText.SetActive(true);
 			Debug.Log ("I am starting a recording");
@@ -156,11 +163,20 @@ public class ScreenshotController : MonoBehaviour {
 		}
 		else {
 			Debug.Log ("VideoShotClick -7-");
+			//レコーディングを既にしていて、これから終了させる時
+
+			Debug.Log ("ReplayKit.recordingAvailable-1:" + ReplayKit.recordingAvailable);
 
 			Debug.Log ("I am ending a recording");
 			ReplayKit.StopRecording();
 
 			VideoRecText.SetActive(false);
+
+			Debug.Log ("ReplayKit.recordingAvailable-2:" + ReplayKit.recordingAvailable);
+
+//			StartCoroutine ("waitProcess");
+//
+//			Debug.Log ("ReplayKit.recordingAvailable-3:" + ReplayKit.recordingAvailable);
 
 			//非表示にしたUIを再表示
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
