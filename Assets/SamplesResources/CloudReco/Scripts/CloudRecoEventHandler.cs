@@ -30,7 +30,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 
     // the parent gameobject of the referenced ImageTargetTemplate - reused for all target search results
     private GameObject mParentOfImageTargetTemplate;
-	private string mUniqueTargetId;
+    private string mUniqueTargetId;
     #endregion // PRIVATE_MEMBERS
 
 
@@ -50,7 +50,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
     public UnityEngine.UI.Text cloudErrorTitle;
     public UnityEngine.UI.Text cloudErrorText;
 
-	public string targetFileName;
+    public string targetFileName;
     #endregion //PUBLIC_MEMBERS
 
 
@@ -70,7 +70,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
         if (cloudRecoBehaviour)
         {
             cloudRecoBehaviour.RegisterEventHandler(this);
-        }			
+        }
     }
     #endregion //MONOBEHAVIOUR_METHODS
 
@@ -107,7 +107,7 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
                 break;
         }
     }
-    
+
     /// <summary>
     /// Called if a Cloud Reco update error occurs
     /// </summary>
@@ -157,198 +157,176 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
         //ShowScanLine(scanning);
     }
 
-	[Serializable]
-	class CloudMetaData
-	{
-		public string title;
-		public string url;
-		public string linkUrl;
-		public string targetImageUrl;
-	}
-		
-	public IEnumerator timeStop(){
+    [Serializable]
+    class CloudMetaData
+    {
+        public string title;
+        public string url;
+        public string linkUrl;
+        public string targetImageUrl;
+    }
 
-		Debug.Log("timeStop:start");
+    public IEnumerator timeStop()
+    {
+
+        Debug.Log("timeStop:start");
         yield return new WaitForSeconds(3);
-		Debug.Log("5秒経ちました");
+        Debug.Log("5秒経ちました");
 
     }
 
-	public void OnNewSearchResult(TargetFinder.TargetSearchResult targetSearchResult)
-	{
-		//******** targetを発見したら画像認識機能をStop
-		mObjectTracker.TargetFinder.Stop ();
-		VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
+    public void OnNewSearchResult(TargetFinder.TargetSearchResult targetSearchResult)
+    {
+        //******** targetを発見したら画像認識機能をStop
+        mObjectTracker.TargetFinder.Stop();
+        VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
 
-		Debug.Log ("OnNewSearchResult:video.mCurrentState");
-		Debug.Log (video.mIsInited);
-		Debug.Log (video.mCurrentState); 
+        Debug.Log("OnNewSearchResult:video.mCurrentState");
+        Debug.Log(video.mIsInited);
+        Debug.Log(video.mCurrentState);
 
-		var metaData = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
-
-
-		//******** 一旦全てのvideoを止める
-		PauseAllVideos ();
+        var metaData = JsonUtility.FromJson<CloudMetaData>(targetSearchResult.MetaData);
 
 
-		//******** カウントアップはOnTrackingFound で行うこととした。
-		//				-> やはりココで行う
-		mUniqueTargetId = targetSearchResult.UniqueTargetId;
-		CountUpReplay ();
-//		//******** カウンターUP
-//		if (video.mCurrentState != VideoPlayerHelper.MediaState.NOT_READY) {
-//			//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
-//			Debug.Log("targetSearchResult.UniqueTargetId: " + targetSearchResult.UniqueTargetId);
-//			//		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
-//			CountUp (targetSearchResult.UniqueTargetId);
-//
-//			//HLARのaccess logにinsert
-//			InsAccessLog (targetSearchResult.UniqueTargetId);
-//		}
-		
-		var targetMenuURL = "";
-
-		var data2 = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
-
-//		Debug.Log ("OnNewSearchResult:video.textureW:" + video.textureW);
-//		if (data2.url == video.m_path && video.textureW == 0) {
-//			Debug.Log ("same video!");
-//		} else {
-
-			//******** video表示エフェクト particle systemを表示
-			GameObject Particle_video = GameObject.Find("Particle_video");
-			Debug.Log ("Particle_video:" + Particle_video);
-
-			GameObject SimpleFlame3 = GameObject.Find("Flare02-MultiColor");
-			ParticleSystem PS2 = SimpleFlame3.GetComponent<ParticleSystem> ();
-			PS2.Play ();
+        //******** 一旦全てのvideoを止める
+        PauseAllVideos();
 
 
-			if (targetSearchResult.MetaData == null) {
-				return;
-			} else {
-				//			VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
+        //******** カウントアップはOnTrackingFound で行うこととした。
+        //				-> やはりココで行う
+        mUniqueTargetId = targetSearchResult.UniqueTargetId;
+        CountUpReplay();
+        //		//******** カウンターUP
+        //		if (video.mCurrentState != VideoPlayerHelper.MediaState.NOT_READY) {
+        //			//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
+        //			Debug.Log("targetSearchResult.UniqueTargetId: " + targetSearchResult.UniqueTargetId);
+        //			//		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
+        //			CountUp (targetSearchResult.UniqueTargetId);
+        //
+        //			//HLARのaccess logにinsert
+        //			InsAccessLog (targetSearchResult.UniqueTargetId);
+        //		}
 
-				VuforiaRenderer.RendererAPI rendererAPI = VuforiaRenderer.Instance.GetRendererAPI ();
+        var targetMenuURL = "";
 
-				//nativeの initWithMetalRendering へアクセス
-				if (video.VideoPlayer.Init (rendererAPI)) {
-				} else {
-					Debug.Log ("video.VideoPlayer.Init false");
-				}
-
-				//新しいVideoを再生するのでinitフラグをfalseにするなど操作。okamura 2017/5/14
-				video.OnApplicationPause (true);	//init flgなどの制御
-
-				Debug.Log ("targetSearchResult.MetaData" + targetSearchResult.MetaData);
-
-				//var data2 = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
-
-				Debug.Log ("We got a target metadata title: " + data2.title);
-				Debug.Log ("We got a target metadata url: " + data2.url);
-				Debug.Log ("We got a target metadata linkUrl: " + data2.linkUrl);
-				targetMenuURL = data2.linkUrl; 
-				video.m_path = data2.url;
-				Debug.Log ("We got a target metadata targetImageUrl: " + data2.targetImageUrl);
+        var data2 = JsonUtility.FromJson<CloudMetaData>(targetSearchResult.MetaData);
 
 
-				//ファイル名の拡張子 以前を取得
-				try {
-					string[] arImageUrl = data2.targetImageUrl.Split('/');
-					string imageFileName = arImageUrl [arImageUrl.Length - 1];
-					string[] arFileName = imageFileName.Split('.');
-					string fileName = arFileName [0];
-					Debug.Log (fileName);					
-					targetFileName = fileName;
+        //******** video表示エフェクト particle systemを表示
+        GameObject Particle_video = GameObject.Find("Particle_video");
+        Debug.Log("Particle_video:" + Particle_video);
 
-				} catch {
-					Debug.Log ("ファイル名 取得エラー");
-				}
-
-				if (video != null) {
-					Debug.Log ("Unload:0");
-					video.VideoPlayer.Unload ();
-
-					//ここでVideoPlayerHelper.mm のload にアクセスしている。
-					if (video.VideoPlayer.Load (data2.url, VideoPlayerHelper.MediaType.ON_TEXTURE, true, 0) == false) {
-						Debug.Log ("fail from title......");
-					} else {
-						Debug.Log ("success from title......!!!");
-					}
-				}
-			}
-
-			// First clear all trackables
-			mObjectTracker.TargetFinder.ClearTrackables (false);
-
-			// enable the new result with the same ImageTargetBehaviour:
-			ImageTargetBehaviour imageTargetBehaviour = mObjectTracker.TargetFinder.EnableTracking (targetSearchResult, mParentOfImageTargetTemplate) as ImageTargetBehaviour;
+        GameObject SimpleFlame3 = GameObject.Find("Flare02-MultiColor");
+        ParticleSystem PS2 = SimpleFlame3.GetComponent<ParticleSystem>();
+        PS2.Play();
 
 
-			if (targetMenuURL == "") {
-				targetMenuURL = "https://universear.hiliberate.biz/";
-			} 
+        if (targetSearchResult.MetaData == null)
+        {
+            return;
+        }
+        else
+        {
+            VuforiaRenderer.RendererAPI rendererAPI = VuforiaRenderer.Instance.GetRendererAPI();
+
+            //nativeの initWithMetalRendering へアクセス
+            if (video.VideoPlayer.Init(rendererAPI))
+            {
+            }
+            else
+            {
+                Debug.Log("video.VideoPlayer.Init false");
+            }
+
+            //新しいVideoを再生するのでinitフラグをfalseにするなど操作。okamura 2017/5/14
+            video.OnApplicationPause(true); //init flgなどの制御
+
+            Debug.Log("targetSearchResult.MetaData" + targetSearchResult.MetaData);
+
+            //var data2 = JsonUtility.FromJson<CloudMetaData> (targetSearchResult.MetaData);
+
+            Debug.Log("We got a target metadata title: " + data2.title);
+            Debug.Log("We got a target metadata url: " + data2.url);
+            Debug.Log("We got a target metadata linkUrl: " + data2.linkUrl);
+            targetMenuURL = data2.linkUrl;
+            video.m_path = data2.url;
+            Debug.Log("We got a target metadata targetImageUrl: " + data2.targetImageUrl);
 
 
-			//20170704 okamura add
-			Debug.Log ("OnNewSearchResult:video.VideoRender()");
-			video.VideoRender (data2.url);
+            //ファイル名の拡張子 以前を取得
+            try
+            {
+                string[] arImageUrl = data2.targetImageUrl.Split('/');
+                string imageFileName = arImageUrl[arImageUrl.Length - 1];
+                string[] arFileName = imageFileName.Split('.');
+                string fileName = arFileName[0];
+                Debug.Log(fileName);
+                targetFileName = fileName;
+
+            }
+            catch
+            {
+                Debug.Log("ファイル名 取得エラー");
+            }
+
+            if (video != null)
+            {
+                Debug.Log("Unload:0");
+                video.VideoPlayer.Unload();
+
+                //ここでVideoPlayerHelper.mm のload にアクセスしている。
+                if (video.VideoPlayer.Load(data2.url, VideoPlayerHelper.MediaType.ON_TEXTURE, true, 0) == false)
+                {
+                    Debug.Log("fail from title......");
+                }
+                else
+                {
+                    Debug.Log("success from title......!!!");
+                }
+            }
+        }
+
+        // First clear all trackables
+        mObjectTracker.TargetFinder.ClearTrackables(false);
+
+        // enable the new result with the same ImageTargetBehaviour:
+        ImageTargetBehaviour imageTargetBehaviour = mObjectTracker.TargetFinder.EnableTracking(targetSearchResult, mParentOfImageTargetTemplate) as ImageTargetBehaviour;
 
 
-			// ターゲットのメニューを設定
-			//ターゲット メニューボタンのURLを設定
-			GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
-			Debug.Log ("TargetMenuPlane:" + TargetMenuPlane);
-			TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-			tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
-			tap.fullScreenURL = video.m_path;
-
-			//Rec中で無ければメニューを表示
-			GameObject Utility = GameObject.Find ("Utility");
-			ScreenshotController ssc = Utility.GetComponent<ScreenshotController> ();
-
-			if (ssc.recording == false) {
-				tap.MessageUI_menu.SetActive (true);
-			}
+        if (targetMenuURL == "")
+        {
+            targetMenuURL = "https://universear.hiliberate.biz/";
+        }
 
 
-
-			//20171117 メニューボタンの位置を変更
-			//		//ターゲットメニュー はメイン以外は初期は非表示
-			//		GameObject www_icon = GameObject.Find("www_icon");
-			//		GameObject fullscreen_icon = GameObject.Find("fullscreen_icon");
-			//		GameObject twitter_icon = GameObject.Find("twitter_icon");
-			//		GameObject fb_icon = GameObject.Find("fb_icon");
-			//		//GameObject insta_icon = GameObject.Find("insta_icon");
-			//
-			//		showHideGameObject (www_icon);
-			//		showHideGameObject (fullscreen_icon);
-			//		showHideGameObject (twitter_icon);
-			//		showHideGameObject (fb_icon);
-			//		//showHideGameObject (insta_icon);
+        //20170704 okamura add
+        Debug.Log("OnNewSearchResult:video.VideoRender()");
 
 
-			Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
+//#if UNITY_IPHONE
+        video.VideoRender (data2.url);
+//#endif
 
-//		}
+		// ターゲットのメニューを設定
+		//ターゲット メニューボタンのURLを設定
+		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+		Debug.Log ("TargetMenuPlane:" + TargetMenuPlane);
+		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+		tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
+		tap.fullScreenURL = video.m_path;
+
+		//Rec中で無ければメニューを表示
+		GameObject Utility = GameObject.Find ("Utility");
+		ScreenshotController ssc = Utility.GetComponent<ScreenshotController> ();
+
+		if (ssc.recording == false) {
+			tap.MessageUI_menu.SetActive (true);
+		}
 
 
 
 
-//		//チュートリアル画面が表示されているなら非表示にして普通の画面に戻す
-//		if (GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled == true) {
-//			GameObject TutorialUI = GameObject.Find ("TutorialUI");
-//			TutorialUI.SetActive (false);
-//
-//			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
-//			GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
-//		}
-
-		//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
-		//		if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled()) {
-		//			imageTargetBehaviour.ImageTarget.StartExtendedTracking();
-		//		}
-
+		Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
 
 
 		// FoundLostUpdate
@@ -360,114 +338,10 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	}
 
 
-	//bak
-//	public void OnNewSearchResult(TargetFinder.TargetSearchResult targetSearchResult)
-//	{
-//		if(targetSearchResult.MetaData == null){
-//			return;
-//		} else {
-//			//no neccesory to apply SerializeObject here...
-//			string output = JsonConvert.SerializeObject (targetSearchResult.MetaData);
-//
-//			JObject dict = JsonConvert.DeserializeObject<JObject> (targetSearchResult.MetaData);
-//			Debug.Log("We got a target metadata title: " + dict["title"]);
-//			Debug.Log("We got a target metadata url: " + dict["url"]);
-//			VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
-//
-//			if(video != null) {
-//				video.VideoPlayer.Unload();
-//				if(video.VideoPlayer.Load((string) dict["title"], VideoPlayerHelper.MediaType.ON_TEXTURE, false, 0) == false) {
-//					Debug.Log ("fail from title......");
-//					if (video.VideoPlayer.Load ((string)dict ["url"], VideoPlayerHelper.MediaType.ON_TEXTURE, false, 0) == false) {
-//						Debug.Log ("fail from url......");
-//					}
-//				}
-//			}
-//		}
-//
-//		// First clear all trackables
-//		mObjectTracker.TargetFinder.ClearTrackables(false);
-//
-//		// enable the new result with the same ImageTargetBehaviour:
-//		ImageTargetBehaviour imageTargetBehaviour = mObjectTracker.TargetFinder.EnableTracking(targetSearchResult, mParentOfImageTargetTemplate) as ImageTargetBehaviour;
-//
-//		//if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
-//		if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled()) {
-//			imageTargetBehaviour.ImageTarget.StartExtendedTracking();
-//		}
-//	}
+#endregion //ICloudRecoEventHandler_implementation
 
 
-//	public void OnNewSearchResult(TargetFinder.TargetSearchResult targetSearchResult)
-//	{
-//		if(targetSearchResult.MetaData == null)
-//		{
-//			return;
-//		}
-//		else
-//		{
-//			Json.
-//			var dict = Json.Deserialize(targetSearchResult.MetaData) as Dictionary<string,object>;
-//
-//			VideoPlaybackBehaviour video = ImageTargetTemplate.gameObject.GetComponentInChildren<VideoPlaybackBehaviour>();
-//			if(video != null)
-//			{
-//				video.VideoPlayer.Unload();
-//
-//				if(video.VideoPlayer.Load((string) dict["video"], VideoPlayerHelper.MediaType.ON_TEXTURE, false, 0) == false)
-//				{
-//
-//				}
-//			}
-//		}
-//
-//		mObjectTracker.TargetFinder.ClearTrackables(false);
-//
-//		ImageTargetBehaviour imageTargetBehaviour = mObjectTracker.TargetFinder.EnableTracking(targetSearchResult, mParentOfImageTargetTemplate) as ImageTargetBehaviour;
-//
-//		if(CloudRecognitionUIEventHandler.ExtendedTrackingIsEnabled)
-//		{
-//			imageTargetBehaviour.ImageTarget.StartExtendedTracking();
-//		}
-//	}
-
-
-//    /// <summary>
-//    /// Handles new search results
-//    /// </summary>
-//    /// <param name="targetSearchResult"></param>
-//    public void OnNewSearchResult(TargetFinder.TargetSearchResult targetSearchResult)
-//    {
-//        // This code demonstrates how to reuse an ImageTargetBehaviour for new search results and modifying it according to the metadata
-//        // Depending on your application, it can make more sense to duplicate the ImageTargetBehaviour using Instantiate(), 
-//        // or to create a new ImageTargetBehaviour for each new result
-//
-//        // Vuforia will return a new object with the right script automatically if you use
-//        // TargetFinder.EnableTracking(TargetSearchResult result, string gameObjectName)
-//        
-//        //Check if the metadata isn't null
-//        if (targetSearchResult.MetaData == null)
-//        {
-//            Debug.Log("Target metadata not available.");
-//            return;
-//        }
-//
-//        // First clear all trackables
-//        mObjectTracker.TargetFinder.ClearTrackables(false);
-//
-//        // enable the new result with the same ImageTargetBehaviour:
-//        ImageTargetBehaviour imageTargetBehaviour = mObjectTracker.TargetFinder.EnableTracking(targetSearchResult, mParentOfImageTargetTemplate) as ImageTargetBehaviour;
-//        
-//        //if extended tracking was enabled from the menu, we need to start the extendedtracking on the newly found trackble.
-//        if (mTrackableSettings && mTrackableSettings.IsExtendedTrackingEnabled())
-//        {
-//            imageTargetBehaviour.ImageTarget.StartExtendedTracking();
-//        }
-//    }
-    #endregion //ICloudRecoEventHandler_implementation
-
-
-    #region PUBLIC_METHODS
+#region PUBLIC_METHODS
     public void CloseErrorDialog()
     {
         if (cloudErrorCanvas)
@@ -483,34 +357,13 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
             }
         }
     }
-    #endregion //PUBLIC_METHODS
+#endregion //PUBLIC_METHODS
 
-    #region PRIVATE_METHODS
+#region PRIVATE_METHODS
     private void ShowScanLine(bool show)
     {
 		Renderer scanLineRenderer = scanLine.GetComponent<Renderer>();
 		scanLineRenderer.enabled = false;
-
-
-//		// Toggle scanline rendering
-//        if (scanLine != null)
-//        {
-//            Renderer scanLineRenderer = scanLine.GetComponent<Renderer>();
-//            if (show)
-//            {
-//                // Enable scan line rendering
-//                if (!scanLineRenderer.enabled)
-//                    scanLineRenderer.enabled = true;
-//
-//                scanLine.ResetAnimation();
-//            }
-//            else
-//            {
-//                // Disable scanline rendering
-//                if (scanLineRenderer.enabled)
-//                    scanLineRenderer.enabled = false;
-//            }
-//        }
     }
 
     private void ShowError(string title, string msg)
@@ -550,57 +403,6 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 	// Pause all videos except this one
 	private void PauseOtherVideos(VideoPlaybackBehaviour currentVideo)
 	{
-//		VideoPlaybackBehaviour[] videos = (VideoPlaybackBehaviour[])
-//			FindObjectsOfType(typeof(VideoPlaybackBehaviour));
-//
-//		foreach (VideoPlaybackBehaviour video in videos)
-//		{
-//			Debug.Log ("PauseOtherVideos:" + video);
-//			Debug.Log ("video.CurrentState:" + video.CurrentState);
-//
-//
-////			if (video != currentVideo)
-////			{
-////				if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
-////				{
-//					video.VideoPlayer.Pause();
-////				}
-////			}
-//		}
-
-//		VideoPlaybackBehaviour[] videos = FindObjectsOfType<VideoPlaybackBehaviour>();
-//		foreach (VideoPlaybackBehaviour video in videos)
-//		{
-//			Debug.Log ("PauseOtherVideos:" + video);
-//			Debug.Log ("video.CurrentState:" + video.CurrentState);
-//
-////			if (video != currentVideo &&
-////				video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
-////			{
-//			if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
-//			{
-//				Debug.Log ("PauseOtherVideos0:");
-//				//video.VideoPlayer.Pause();
-//				video.VideoPlayer.Stop();
-//			}
-//		}
-
-
-//		Debug.Log ("FindGameObjectsWithTag:0");
-//		respawns = GameObject.FindGameObjectsWithTag("VideoGameObject");
-//
-//		Debug.Log ("respawns.Length:" + respawns.Length);
-//
-//		foreach (GameObject respawn in respawns) {
-//			VideoPlaybackBehaviour video = respawn.GetComponent( typeof(VideoPlaybackBehaviour) ) as VideoPlaybackBehaviour;
-//
-//			Debug.Log ("PauseOtherVideos:video:" + video);
-//
-//			video.VideoPlayer.Stop ();
-//			//Instantiate(respawnPrefab, respawn.transform.position, respawn.transform.rotation);
-//		}
-	
-
 		Debug.Log ("FindGameObjectsWithTag:0");
 		VideoPlaybackBehaviour video = GetPlayingVideo();
 		if (video != null && video.VideoPlayer.IsPlayableOnTexture()) {
@@ -736,7 +538,6 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		if (mUniqueTargetId != null) {
 			//HLARのdbカウントアップ APIへアクセス(制限回数を超えていたらターゲットをinactiveに更新)
 			Debug.Log("CountUpReplay:mUniqueTargetId: " + mUniqueTargetId);
-			//		StartCoroutine (CountUp (targetSearchResult.UniqueTargetId));
 			CountUp (mUniqueTargetId);
 
 			//HLARのaccess logにinsert
@@ -744,5 +545,5 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		} 
 	}
 
-    #endregion //PRIVATE_METHODS
+#endregion //PRIVATE_METHODS
 }

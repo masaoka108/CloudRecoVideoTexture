@@ -54,7 +54,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 //		Debug.Log (SuccessScript);
 //		SuccessScript.ShowAndHide ();
 
-		#if !UNITY_EDITOR
+#if (UNITY_IPHONE || UNITY_IOS)
 		PHAuthorizationStatus phstatus = (PHAuthorizationStatus)Enum.ToObject(
 			typeof(PHAuthorizationStatus), UnityiOS.HasCameraRollPermission());
 
