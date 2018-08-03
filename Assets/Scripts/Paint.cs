@@ -19,7 +19,7 @@ public class Paint : MonoBehaviour
     public GameObject EraseButton = null;
     public GameObject CanvasPalette = null;
 
-    public Color selectColor = Color.black;
+    public Color selectColor;
 
     public Camera CameraNow = null;
 
@@ -28,6 +28,9 @@ public class Paint : MonoBehaviour
     private Vector3 beforePos = new Vector3(0, 0, 0);
 
     public GameObject AllClearMsgPanel;
+
+    private GameObject Utility;
+    private AppUtil appUtil;
 
     void Start()
     {
@@ -38,8 +41,13 @@ public class Paint : MonoBehaviour
         CanvasPalette = GameObject.Find("CanvasPalette");
         CanvasPalette.SetActive(false);
 
+        Utility = GameObject.Find("Utility");
+        appUtil = Utility.GetComponent<AppUtil>();
+
         //メッセージBOX を非表示
         AllClearMsgPanel.SetActive(false);
+
+        selectColor = new Color(1, 1, 1, 1.0f);
     }
 
     // マウスボタンを離した時にコールされる
@@ -52,13 +60,20 @@ public class Paint : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetMouseButtonUp(0))
+        TouchInfo info = AppUtil.GetTouch();
+
+        if (info == TouchInfo.Ended)
         {
             beforePos = new Vector3(0, 0, 0);
         }
-        
 
-        if (Input.GetMouseButton(0))
+        if (info == TouchInfo.Began)
+        {
+            print("いま左ボタンが押された");
+            beforePos = new Vector3(0, 0, 0);
+        }
+
+        if (info == TouchInfo.Moved || info == TouchInfo.Stationary)
         {
 
             bool raycastflg = false;
@@ -113,8 +128,10 @@ public class Paint : MonoBehaviour
                     Color lineColor = selectColor;
                     blockPrefab.GetComponent<Image>().color = lineColor;
 
+                    RectTransform rt = blockPrefab.GetComponent(typeof(RectTransform)) as RectTransform;
+                    rt.sizeDelta = new Vector2(10, 10);
+
                     GameObject blackDots = Instantiate(blockPrefab, placePosition, Quaternion.identity);
-                    blackDots.layer = 2;
                     blackDots.transform.parent = parentObj.transform;
 
                 } else {

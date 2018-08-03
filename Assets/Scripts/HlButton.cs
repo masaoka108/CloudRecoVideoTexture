@@ -127,7 +127,7 @@ public class HlButton : MonoBehaviour {
 //
 		Image _This = this.GetComponent<Image>();
 		
-        if (_This != null) {
+        if (_This != null && _This.name != "white_round") {
             _This.color = new Color(1, 1, 1, 0.5f);
         }
 
@@ -226,7 +226,10 @@ public class HlButton : MonoBehaviour {
 
             //********* そのカラーを設定
             GameObject Utility = GameObject.Find("Utility");
-            Utility.GetComponent<Paint>().selectColor = selectColor;                   
+            Paint paint = Utility.GetComponent<Paint>();
+            paint.paintFlg = true;
+            paint.eraserFlg = false;
+            paint.selectColor = selectColor;
         }
 
 
