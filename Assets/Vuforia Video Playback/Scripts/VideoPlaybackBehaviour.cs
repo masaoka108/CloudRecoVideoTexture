@@ -177,85 +177,85 @@ public class VideoPlaybackBehaviour : MonoBehaviour
     }
 
 
-//#if UNITY_ANDROID
+#if UNITY_ANDROID
 
-//    //画像認識して動画を再生する(多分)
-//    void OnRenderObject()
-//    {
-//        Debug.Log("OnRenderObject:0");
-//        Debug.Log("mAppPaused:" + mAppPaused);
+    //画像認識して動画を再生する(多分)
+    void OnRenderObject()
+    {
+        Debug.Log("OnRenderObject:0");
+        Debug.Log("mAppPaused:" + mAppPaused);
 
-//        //pause だったら何もしない
-//        if (mAppPaused) return;
+        //pause だったら何もしない
+        if (mAppPaused) return;
 
-//        Debug.Log("OnRenderObject:0-1");
+        Debug.Log("OnRenderObject:0-1");
 
-//        //Iconの表示/非表示を設定。(多分)
-//        CheckIconPlaneVisibility();
+        //Iconの表示/非表示を設定。(多分)
+        CheckIconPlaneVisibility();
 
-//        Debug.Log("OnRenderObject:0-2");
-//        Debug.Log("mIsInited:" + mIsInited);
+        Debug.Log("OnRenderObject:0-2");
+        Debug.Log("mIsInited:" + mIsInited);
 
-//        if (!mIsInited)
-//        {
-//            //Videoの初期設定が出来ていない場合
+        if (!mIsInited)
+        {
+            //Videoの初期設定が出来ていない場合
 
-//            Debug.Log("OnRenderObject:0-3");
-//            Debug.Log("mInitInProgess:" + mInitInProgess);
+            Debug.Log("OnRenderObject:0-3");
+            Debug.Log("mInitInProgess:" + mInitInProgess);
 
-//            if (!mInitInProgess)
-//            {
-//                //Videoの初期設定を実行中でないなら、実行する。
+            if (!mInitInProgess)
+            {
+                //Videoの初期設定を実行中でないなら、実行する。
 
-//                Debug.Log("OnRenderObject:0-3");
-//                Debug.Log("mInitInProgess:" + mInitInProgess);
+                Debug.Log("OnRenderObject:0-3");
+                Debug.Log("mInitInProgess:" + mInitInProgess);
 
-//                mInitInProgess = true;
+                mInitInProgess = true;
 
-//                //ここから展開していく InitVideoPlayer -> LoadVideo -> PrepareVideo
-//                StartCoroutine(InitVideoPlayer());
+                //ここから展開していく InitVideoPlayer -> LoadVideo -> PrepareVideo
+                StartCoroutine(InitVideoPlayer());
 
-//                Debug.Log("OnRenderObject:0-4");
-//            }
+                Debug.Log("OnRenderObject:0-4");
+            }
 
-//            return;
-//        }
+            return;
+        }
 
-//        Debug.Log("OnRenderObject:1");
-//        Debug.Log("isPlayableOnTexture" + isPlayableOnTexture);
-//        Debug.Log("OnRenderObject:2");
+        Debug.Log("OnRenderObject:1");
+        Debug.Log("isPlayableOnTexture" + isPlayableOnTexture);
+        Debug.Log("OnRenderObject:2");
 
-//        // Update the video texture with the latest video frame
-//        VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
+        // Update the video texture with the latest video frame
+        VideoPlayerHelper.MediaState state = mVideoPlayer.UpdateVideoData();
 
-//        Debug.Log("UpdateVideoData return:" + state);
+        Debug.Log("UpdateVideoData return:" + state);
 
-//        //@ToDo 一旦、ストップは考えないでとりあえず再生する。 2017/7/3 パフォーマンスを考え修正
-//        if (state == VideoPlayerHelper.MediaState.PLAYING)
-//        {
+        //@ToDo 一旦、ストップは考えないでとりあえず再生する。 2017/7/3 パフォーマンスを考え修正
+        if (state == VideoPlayerHelper.MediaState.PLAYING)
+        {
 
-//        #if UNITY_WSA_10_0 && !UNITY_EDITOR
-//                // For Direct3D video texture update, we need to be on the rendering thread
-//                GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
-//        #else
-//            Debug.Log("GL.InvalidateState()");
-//            GL.InvalidateState();
-//#endif
-//        }
+        #if UNITY_WSA_10_0 && !UNITY_EDITOR
+                // For Direct3D video texture update, we need to be on the rendering thread
+                GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
+        #else
+            Debug.Log("GL.InvalidateState()");
+            GL.InvalidateState();
+#endif
+        }
 
-//        Debug.Log("OnRenderObject:state:" + state);
-//        Debug.Log("OnRenderObject:3:" + mCurrentState);
+        Debug.Log("OnRenderObject:state:" + state);
+        Debug.Log("OnRenderObject:3:" + mCurrentState);
 
-//        // Check for playback state change
-//        if (state != mCurrentState)
-//        {
+        // Check for playback state change
+        if (state != mCurrentState)
+        {
 
-//            HandleStateChange(state);
-//            mCurrentState = state;
-//        }
-//    }
+            HandleStateChange(state);
+            mCurrentState = state;
+        }
+    }
 
-//#else
+#else
 
 
     public void VideoRender(string url)
@@ -296,7 +296,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
         Debug.Log("OnRenderObject:2");
     }
 
-//#endif
+#endif
 
     public IEnumerator SetState()
     {

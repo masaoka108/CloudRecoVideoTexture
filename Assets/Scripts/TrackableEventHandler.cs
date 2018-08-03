@@ -2,6 +2,7 @@
 /*============================================================================== 
  * Copyright (c) 2012-2015 Qualcomm Connected Experiences, Inc. All Rights Reserved. 
  * ==============================================================================*/
+using System;
 using UnityEngine;
 using Vuforia;
 
@@ -230,11 +231,13 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
         mSecondsSinceLost = 0;
 
 		//okamura add 
-		PauseOtherVideos (video);
-		video.VideoPlayer.Pause();
+        if (video) {
+            PauseOtherVideos(video);
+            video.VideoPlayer.Pause();
+        }
 
-		Debug.Log("OnTrackingLost:video.mCurrentState:1");
-		Debug.Log(video.mCurrentState);
+		//Debug.Log("OnTrackingLost:video.mCurrentState:1");
+		//Debug.Log(video.mCurrentState);
 
 		// Start finder again if we lost the current trackable
 		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
@@ -247,14 +250,20 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 		//メニュー非表示
 		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
 		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-		tap.MessageUI_menu.SetActive (false);
+        try {
+            tap.MessageUI_menu.SetActive(false);
+        }
+        catch (UnassignedReferenceException ex)
+        {
+            Debug.Log("myLight was not set in the inspector");
+        }
 
 
 		//FoundLostUpdate okamura add
 		FoundLostUpdate();
 
-		Debug.Log("OnTrackingLost:video.mCurrentState:2");
-		Debug.Log(video.mCurrentState);
+		//Debug.Log("OnTrackingLost:video.mCurrentState:2");
+		//Debug.Log(video.mCurrentState);
     }
 
     // Pause all videos except this one

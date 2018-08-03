@@ -15,6 +15,8 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 	private GameObject SuccessMsgPanel;
 	private GameObject FailureMsgPanel;
 
+    private GameObject AndroidMsgPanel;
+        
 	private bool bMenuActive;
 
 	void Start()
@@ -23,9 +25,11 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
         SuccessMsgPanel = GameObject.Find("SuccessMsgPanel");
         FailureMsgPanel = GameObject.Find("FailureMsgPanel");
+        AndroidMsgPanel = GameObject.Find("AndroidMsgPanel");
 
         SuccessMsgPanel.SetActive(false);
         FailureMsgPanel.SetActive(false);
+        AndroidMsgPanel.SetActive(false);
 
 #if UNITY_IPHONE
         UiOS = Utility.GetComponent<UnityiOS>();
@@ -36,9 +40,14 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 
 	public void Execute() {
 
-		//		UnityEditor.EditorUtility.DisplayDialog("Notice", "Hello!", "OK");
+#if UNITY_ANDROID
+        AndroidMsgBoxShow();
+        return;
+#endif
 
-		Debug.Log ("Execute");
+        //		UnityEditor.EditorUtility.DisplayDialog("Notice", "Hello!", "OK");
+
+        Debug.Log ("Execute");
 
 //		SuccessMsgPanel.SetActive (true);
 
@@ -157,6 +166,16 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 	public void FailureMsgBoxShow() {
 		FailureMsgPanel.SetActive (true);
 	}
+
+    public void AndroidMsgBoxHide()
+    {
+        AndroidMsgPanel.SetActive(false);
+    }
+
+    public void AndroidMsgBoxShow()
+    {
+        AndroidMsgPanel.SetActive(true);
+    }
 
 
 }

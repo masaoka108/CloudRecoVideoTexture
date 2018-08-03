@@ -303,9 +303,9 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
         Debug.Log("OnNewSearchResult:video.VideoRender()");
 
 
-//#if UNITY_IPHONE
+#if UNITY_IPHONE
         video.VideoRender (data2.url);
-//#endif
+#endif
 
 		// ターゲットのメニューを設定
 		//ターゲット メニューボタンのURLを設定

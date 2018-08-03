@@ -40,7 +40,7 @@ public class ScreenshotController : MonoBehaviour {
 
 	private GameObject VideoCaptureFinishMsgPanel;
 
-	void Start() {
+    void Start() {
 		videoPressed = false;
 
 		confirmVideoButton.SetActive (false);
@@ -48,7 +48,8 @@ public class ScreenshotController : MonoBehaviour {
 
 		VideoCaptureFinishMsgPanel = GameObject.Find("VideoCaptureFinishMsgPanel");
 		VideoCaptureFinishMsgPanel.SetActive(false);
-	}
+
+    }
 
 	void Update()
 	{
@@ -96,6 +97,15 @@ public class ScreenshotController : MonoBehaviour {
 	// Video Button OnClick 
 	public void VideoShotClick() {
 		Debug.Log ("start VideoShotClick -1-");
+
+
+#if UNITY_ANDROID
+
+        GameObject UnityiOSScreenCapture = GameObject.Find("UnityiOSScreenCapture");
+        UnityiOSScreenCapture captureObj = UnityiOSScreenCapture.GetComponent<UnityiOSScreenCapture>();
+        captureObj.AndroidMsgBoxShow();
+        return;
+#endif
 
 
 #if UNITY_IPHONE
