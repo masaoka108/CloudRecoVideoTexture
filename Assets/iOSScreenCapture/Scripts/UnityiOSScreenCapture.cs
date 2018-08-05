@@ -18,6 +18,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
     private GameObject AndroidMsgPanel;
         
 	private bool bMenuActive;
+    private bool isRecognize = false;
 
 	void Start()
 	{
@@ -45,23 +46,7 @@ public class UnityiOSScreenCapture : MonoBehaviour {
         return;
 #endif
 
-        //		UnityEditor.EditorUtility.DisplayDialog("Notice", "Hello!", "OK");
-
         Debug.Log ("Execute");
-
-//		SuccessMsgPanel.SetActive (true);
-
-//		CaptureTextSuccess.SetActive (true);
-//		System.Threading.Thread.Sleep(1000);
-//		CaptureTextSuccess.SetActive (false);
-
-
-
-//		ShowAndHide (CaptureTextSuccess);
-
-		//		Debug.Log ("Execute");
-//		Debug.Log (SuccessScript);
-//		SuccessScript.ShowAndHide ();
 
 #if (UNITY_IPHONE || UNITY_IOS)
 		PHAuthorizationStatus phstatus = (PHAuthorizationStatus)Enum.ToObject(
@@ -88,15 +73,32 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 	private IEnumerator _CaptureScreenShot() {
 		//canvasGroup.alpha = 0; //みたいな処理を入れておくと撮影時にUIを外すといった事が出来ます
 
-		//無駄なUIを非表示にする
-		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
-        GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = false;
-		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
-		GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
-		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
-		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-		bMenuActive = tap.MessageUI_menu.active;
-		tap.MessageUI_menu.SetActive (false);
+        try {
+    		//無駄なUIを非表示にする
+    		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+    		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
+    		GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
+    		//GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
+    		//TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
+    		//bMenuActive = tap.MessageUI_menu.active;
+    		//tap.MessageUI_menu.SetActive (false);
+            //GameObject.Find("MessageUI_menu").GetComponent<Canvas>().enabled = false;
+
+            //パレットが開かれていたら非表示にする
+            Utility.GetComponent<Paint>().CanvasPalette.SetActive(false);
+
+            //Twitter,FBボタンを非表示
+            GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+            TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+            if (tap.MessageUI_menu != null)
+            {
+                isRecognize = true;
+                tap.MessageUI_menu.SetActive(false);
+            }
+
+        } catch (NullReferenceException ex) {
+            Debug.Log("NullReferenceException");
+        }
 
 
 		yield return new WaitForEndOfFrame();
@@ -124,14 +126,43 @@ public class UnityiOSScreenCapture : MonoBehaviour {
 		}
 
 
-		//UIを再表示にする
-		GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
-        GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = true;
-		GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
-		GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
-		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
-		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-		tap.MessageUI_menu.SetActive (bMenuActive);
+        try{
+            //UIを再表示にする
+            GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
+            GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
+            GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
+
+            //GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = true;
+            //GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+            //TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+            //tap.MessageUI_menu.SetActive(bMenuActive);
+            //GameObject.Find("MessageUI_menu").GetComponent<Canvas>().enabled = true;
+
+            //パレット
+            if (Utility.GetComponent<Paint>().paintFlg == true || Utility.GetComponent<Paint>().eraserFlg == true)
+            {
+                Utility.GetComponent<Paint>().CanvasPalette.SetActive(true);
+            }
+            Utility.GetComponent<Paint>().CanvasPalette.SetActive(false);
+
+            //Twitter,FBボタンを非表示
+            if (isRecognize)
+            {
+                GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+                TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+                if (tap.MessageUI_menu != null)
+                {
+                    tap.MessageUI_menu.SetActive(true);
+                }
+            }
+
+
+        }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log("NullReferenceException");
+        }
+
 
 	}
 

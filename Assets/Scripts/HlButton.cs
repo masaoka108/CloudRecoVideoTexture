@@ -191,6 +191,7 @@ public class HlButton : MonoBehaviour
 
             //Flgを変更
             Utility.GetComponent<Paint>().paintFlg = false;
+            Utility.GetComponent<Paint>().eraserFlg = false;
 
             //消しゴム ボタンを表示
             Utility.GetComponent<Paint>().EraseButton.SetActive(false);

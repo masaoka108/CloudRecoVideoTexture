@@ -231,9 +231,13 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
         mSecondsSinceLost = 0;
 
 		//okamura add 
-        if (video) {
+        try {
             PauseOtherVideos(video);
             video.VideoPlayer.Pause();
+        }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log("myLight was not set in the inspector");
         }
 
 		//Debug.Log("OnTrackingLost:video.mCurrentState:1");
