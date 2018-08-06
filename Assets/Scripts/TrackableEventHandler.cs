@@ -2,6 +2,7 @@
 /*============================================================================== 
  * Copyright (c) 2012-2015 Qualcomm Connected Experiences, Inc. All Rights Reserved. 
  * ==============================================================================*/
+using System;
 using UnityEngine;
 using Vuforia;
 
@@ -15,7 +16,7 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
     private bool mHasBeenFound = false;
     private bool mLostTracking;
     private float mSecondsSinceLost;
-	private CloudRecoEventHandler CREH;
+	//private CloudRecoEventHandler CREH;
 
 	public GameObject MessageUI_err;
 	public GameObject CloudRecognition;
@@ -37,19 +38,10 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
 		Debug.Log("TrackableEventHandler:Start-0-:aaaaaaaaaaaaaaaa");
 
-//		//とりあえず MessageUI_err を保存しておいて非表示とする。
-//		MessageUI_err = GameObject.Find ("MessageUI_err");
-//
-//		Debug.Log("TrackableEventHandler:Start-1-:" + MessageUI_err);
-//
-//		//MessageUI_err.SetActive (false);
-//
-//		Debug.Log("TrackableEventHandler:Start-2-:" + MessageUI_err);
+		//CREH = CloudRecognition.GetComponent<CloudRecoEventHandler> ();
 
-		CREH = CloudRecognition.GetComponent<CloudRecoEventHandler> ();
-
-		Debug.Log ("TrackableEventHandler:Start -1-");
-		Debug.Log (CREH);
+		//Debug.Log ("TrackableEventHandler:Start -1-");
+		//Debug.Log (CREH);
 
         OnTrackingLost();
     }
@@ -73,49 +65,6 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 		}
 	}
 
-//    void Update()
-//    {
-//		//return;	//@ToDo パフォーマンス テスト
-//
-//		Debug.Log("TrackableEventHandler:Update-0");
-//
-//		video.SetState();
-//
-//
-//		// Pause the video if tracking is lost for more than two seconds
-//        if (mHasBeenFound && mLostTracking)
-//        {
-//
-//			Debug.Log("TrackableEventHandler:Update-1");
-//
-//			//if (mSecondsSinceLost > 2.0f)
-//			if (mSecondsSinceLost > 0.01f)
-//            {
-//				Debug.Log("TrackableEventHandler:Update-2");
-//				Debug.Log("video:" + video);
-//				Debug.Log("video.CurrentState:" + video.CurrentState);
-//
-//				if (video != null)
-//				{
-//					Debug.Log("TrackableEventHandler:Update-3");
-//					video.VideoPlayer.Pause();
-//				}
-//
-//                mLostTracking = false;
-//
-//				// Start finder again if we lost the current trackable
-//				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-//				if (objectTracker != null)
-//				{
-//					objectTracker.TargetFinder.ClearTrackables(false);
-//					objectTracker.TargetFinder.StartRecognition();
-//				}
-//			}
-//
-//            mSecondsSinceLost += Time.deltaTime;
-//        }
-//    }
-
     #endregion //MONOBEHAVIOUR_METHODS
 
 	public void FoundLostUpdate()
@@ -126,86 +75,11 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
 		StartCoroutine(video.SetState());
 
-
-//		// Pause the video if tracking is lost for more than two seconds
-//		if (mHasBeenFound && mLostTracking)
-//		{
-//
-//			Debug.Log("TrackableEventHandler:FoundLostUpdate-1");
-//
-//			//if (mSecondsSinceLost > 2.0f)
-//			if (mSecondsSinceLost > 0.01f)
-//			{
-//				Debug.Log("TrackableEventHandler:FoundLostUpdate-2");
-//				Debug.Log("video:" + video);
-//				Debug.Log("video.CurrentState:" + video.CurrentState);
-//
-//				if (video != null)
-//				{
-//					Debug.Log("TrackableEventHandler:FoundLostUpdate-3");
-//					video.VideoPlayer.Pause();
-//				}
-//
-//				mLostTracking = false;
-//
-//				// Start finder again if we lost the current trackable
-//				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-//				if (objectTracker != null)
-//				{
-//					objectTracker.TargetFinder.ClearTrackables(false);
-//					objectTracker.TargetFinder.StartRecognition();
-//				}
-//			}
-//
-//			mSecondsSinceLost += Time.deltaTime;
-//		}
 	}
 
 	public void FoundLostUpdate2 () {
 	
-//		// Pause the video if tracking is lost for more than two seconds
-//		if (mHasBeenFound && mLostTracking)
-//		{
-//
-//			Debug.Log("TrackableEventHandler:FoundLostUpdate-1");
-//
-//			if (mLostTracking) {
-//				//if (mSecondsSinceLost > 2.0f)
-//				//			if (mSecondsSinceLost > 0.01f)
-//				//			{
-//				Debug.Log("TrackableEventHandler:FoundLostUpdate-2");
-//				Debug.Log("video:" + video);
-//				Debug.Log("video.CurrentState:" + video.CurrentState);
-//
-//				if (video != null)
-//				{
-//					Debug.Log("TrackableEventHandler:FoundLostUpdate-3");
-//					video.VideoPlayer.Pause();
-//				}
-//
-//				mLostTracking = false;
-//
-//				// Start finder again if we lost the current trackable
-//				ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-//				if (objectTracker != null)
-//				{
-//					objectTracker.TargetFinder.ClearTrackables(false);
-//					objectTracker.TargetFinder.StartRecognition();
-//				}
-//				//			}
-//			}
-//
-//
-//			mSecondsSinceLost += Time.deltaTime;
-//		}	
 	}
-
-
-//	public void CallbackFoundLostUpdate (string statusStr) {
-//		Debug.Log("CallbackFoundLostUpdate:-1");
-//		FoundLostUpdate ();
-//	}
-		
 
     #region PUBLIC_METHODS
     /// <summary>
@@ -272,25 +146,14 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
         VideoPlaybackBehaviour video = GetComponentInChildren<VideoPlaybackBehaviour>();
 
-
-//		//ToDo とりあえず全部のVideoを止める
-//		Debug.Log ("StopOtherVideos:start");
-		//		PauseOtherVideos (video);
-//
-
-// 
-//
-//		if (video != null && video.AutoPlay)
 		if (video != null)
         {
 			Debug.Log("OnTrackingFound:0");
+			Debug.Log("OnTrackingFound:1");
 
-//            if (video.VideoPlayer.IsPlayableOnTexture())
-//            {
-				Debug.Log("OnTrackingFound:1");
+			VideoPlayerHelper.MediaState state = video.VideoPlayer.GetStatus();
 
-				VideoPlayerHelper.MediaState state = video.VideoPlayer.GetStatus();
-			if (state == VideoPlayerHelper.MediaState.PAUSED ||
+            if (state == VideoPlayerHelper.MediaState.PAUSED ||
 			                 state == VideoPlayerHelper.MediaState.READY ||
 			                 state == VideoPlayerHelper.MediaState.STOPPED) {
 				Debug.Log ("OnTrackingFound:2");
@@ -318,14 +181,7 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 			} else {
 				Debug.Log ("OnTrackingFound:3.1");
 				Debug.Log (state);
-
-//				video.mCurrentState = VideoPlayerHelper.MediaState.PLAYING;
-
-//				// Play this video on texture where it left off
-//				video.VideoPlayer.Play (false, video.VideoPlayer.GetCurrentPosition ());
 			}
-//            }
-
 
 			//******** メニューを表示
 			GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
@@ -342,13 +198,9 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 			Debug.Log("OnTrackingFound:3.5");
 
 			//******** 認識時は自動再生させる仕様とするので、アイコンはここで絶対非表示とする。
-			//video.HideIcon();
-
-//			//******** カウントアップ
-//			CREH.CountUpReplay();
+			video.HideIcon();
 
 			Debug.Log("OnTrackingFound:4");
-
         }
 
         mHasBeenFound = true;
@@ -375,25 +227,21 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 		Debug.Log("OnTrackingLost:0");
         Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
 
-
-//		// Start finder again if we lost the current trackable
-//		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-//		if (objectTracker != null)
-//		{
-//			objectTracker.TargetFinder.ClearTrackables(false);
-//			objectTracker.TargetFinder.StartRecognition();
-//		}
-
-
         mLostTracking = true;
         mSecondsSinceLost = 0;
 
 		//okamura add 
-		PauseOtherVideos (video);
-		video.VideoPlayer.Pause();
+        try {
+            PauseOtherVideos(video);
+            video.VideoPlayer.Pause();
+        }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log("myLight was not set in the inspector");
+        }
 
-		Debug.Log("OnTrackingLost:video.mCurrentState:1");
-		Debug.Log(video.mCurrentState);
+		//Debug.Log("OnTrackingLost:video.mCurrentState:1");
+		//Debug.Log(video.mCurrentState);
 
 		// Start finder again if we lost the current trackable
 		ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
@@ -406,14 +254,20 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 		//メニュー非表示
 		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
 		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-		tap.MessageUI_menu.SetActive (false);
+        try {
+            tap.MessageUI_menu.SetActive(false);
+        }
+        catch (UnassignedReferenceException ex)
+        {
+            Debug.Log("myLight was not set in the inspector");
+        }
 
 
 		//FoundLostUpdate okamura add
 		FoundLostUpdate();
 
-		Debug.Log("OnTrackingLost:video.mCurrentState:2");
-		Debug.Log(video.mCurrentState);
+		//Debug.Log("OnTrackingLost:video.mCurrentState:2");
+		//Debug.Log(video.mCurrentState);
     }
 
     // Pause all videos except this one
@@ -434,24 +288,6 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
             }
         }
     }
-
-//	private void StopOtherVideos(VideoPlaybackBehaviour currentVideo)
-//	{
-//		VideoPlaybackBehaviour[] videos = (VideoPlaybackBehaviour[])
-//			FindObjectsOfType(typeof(VideoPlaybackBehaviour));
-//
-//		foreach (VideoPlaybackBehaviour video in videos)
-//		{
-//			Debug.Log("StopOtherVideos");
-////			if (video != currentVideo)
-////			{
-////				if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING)
-////				{
-//					video.VideoPlayer.Stop();
-////				}
-////			}
-//		}
-//	}
 
 	#endregion //PRIVATE_METHODS
 }

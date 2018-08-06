@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class HlButton : MonoBehaviour {
+public class HlButton : MonoBehaviour
+{
+
 
 	/// ボタンをクリックした時の処理
 	public void OnClick() {
@@ -93,8 +96,26 @@ public class HlButton : MonoBehaviour {
 	}
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
+
+        //Androidだったら音量ボタンを非表示にする。
+#if UNITY_ANDROID
+        GameObject refObj = GameObject.Find("TargetMenuPlane");
+        TapEvent tapEvent = refObj.GetComponent<TapEvent>();
+        try {
+            tapEvent.VolumeOffButton.SetActive(false);
+        }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log("myLight was not set in the inspector");
+        }
+  
+//        tapEvent.VolumeOnButton.SetActive(false);
+#endif
+
+
 		//******** 透過処理
 
 //		if (this.name == "MenuButton") {
@@ -170,6 +191,7 @@ public class HlButton : MonoBehaviour {
 
             //Flgを変更
             Utility.GetComponent<Paint>().paintFlg = false;
+            Utility.GetComponent<Paint>().eraserFlg = false;
 
             //消しゴム ボタンを表示
             Utility.GetComponent<Paint>().EraseButton.SetActive(false);

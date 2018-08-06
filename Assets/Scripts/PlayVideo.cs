@@ -5,6 +5,7 @@ Copyright (c) 2016 PTC Inc. All Rights Reserved.
  * ==============================================================================*/
 
 using UnityEngine;
+using System;
 using System.Collections;
 using Vuforia;
 
@@ -227,19 +228,26 @@ public class PlayVideo : MonoBehaviour
     /// </summary>
     private VideoPlaybackBehaviour PickVideo(Vector3 screenPoint)
     {
-        GameObject go = VuforiaManager.Instance.ARCameraTransform.gameObject;
-        Camera[] cam = go.GetComponentsInChildren<Camera> ();
-        Ray ray = cam[0].ScreenPointToRay(screenPoint);
+        try{
+            GameObject go = VuforiaManager.Instance.ARCameraTransform.gameObject;
+            Camera[] cam = go.GetComponentsInChildren<Camera>();
+            Ray ray = cam[0].ScreenPointToRay(screenPoint);
 
-        RaycastHit hit = new RaycastHit();
-        VideoPlaybackBehaviour[] videos = FindObjectsOfType<VideoPlaybackBehaviour>();
-        foreach (VideoPlaybackBehaviour video in videos)
-        {
-            if (video.GetComponent<Collider>().Raycast(ray, out hit, 10000))
+            RaycastHit hit = new RaycastHit();
+            VideoPlaybackBehaviour[] videos = FindObjectsOfType<VideoPlaybackBehaviour>();
+            foreach (VideoPlaybackBehaviour video in videos)
             {
-                return video;
+                if (video.GetComponent<Collider>().Raycast(ray, out hit, 10000))
+                {
+                    return video;
+                }
             }
         }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log("myLight was not set in the inspector");
+        }
+
         return null;
     }
 

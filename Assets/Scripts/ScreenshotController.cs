@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
@@ -39,8 +40,10 @@ public class ScreenshotController : MonoBehaviour {
 	private bool videoPressed;
 
 	private GameObject VideoCaptureFinishMsgPanel;
+    private bool isRecognize = false;
 
-	void Start() {
+
+    void Start() {
 		videoPressed = false;
 
 		confirmVideoButton.SetActive (false);
@@ -48,12 +51,14 @@ public class ScreenshotController : MonoBehaviour {
 
 		VideoCaptureFinishMsgPanel = GameObject.Find("VideoCaptureFinishMsgPanel");
 		VideoCaptureFinishMsgPanel.SetActive(false);
-	}
+
+    }
 
 	void Update()
 	{
 		#if UNITY_IPHONE
 		Debug.Log ("ReplayKit.recordingAvailable-update:" + ReplayKit.recordingAvailable);
+        Debug.Log("ReplayKit.isRecording:" + ReplayKit.isRecording);
 		#endif
 	}
 
@@ -96,6 +101,14 @@ public class ScreenshotController : MonoBehaviour {
 	// Video Button OnClick 
 	public void VideoShotClick() {
 		Debug.Log ("start VideoShotClick -1-");
+
+#if UNITY_ANDROID
+
+        GameObject UnityiOSScreenCapture = GameObject.Find("UnityiOSScreenCapture");
+        UnityiOSScreenCapture captureObj = UnityiOSScreenCapture.GetComponent<UnityiOSScreenCapture>();
+        captureObj.AndroidMsgBoxShow();
+        return;
+#endif
 
 
 #if UNITY_IPHONE
@@ -140,6 +153,9 @@ public class ScreenshotController : MonoBehaviour {
 		// Recording 
 		recording = ReplayKit.isRecording;
 		recording = !recording;
+
+        Debug.Log("VideoShotClick recording:" + recording);
+
 		if (recording) {
 			Debug.Log ("VideoShotClick -6-");
 			//これからレコーディングをスタートする時
@@ -147,19 +163,40 @@ public class ScreenshotController : MonoBehaviour {
 			VideoRecText.SetActive(true);
 			Debug.Log ("I am starting a recording");
 
-			//無駄なUIを非表示にする
-			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
-            GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = false;
+            try {
+                //無駄なUIを非表示にする
+                GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+
+                //バナーを非表示にする
+                GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
 
 
-			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
-			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
-			GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
-			TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-			tap.MessageUI_menu.SetActive (false);
+                //パレットが開かれていたら非表示にする
+                GameObject Utility = GameObject.Find("Utility");
+                Utility.GetComponent<Paint>().CanvasPalette.SetActive(false);
+
+                //if (GameObject.Find("CanvasPalette") != null)
+                //{
+                //    GameObject.Find("CanvasPalette").SetActive(false);
+                //}
+
+                //Twitter,FBボタンを非表示
+                GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+                TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+                if (tap.MessageUI_menu != null) {
+                    isRecognize = true;
+                    tap.MessageUI_menu.SetActive(false);
+                }
+
+            } catch (NullReferenceException ex) {
+                Debug.Log("NullReferenceException");
+            }
 
 
 			ReplayKit.StartRecording(true);	//1st arg = enable microphone
+
+            Debug.Log("VideoShotClick -6.1-");
+            Debug.Log("ReplayKit.isRecording:" + ReplayKit.isRecording);
 		}
 		else {
 			Debug.Log ("VideoShotClick -7-");
@@ -178,12 +215,38 @@ public class ScreenshotController : MonoBehaviour {
 //
 //			Debug.Log ("ReplayKit.recordingAvailable-3:" + ReplayKit.recordingAvailable);
 
-			//非表示にしたUIを再表示
+			//******** 非表示にしたUIを再表示
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
-            GameObject.Find("CanvasPalette").GetComponent<Canvas>().enabled = true;
-			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
-			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
-		}
+
+            //バナー
+            GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
+
+            //パレット
+            GameObject Utility = GameObject.Find("Utility");
+            if (Utility.GetComponent<Paint>().paintFlg == true || Utility.GetComponent<Paint>().eraserFlg == true) {
+                Utility.GetComponent<Paint>().CanvasPalette.SetActive(true);
+            }
+            Utility.GetComponent<Paint>().CanvasPalette.SetActive(false);
+
+            //Twitter,FBボタンを非表示
+            if (isRecognize) {
+                GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+                TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+                if (tap.MessageUI_menu != null)
+                {
+                    tap.MessageUI_menu.SetActive(true);
+                }
+            }
+
+
+            //GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+            //TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+            //if (tap != null)
+            //{
+            //    tap.MessageUI_menu.SetActive(false);
+            //}
+
+        }
 #endif
 
     }
