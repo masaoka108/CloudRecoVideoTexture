@@ -234,10 +234,10 @@ public class VideoPlaybackBehaviour : MonoBehaviour
         if (state == VideoPlayerHelper.MediaState.PLAYING)
         {
 
-        #if UNITY_WSA_10_0 && !UNITY_EDITOR
+#if UNITY_WSA_10_0 && !UNITY_EDITOR
                 // For Direct3D video texture update, we need to be on the rendering thread
                 GL.IssuePluginEvent(VideoPlayerHelper.GetNativeRenderEventFunc(), 0);
-        #else
+#else
             Debug.Log("GL.InvalidateState()");
             GL.InvalidateState();
 #endif
@@ -323,6 +323,8 @@ public class VideoPlaybackBehaviour : MonoBehaviour
         if (mIsInited == true && mInitInProgess == false && state == VideoPlayerHelper.MediaState.READY)
         {
             Debug.Log("SetState:1");
+
+#if UNITY_IPHONE
             //Volume 設定
             GameObject refObjTMP = GameObject.Find("TargetMenuPlane");
             TapEvent tapEvent = refObjTMP.GetComponent<TapEvent>();
@@ -337,6 +339,7 @@ public class VideoPlaybackBehaviour : MonoBehaviour
             {
                 this.VideoPlayer.VolumeOff();
             }
+#endif
 
             //native の　play を実行
             this.VideoPlayer.Play(false, 0);

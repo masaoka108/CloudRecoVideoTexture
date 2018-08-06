@@ -307,35 +307,37 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
         video.VideoRender (data2.url);
 #endif
 
-		// ターゲットのメニューを設定
-		//ターゲット メニューボタンのURLを設定
-		GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
-		Debug.Log ("TargetMenuPlane:" + TargetMenuPlane);
-		TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-		tap.targetURL = targetMenuURL;	//@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
-		tap.fullScreenURL = video.m_path;
+        // ターゲットのメニューを設定
+        //ターゲット メニューボタンのURLを設定
+        GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+        Debug.Log("TargetMenuPlane:" + TargetMenuPlane);
+        TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+        tap.targetURL = targetMenuURL;  //@ToDo 今、動画のURLとなっているのでそれぞれの誘導URLへ変更
+        tap.fullScreenURL = video.m_path;
 
-		//Rec中で無ければメニューを表示
-		GameObject Utility = GameObject.Find ("Utility");
-		ScreenshotController ssc = Utility.GetComponent<ScreenshotController> ();
+        //Rec中で無ければメニューを表示
+        GameObject Utility = GameObject.Find("Utility");
+        ScreenshotController ssc = Utility.GetComponent<ScreenshotController>();
 
-		if (ssc.recording == false) {
-			tap.MessageUI_menu.SetActive (true);
-		}
-
-
-
-
-		//Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
+        if (ssc.recording == false)
+        {
+            tap.MessageUI_menu.SetActive(true);
+        }
 
 
-		// FoundLostUpdate
-		GameObject refObj = GameObject.Find ("CloudRecoTarget");
+
+
+        //Debug.Log ("TutorialUI:" + GameObject.Find ("TutorialUI").GetComponent<Canvas> ().enabled);
+
+#if UNITY_IPHONE
+        // FoundLostUpdate
+        GameObject refObj = GameObject.Find ("CloudRecoTarget");
 		Debug.Log ("refObj:" + refObj);
 		TrackableEventHandler teh = refObj.GetComponent<TrackableEventHandler> ();
 		Debug.Log ("teh:" + teh);
 		teh.FoundLostUpdate ();
-	}
+#endif
+}
 
 
 #endregion //ICloudRecoEventHandler_implementation

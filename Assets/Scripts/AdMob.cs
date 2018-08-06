@@ -31,7 +31,9 @@ public class AdMob : MonoBehaviour {
 		#if UNITY_EDITOR
 		string adUnitId = "ca-app-pub-7513980837257698/1850316452";
 		#elif UNITY_ANDROID
-		string adUnitId = "INSERT_ANDROID_BANNER_AD_UNIT_ID_HERE";
+        //string adUnitId = "ca-app-pub-7513980837257698~5282767373";
+        string adUnitId = "ca-app-pub-7513980837257698/6722899608";
+
 		#elif UNITY_IPHONE
 		string adUnitId = "ca-app-pub-7513980837257698/1850316452";
 		#else
