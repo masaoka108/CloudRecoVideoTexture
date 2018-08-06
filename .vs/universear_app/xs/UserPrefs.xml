@@ -1,0 +1,24 @@
+﻿<Properties StartupConfiguration="{7DA78413-93CE-4DA1-3C0E-A3528CE043CD}|">
+  <MonoDevelop.Ide.ItemProperties.universear__app PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/AdMob.cs">
+    <Files>
+      <File FileName="Assets/SamplesResources/CloudReco/Scripts/CloudRecoEventHandler.cs" Line="291" Column="9" />
+      <File FileName="Assets/Scripts/TrackableEventHandler.cs" Line="194" Column="41" />
+      <File FileName="Assets/Vuforia Video Playback/Scripts/VideoPlayerHelper.cs" Line="95" Column="20" />
+      <File FileName="Assets/Vuforia Video Playback/Scripts/VideoPlaybackBehaviour.cs" Line="248" Column="1" />
+      <File FileName="Assets/iOSScreenCapture/Scripts/UnityiOSScreenCapture.cs" Line="58" Column="1" />
+      <File FileName="Assets/Scripts/PlayVideo.cs" Line="33" Column="32" />
+      <File FileName="Assets/SamplesResources/TextReco/Scripts/TextEventHandler.cs" Line="73" Column="10" />
+      <File FileName="Assets/Scripts/AdMob.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/user/Documents/develop/universear_app/Assets/LineDraw/Scripts/LineFactory.cs" relfile="Assets/LineDraw/Scripts/LineFactory.cs" line="46" column="1" />
+      <Breakpoint file="/Users/user/Documents/develop/universear_app/Assets/Scripts/HlButton.cs" relfile="Assets/Scripts/HlButton.cs" line="232" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
@@ -39,8 +40,10 @@ public class ScreenshotController : MonoBehaviour {
 	private bool videoPressed;
 
 	private GameObject VideoCaptureFinishMsgPanel;
+    private bool isRecognize = false;
 
-	void Start() {
+
+    void Start() {
 		videoPressed = false;
 
 		confirmVideoButton.SetActive (false);
@@ -48,6 +51,15 @@ public class ScreenshotController : MonoBehaviour {
 
 		VideoCaptureFinishMsgPanel = GameObject.Find("VideoCaptureFinishMsgPanel");
 		VideoCaptureFinishMsgPanel.SetActive(false);
+
+    }
+
+	void Update()
+	{
+		#if UNITY_IPHONE
+		Debug.Log ("ReplayKit.recordingAvailable-update:" + ReplayKit.recordingAvailable);
+        Debug.Log("ReplayKit.isRecording:" + ReplayKit.isRecording);
+		#endif
 	}
 
 
@@ -90,7 +102,16 @@ public class ScreenshotController : MonoBehaviour {
 	public void VideoShotClick() {
 		Debug.Log ("start VideoShotClick -1-");
 
-		#if UNITY_IPHONE
+#if UNITY_ANDROID
+
+        GameObject UnityiOSScreenCapture = GameObject.Find("UnityiOSScreenCapture");
+        UnityiOSScreenCapture captureObj = UnityiOSScreenCapture.GetComponent<UnityiOSScreenCapture>();
+        captureObj.AndroidMsgBoxShow();
+        return;
+#endif
+
+
+#if UNITY_IPHONE
 		if (!ReplayKit.APIAvailable) {
 			Debug.Log ("API not available! ");
 			return;
@@ -102,6 +123,7 @@ public class ScreenshotController : MonoBehaviour {
 
 		if (videoPressed) {
 			Debug.Log ("VideoShotClick -3-");
+			//レコーディングを既にしていて、これから終了させる時
 
 			videoPressed = false;
 
@@ -116,6 +138,7 @@ public class ScreenshotController : MonoBehaviour {
 
 		} else {
 			Debug.Log ("VideoShotClick -4-");
+			//これからレコーディングをスタートする時
 
 			videoPressed = true;
 
@@ -130,60 +153,185 @@ public class ScreenshotController : MonoBehaviour {
 		// Recording 
 		recording = ReplayKit.isRecording;
 		recording = !recording;
+
+        Debug.Log("VideoShotClick recording:" + recording);
+
 		if (recording) {
 			Debug.Log ("VideoShotClick -6-");
+			//これからレコーディングをスタートする時
 
 			VideoRecText.SetActive(true);
 			Debug.Log ("I am starting a recording");
 
-			//無駄なUIを非表示にする
-			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+            try {
+                //無駄なUIを非表示にする
+                GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
+
+                //バナーを非表示にする
+                GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
 
 
-			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = false;
-			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerHide();
-			GameObject TargetMenuPlane = GameObject.Find ("TargetMenuPlane");
-			TapEvent tap = TargetMenuPlane.GetComponent<TapEvent> ();
-			tap.MessageUI_menu.SetActive (false);
+                //パレットが開かれていたら非表示にする
+                GameObject Utility = GameObject.Find("Utility");
+                Utility.GetComponent<Paint>().CanvasPalette.SetActive(false);
+
+                //if (GameObject.Find("CanvasPalette") != null)
+                //{
+                //    GameObject.Find("CanvasPalette").SetActive(false);
+                //}
+
+                //Twitter,FBボタンを非表示
+                GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+                TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+                if (tap.MessageUI_menu != null) {
+                    isRecognize = true;
+                    tap.MessageUI_menu.SetActive(false);
+                }
+
+            } catch (NullReferenceException ex) {
+                Debug.Log("NullReferenceException");
+            }
 
 
 			ReplayKit.StartRecording(true);	//1st arg = enable microphone
+
+            Debug.Log("VideoShotClick -6.1-");
+            Debug.Log("ReplayKit.isRecording:" + ReplayKit.isRecording);
 		}
 		else {
 			Debug.Log ("VideoShotClick -7-");
+			//レコーディングを既にしていて、これから終了させる時
+
+			Debug.Log ("ReplayKit.recordingAvailable-1:" + ReplayKit.recordingAvailable);
 
 			Debug.Log ("I am ending a recording");
 			ReplayKit.StopRecording();
 
 			VideoRecText.SetActive(false);
 
-			//非表示にしたUIを再表示
+			Debug.Log ("ReplayKit.recordingAvailable-2:" + ReplayKit.recordingAvailable);
+
+//			StartCoroutine ("waitProcess");
+//
+//			Debug.Log ("ReplayKit.recordingAvailable-3:" + ReplayKit.recordingAvailable);
+
+			//******** 非表示にしたUIを再表示
 			GameObject.Find("Canvas").GetComponent<Canvas>().enabled = true;
-			//GameObject.Find("CanvasCaptureButton").GetComponent<Canvas>().enabled = true;
-			GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
-		}
-		#endif
-	}
 
-	public void VideoConfirm(){
-		#if UNITY_IPHONE
+            //バナー
+            GameObject.Find("MenuButton").GetComponent<AdMob>().BannerShow();
 
-		if (ReplayKit.recordingAvailable) {
-			ReplayKit.Preview();
-		}
+            //パレット
+            GameObject Utility = GameObject.Find("Utility");
+            if (Utility.GetComponent<Paint>().paintFlg == true || Utility.GetComponent<Paint>().eraserFlg == true) {
+                Utility.GetComponent<Paint>().CanvasPalette.SetActive(true);
+            }
+            Utility.GetComponent<Paint>().CanvasPalette.SetActive(false);
 
-		// Go back to normal GUI operation
-		confirmVideoButton.SetActive (false);
-//		cameraButton.SetActive (true);
-		videoButton.SetActive (true);
+            //Twitter,FBボタンを非表示
+            if (isRecognize) {
+                GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+                TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+                if (tap.MessageUI_menu != null)
+                {
+                    tap.MessageUI_menu.SetActive(true);
+                }
+            }
 
-		VideoCaptureFinishMsgPanel.SetActive(false);
 
-		#endif
-	}
+            //GameObject TargetMenuPlane = GameObject.Find("TargetMenuPlane");
+            //TapEvent tap = TargetMenuPlane.GetComponent<TapEvent>();
+            //if (tap != null)
+            //{
+            //    tap.MessageUI_menu.SetActive(false);
+            //}
 
-	public void VideoCaptureFinishMsgPanelHide(){
-		VideoCaptureFinishMsgPanel.SetActive(false);
-	}
+        }
+#endif
+
+    }
+
+    public void VideoConfirm()
+    {
+#if UNITY_IPHONE
+
+        Debug.Log("VideoConfirm");
+        Debug.Log("ReplayKit.recordingAvailable:" + ReplayKit.recordingAvailable);
+
+        StartCoroutine("waitProcessThenPreview");
+
+        Debug.Log("after StartCoroutine:" + ReplayKit.recordingAvailable);
+
+        //      if (ReplayKit.recordingAvailable) {
+        //          Debug.Log ("VideoConfirm -1-");
+        //          ReplayKit.Preview();
+        //      }
+        //
+        //      Debug.Log ("VideoConfirm -2-");
+        //
+        //      // Go back to normal GUI operation
+        //      confirmVideoButton.SetActive (false);
+        ////        cameraButton.SetActive (true);
+        //      videoButton.SetActive (true);
+        //
+        //      Debug.Log ("VideoConfirm -3-");
+        //      Debug.Log ("before VideoCaptureFinishMsgPanel:" + ReplayKit.recordingAvailable);
+        //
+        //      VideoCaptureFinishMsgPanel.SetActive(false);
+        //
+        //      Debug.Log ("VideoConfirm -4-");
+
+#endif
+    }
+
+    public void VideoCaptureFinishMsgPanelHide(){
+        VideoCaptureFinishMsgPanel.SetActive(false);
+    }
+
+
+    private IEnumerator waitProcessThenPreview() {  
+
+
+        #if UNITY_IPHONE
+
+        while(ReplayKit.recordingAvailable == false) {
+        Debug.Log("while recordingAvailable");
+
+        Debug.Log("while recordingAvailable:" + ReplayKit.recordingAvailable);
+        yield return null;
+        }
+
+        Debug.Log("recordingAvailable before break:" + ReplayKit.recordingAvailable);
+
+
+
+
+
+        if (ReplayKit.recordingAvailable) {
+        Debug.Log ("VideoConfirm -1-");
+        ReplayKit.Preview();
+        }
+
+        Debug.Log ("VideoConfirm -2-");
+
+        // Go back to normal GUI operation
+        confirmVideoButton.SetActive (false);
+        //      cameraButton.SetActive (true);
+        videoButton.SetActive (true);
+
+        Debug.Log ("VideoConfirm -3-");
+        Debug.Log ("before VideoCaptureFinishMsgPanel:" + ReplayKit.recordingAvailable);
+
+        VideoCaptureFinishMsgPanel.SetActive(false);
+
+        Debug.Log ("VideoConfirm -4-");
+
+
+        #endif
+
+        yield break;  
+
+    }  
+
 
 }

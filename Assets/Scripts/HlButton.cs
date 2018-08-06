@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class HlButton : MonoBehaviour {
+public class HlButton : MonoBehaviour
+{
+
 
 	/// ボタンをクリックした時の処理
 	public void OnClick() {
@@ -93,8 +96,26 @@ public class HlButton : MonoBehaviour {
 	}
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
+
+        //Androidだったら音量ボタンを非表示にする。
+#if UNITY_ANDROID
+        GameObject refObj = GameObject.Find("TargetMenuPlane");
+        TapEvent tapEvent = refObj.GetComponent<TapEvent>();
+        try {
+            tapEvent.VolumeOffButton.SetActive(false);
+        }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log("myLight was not set in the inspector");
+        }
+  
+//        tapEvent.VolumeOnButton.SetActive(false);
+#endif
+
+
 		//******** 透過処理
 
 //		if (this.name == "MenuButton") {
@@ -126,7 +147,10 @@ public class HlButton : MonoBehaviour {
 //		Debug.Log("HlButton:this.name:" + this.name);
 //
 		Image _This = this.GetComponent<Image>();
-		_This.color = new Color(1,1,1,0.5f);
+		
+        if (_This != null && _This.name != "white_round") {
+            _This.color = new Color(1, 1, 1, 0.5f);
+        }
 
 	}
 
@@ -139,6 +163,146 @@ public class HlButton : MonoBehaviour {
 		SceneManager.LoadScene ("Vuforia-3-CloudReco");
 
 	}
+
+
+    // ペイント ボタン
+    public void OnClickPaint()
+    {
+        Debug.Log("OnClickPaint click!");
+
+        GameObject Utility = GameObject.Find("Utility");
+
+        if (!Utility.GetComponent<Paint>().paintFlg || Utility.GetComponent<Paint>().eraserFlg == true){
+            //******** ペイント モード
+
+            //Flgを変更
+            Utility.GetComponent<Paint>().paintFlg = true;
+            Utility.GetComponent<Paint>().eraserFlg = false;
+
+
+            //消しゴム ボタンを表示
+            Utility.GetComponent<Paint>().EraseButton.SetActive(true);
+            Utility.GetComponent<Paint>().CanvasPalette.SetActive(true);
+
+            //パレットを表示
+
+        } else {
+            //******** ペイント モードを解除
+
+            //Flgを変更
+            Utility.GetComponent<Paint>().paintFlg = false;
+            Utility.GetComponent<Paint>().eraserFlg = false;
+
+            //消しゴム ボタンを表示
+            Utility.GetComponent<Paint>().EraseButton.SetActive(false);
+            Utility.GetComponent<Paint>().CanvasPalette.SetActive(false);
+
+            //パレットを表示
+
+        }
+
+
+
+    }
+
+    // 消しゴム ボタン
+    public void OnClickEraser()
+    {
+        Debug.Log("OnClickEraser click!");
+
+        GameObject Utility = GameObject.Find("Utility");
+
+        if (!Utility.GetComponent<Paint>().eraserFlg)
+        {
+            //******** 消しゴム モード
+
+            //Flgを変更
+            Utility.GetComponent<Paint>().eraserFlg = true;
+
+        }
+        else
+        {
+            //******** 消しゴム モードを解除
+
+            //Flgを変更
+            Utility.GetComponent<Paint>().eraserFlg = false;
+
+        }
+
+    }
+
+
+    // パレットカラー選択 ボタン
+    public void OnClickPaletteColor()
+    {
+        Debug.Log("OnClickPaletteColor click!");
+
+        //********* クリックされたオブジェクトを取得
+        RaycastHit[] hits;
+        //hits = Physics.SphereCastAll(pointer.position, 25.0f, Vector3.back);
+        hits = Physics.SphereCastAll(Input.mousePosition, 50.0f, Vector3.back);
+
+        foreach (var obj in hits)
+        {
+            Color selectColor = obj.collider.gameObject.GetComponent<Image>().color;
+
+            //********* そのカラーを設定
+            GameObject Utility = GameObject.Find("Utility");
+            Paint paint = Utility.GetComponent<Paint>();
+            paint.paintFlg = true;
+            paint.eraserFlg = false;
+            paint.selectColor = selectColor;
+        }
+
+
+    }
+
+
+    public void OnClickAllClear()
+    {
+        Debug.Log("OnClickAllClear click!");
+
+        //********* 全て削除しますか？ ダイアログ
+        GameObject Utility = GameObject.Find("Utility");
+        Utility.GetComponent<Paint>().AllClearMsgPanel.SetActive(true);
+
+
+        //********* 全て削除
+        //GameObject LineCanvas = GameObject.Find("LineCanvas");
+
+        //foreach (Transform child in LineCanvas.transform)
+        //{
+        //    Destroy(child.gameObject);
+        //}
+
+
+    }
+
+
+    public void OnClickAllClearDone()
+    {        
+        //********* 全て削除しますか？ ダイアログ
+        GameObject Utility = GameObject.Find("Utility");
+        Utility.GetComponent<Paint>().AllClearMsgPanel.SetActive(false);
+
+        //********* 全て削除
+        GameObject LineCanvas = GameObject.Find("LineCanvas");
+
+        foreach (Transform child in LineCanvas.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+
+    }
+
+    public void OnClickAllClearNo()
+    {
+        //********* 全て削除しますか？ ダイアログ
+        GameObject Utility = GameObject.Find("Utility");
+        Utility.GetComponent<Paint>().AllClearMsgPanel.SetActive(false);
+
+    }
 
 
 //	// Update is called once per frame

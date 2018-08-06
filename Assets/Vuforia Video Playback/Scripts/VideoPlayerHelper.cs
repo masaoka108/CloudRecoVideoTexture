@@ -247,24 +247,7 @@ public class VideoPlayerHelper
     /// </summary>
     public bool Play(bool fullScreen, float seekPosition)
     {
-        //okamura mod
-        // // We use Unity's built-in full screen movie player
-        // if (fullScreen)
-        // {
-        //     if (mFilename == null)
-        //     {
-        //         return false;
-        //     }
-        //
-        //     Handheld.PlayFullScreenMovie(mFullScreenFilename, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFit);
-        //     return true;
-        // }
-        // else
-        // {
-            // return videoPlayerPlay(fullScreen, seekPosition);
-        // }
         Debug.Log(fullScreen);
-
 
 		GameObject refObj = GameObject.Find("TargetMenuPlane");
 		TapEvent tapEvent = refObj.GetComponent<TapEvent>();
@@ -504,6 +487,17 @@ public class VideoPlayerHelper
     {
         // nothing to do for Android
     }
+
+    private bool videoPlayerVolumeOn()
+    {
+        return false;
+    }
+
+    private bool videoPlayerVolumeOff()
+    {
+        return false;
+    }
+
 
 #elif (UNITY_IPHONE || UNITY_IOS)
 
