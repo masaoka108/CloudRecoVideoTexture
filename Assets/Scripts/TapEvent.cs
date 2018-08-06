@@ -60,122 +60,124 @@ public class TapEvent : MonoBehaviour {
 		GameObject.Find("TutoriaMenulUI").GetComponent<Canvas>().enabled = false;
 	}
 	
-	// Update is called once per frame
-	void Update () {
 
-		GameObject obj = getClickObject ();
+//    //20180806 負荷対策でコメントアウト
+//	// Update is called once per frame
+//	void Update () {
 
-//		Debug.Log ("TapEvent updat-1-:" + obj);
+//		GameObject obj = getClickObject ();
 
-		if (obj != null) {
+////		Debug.Log ("TapEvent updat-1-:" + obj);
 
-			Debug.Log ("TapEvent updat:" + obj);
+//		if (obj != null) {
 
-			if (obj.name == "TargetMenuPlane") {
+//			Debug.Log ("TapEvent updat:" + obj);
 
-//				GameObject MessageUI_menu = GameObject.Find ("MessageUI_menu");
-				if (MessageUI_menu != null) {
-					Debug.Log ("TapEvent updat:MessageUI_menu:true");
-					MessageUI_menu.SetActive (true);
-				}
+//			if (obj.name == "TargetMenuPlane") {
 
-
-//				GameObject www_icon = GameObject.Find ("www_icon");
-//				GameObject fullscreen_icon = GameObject.Find ("fullscreen_icon");
-//				GameObject twitter_icon = GameObject.Find ("twitter_icon");
-//				GameObject fb_icon = GameObject.Find ("fb_icon");
-//				//GameObject insta_icon = GameObject.Find("insta_icon");
-//
-//				showHideGameObject (www_icon);
-//				showHideGameObject (fullscreen_icon);
-//				showHideGameObject (twitter_icon);
-//				showHideGameObject (fb_icon);
-//				//showHideGameObject (insta_icon);
-
-			} else if (obj.name == "www_icon") {
-				//www アイコン
-				if (getVisibleGameObject (obj)) {
-					Application.OpenURL (targetURL);
-				}
-			} else if (obj.name == "fullscreen_icon") {
-				//fullscreen アイコン
-				if (getVisibleGameObject (obj)) {
-					VideoPlaybackBehaviour video = PickVideo ();
-
-					Debug.Log ("fullscreen アイコン");
-					Debug.Log (video);
-
-					if (video != null) {
-						video.VideoPlayer.Pause ();
-						Handheld.PlayFullScreenMovie (fullScreenURL, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFit);
-					}
-
-				}
-			} else if (obj.name == "twitter_icon") {
-				//twitter アイコン
-				if (getVisibleGameObject (obj)) {
-					//@ToDo ここでターゲット画像のURLを取得して添付する
-//					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universear.hiliberate.biz/static/images/IMG_1272.JPG");
-					string tweetMsg = WWW.EscapeURL ("ARアプリ【UNIVERSE AR】画像と動画を登録するだけで誰でも簡単にオリジナルARコンテンツを作成可能！");
-					string tweetURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
-					//string tweetMsg = "ARアプリUNIVERSE";
-					Application.OpenURL ("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);
-				}
-			} else if (obj.name == "fb_icon") {
-				Debug.Log ("fb_icon");
-				//fb アイコン
-				if (getVisibleGameObject (obj)) {
-					Debug.Log ("fb_icon --1--");
-
-					string fbURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
-					Debug.Log ("fb_icon --2--");
-					Debug.Log (fbURL);
-
-					Application.OpenURL ("https://www.facebook.com/share.php?u=" + fbURL);
-
-					Debug.Log ("fb_icon --3--");
-
-				}
-			} else if (obj.name == "insta_icon") {
-				//insta アイコン
-				if (getVisibleGameObject (obj)) {
-
-				}
-			} else if (obj.name == "VolumeOnButton") {
-				//VolumeOnButton アイコン
-				VolumeOnButton.SetActive (false);
-				VolumeOffButton.SetActive (true);
-			} else if (obj.name == "VolumeOffButton") {
-				//VolumeOffButton アイコン
-				VolumeOnButton.SetActive (true);
-				VolumeOffButton.SetActive (false);
-			}
-
-
-		} else {
-
-			if (Input.GetMouseButtonDown (0) || 0 < Input.touchCount) {
-				Debug.Log ("message:del");
-				GameObject MessageUI = GameObject.Find ("MessageUI");
-				if (MessageUI != null) {
-					MessageUI.SetActive (false);
-				}
-
-				Debug.Log ("error panel");
-
-				GameObject MessageUI_err = GameObject.Find ("MessageUI_err");
-				if (MessageUI_err != null) {
-					MessageUI_err.SetActive (false);
-				}
-
-//				GameObject MessageUI_menu = GameObject.Find ("MessageUI_menu");
+////				GameObject MessageUI_menu = GameObject.Find ("MessageUI_menu");
 //				if (MessageUI_menu != null) {
-//					Debug.Log ("TapEvent updat:MessageUI_menu:false");
-//					MessageUI_menu.SetActive (false);
+//					Debug.Log ("TapEvent updat:MessageUI_menu:true");
+//					MessageUI_menu.SetActive (true);
 //				}
-			}
-		}
-	}
+
+
+////				GameObject www_icon = GameObject.Find ("www_icon");
+////				GameObject fullscreen_icon = GameObject.Find ("fullscreen_icon");
+////				GameObject twitter_icon = GameObject.Find ("twitter_icon");
+////				GameObject fb_icon = GameObject.Find ("fb_icon");
+////				//GameObject insta_icon = GameObject.Find("insta_icon");
+////
+////				showHideGameObject (www_icon);
+////				showHideGameObject (fullscreen_icon);
+////				showHideGameObject (twitter_icon);
+////				showHideGameObject (fb_icon);
+////				//showHideGameObject (insta_icon);
+
+//			} else if (obj.name == "www_icon") {
+//				//www アイコン
+//				if (getVisibleGameObject (obj)) {
+//					Application.OpenURL (targetURL);
+//				}
+//			} else if (obj.name == "fullscreen_icon") {
+//				//fullscreen アイコン
+//				if (getVisibleGameObject (obj)) {
+//					VideoPlaybackBehaviour video = PickVideo ();
+
+//					Debug.Log ("fullscreen アイコン");
+//					Debug.Log (video);
+
+//					if (video != null) {
+//						video.VideoPlayer.Pause ();
+//						Handheld.PlayFullScreenMovie (fullScreenURL, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFit);
+//					}
+
+//				}
+//			} else if (obj.name == "twitter_icon") {
+//				//twitter アイコン
+//				if (getVisibleGameObject (obj)) {
+//					//@ToDo ここでターゲット画像のURLを取得して添付する
+////					string tweetMsg = WWW.EscapeURL ("ARアプリUNIVERSE https://universear.hiliberate.biz/static/images/IMG_1272.JPG");
+//					string tweetMsg = WWW.EscapeURL ("ARアプリ【UNIVERSE AR】画像と動画を登録するだけで誰でも簡単にオリジナルARコンテンツを作成可能！");
+//					string tweetURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
+//					//string tweetMsg = "ARアプリUNIVERSE";
+//					Application.OpenURL ("https://twitter.com/share?text=" + tweetMsg + "&url=" + tweetURL);
+//				}
+//			} else if (obj.name == "fb_icon") {
+//				Debug.Log ("fb_icon");
+//				//fb アイコン
+//				if (getVisibleGameObject (obj)) {
+//					Debug.Log ("fb_icon --1--");
+
+//					string fbURL = WWW.EscapeURL ("https://universear.hiliberate.biz/hlar/");
+//					Debug.Log ("fb_icon --2--");
+//					Debug.Log (fbURL);
+
+//					Application.OpenURL ("https://www.facebook.com/share.php?u=" + fbURL);
+
+//					Debug.Log ("fb_icon --3--");
+
+//				}
+//			} else if (obj.name == "insta_icon") {
+//				//insta アイコン
+//				if (getVisibleGameObject (obj)) {
+
+//				}
+//			} else if (obj.name == "VolumeOnButton") {
+//				//VolumeOnButton アイコン
+//				VolumeOnButton.SetActive (false);
+//				VolumeOffButton.SetActive (true);
+//			} else if (obj.name == "VolumeOffButton") {
+//				//VolumeOffButton アイコン
+//				VolumeOnButton.SetActive (true);
+//				VolumeOffButton.SetActive (false);
+//			}
+
+
+//		} else {
+
+//			if (Input.GetMouseButtonDown (0) || 0 < Input.touchCount) {
+//				Debug.Log ("message:del");
+//				GameObject MessageUI = GameObject.Find ("MessageUI");
+//				if (MessageUI != null) {
+//					MessageUI.SetActive (false);
+//				}
+
+//				Debug.Log ("error panel");
+
+//				GameObject MessageUI_err = GameObject.Find ("MessageUI_err");
+//				if (MessageUI_err != null) {
+//					MessageUI_err.SetActive (false);
+//				}
+
+////				GameObject MessageUI_menu = GameObject.Find ("MessageUI_menu");
+////				if (MessageUI_menu != null) {
+////					Debug.Log ("TapEvent updat:MessageUI_menu:false");
+////					MessageUI_menu.SetActive (false);
+////				}
+	//		}
+	//	}
+	//}
 
 	public bool getVisibleGameObject(GameObject obj)
 	{

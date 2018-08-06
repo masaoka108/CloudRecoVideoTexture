@@ -54,13 +54,13 @@ public class ScreenshotController : MonoBehaviour {
 
     }
 
-	void Update()
-	{
-		#if UNITY_IPHONE
-		Debug.Log ("ReplayKit.recordingAvailable-update:" + ReplayKit.recordingAvailable);
-        Debug.Log("ReplayKit.isRecording:" + ReplayKit.isRecording);
-		#endif
-	}
+	//void Update()
+	//{
+	//	#if UNITY_IPHONE
+	//	Debug.Log ("ReplayKit.recordingAvailable-update:" + ReplayKit.recordingAvailable);
+ //       Debug.Log("ReplayKit.isRecording:" + ReplayKit.isRecording);
+	//	#endif
+	//}
 
 
 	// Camera Button Event Trigger on Pointer Down

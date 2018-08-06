@@ -48,21 +48,24 @@ public class TrackableEventHandler : MonoBehaviour, ITrackableEventHandler
 
 	void Update()
 	{
-		if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING) {
-			Debug.Log("TrackableEventHandler:Update:-1-");
+        System.GC.Collect();
 
-			VideoPlayerHelper.MediaState state = video.VideoPlayer.GetStatus();
-			if (state == VideoPlayerHelper.MediaState.ERROR)
-			{
-				Debug.Log("TrackableEventHandler:Update:-2-");
-				Debug.Log("TrackableEventHandler:Update:-2.5-:" + MessageUI_err);
+        //20180806 メモリ対策でテスト的にコメントアウト
+		//if (video.CurrentState == VideoPlayerHelper.MediaState.PLAYING) {
+		//	Debug.Log("TrackableEventHandler:Update:-1-");
 
-				if (MessageUI_err != null && MessageUI_err.active == false) {
-					Debug.Log("TrackableEventHandler:Update:-3-");
-					MessageUI_err.SetActive (true);
-				}
-			}
-		}
+		//	VideoPlayerHelper.MediaState state = video.VideoPlayer.GetStatus();
+		//	if (state == VideoPlayerHelper.MediaState.ERROR)
+		//	{
+		//		Debug.Log("TrackableEventHandler:Update:-2-");
+		//		Debug.Log("TrackableEventHandler:Update:-2.5-:" + MessageUI_err);
+
+		//		if (MessageUI_err != null && MessageUI_err.active == false) {
+		//			Debug.Log("TrackableEventHandler:Update:-3-");
+		//			MessageUI_err.SetActive (true);
+		//		}
+		//	}
+		//}
 	}
 
     #endregion //MONOBEHAVIOUR_METHODS

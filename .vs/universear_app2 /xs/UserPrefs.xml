@@ -1,31 +1,10 @@
 ﻿<Properties StartupConfiguration="{A441DCC5-70DF-E5EB-03D4-F2FB4E517694}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Vuforia Video Playback/Scripts/VideoPlayerHelper.cs">
-    <Files>
-      <File FileName="Assets/Scripts/AdMob.cs" Line="32" Column="7" />
-      <File FileName="Assets/Scripts/ScreenshotController.cs" Line="240" Column="1" />
-      <File FileName="Assets/iOSScreenCapture/Scripts/UnityiOSScreenCapture.cs" Line="142" Column="1" />
-      <File FileName="Assets/Scripts/Paint.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/HlButton.cs" Line="194" Column="52" />
-      <File FileName="Assets/SamplesResources/CloudReco/Scripts/CloudRecoEventHandler.cs" Line="422" Column="23" />
-      <File FileName="Assets/iOSScreenCapture/Scripts/UnityiOS.cs" Line="31" Column="1" />
-      <File FileName="Assets/GoogleMobileAds/Api/MobileAds.cs" Line="28" Column="31" />
-      <File FileName="Assets/Vuforia Video Playback/Scripts/VideoPlaybackBehaviour.cs" Line="321" Column="109" />
-      <File FileName="Assets/Scripts/TrackableEventHandler.cs" Line="176" Column="8" />
-      <File FileName="Assets/SamplesResources/CloudReco/Scripts/CloudRecoTrackableEventHandler.cs" Line="72" Column="18" />
-      <File FileName="Assets/Vuforia Video Playback/Scripts/VideoPlayerHelper.cs" Line="739" Column="32" />
-      <File FileName="Assets/Vuforia/Scripts/DefaultTrackableEventHandler.cs" Line="69" Column="22" />
-      <File FileName="Assets/Scripts/PlayVideo.cs" Line="265" Column="35" />
-      <File FileName="Assets/Vuforia/Scripts/Internal/AndroidUnityPlayer.cs" Line="101" Column="28" />
-      <File FileName="Assets/Vuforia/Scripts/Internal/IOSUnityPlayer.cs" Line="92" Column="28" />
-      <File FileName="Assets/Scripts/MenuButton.cs" Line="48" Column="48" />
-      <File FileName="Assets/Scripts/TapEvent.cs" Line="109" Column="25" />
-      <File FileName="Assets/Scripts/VideoPlaybackMenuOptions.cs" Line="70" Column="21" />
-      <File FileName="Assets/Plugins/iOS/VuforiaMediaSource/src/VideoPlayerWrapper.mm.txt" Line="193" Column="6" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/user/Documents/develop/universear_app2 /Assets/SamplesResources/CloudReco/Scripts/CloudRecoEventHandler.cs" relfile="Assets/SamplesResources/CloudReco/Scripts/CloudRecoEventHandler.cs" line="91" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.ItemProperties.universear__app2_220 PreferredExecutionTarget="Unity.Editor" />
