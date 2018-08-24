@@ -24,10 +24,10 @@ public class CaptureModeChange : MonoBehaviour {
 		ScreenCapture.SetActive (false);
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	//// Update is called once per frame
+	//void Update () {
 		
-	}
+	//}
 
 	public void ChangeCaptureMode () {
 		float captureMode = SliderCaptureMode.GetComponent<Slider>().value;			

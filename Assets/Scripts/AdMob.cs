@@ -21,10 +21,10 @@ public class AdMob : MonoBehaviour {
 
 	}
 
-	// Update is called once per frame
-	void Update () {
+	//// Update is called once per frame
+	//void Update () {
 
-	}
+	//}
 
 	private void RequestBanner()
 	{

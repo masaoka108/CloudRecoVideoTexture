@@ -31,8 +31,8 @@ public class Menu : MonoBehaviour {
 //		this.material = renderer.material;
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	//// Update is called once per frame
+	//void Update () {
 		
-	}
+	//}
 }
