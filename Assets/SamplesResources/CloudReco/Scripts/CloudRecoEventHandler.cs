@@ -463,10 +463,18 @@ public class CloudRecoEventHandler : MonoBehaviour, ICloudRecoEventHandler
 		string os = WWW.EscapeURL(SystemInfo.operatingSystem);
 
 		//device_unique_identifier
-		string ui = WWW.EscapeURL(SystemInfo.deviceUniqueIdentifier);
+		string ui = "";
+
+    #if UNITY_IPHONE
+        ui = WWW.EscapeURL(UnityEngine.iOS.Device.vendorIdentifier);
+        Debug.Log("get vendorIdentifier");
+        Debug.Log(ui);
+#elif UNITY_ANDROID
+        ui = WWW.EscapeURL(SystemInfo.deviceUniqueIdentifier);
+#endif
 
 		// アクセス URL
-		string POST_URL = "https://universear.hiliberate.biz/api/targets/" + targetId + "/ins_access_log/?os=" + os + "&ui" + ui;
+		string POST_URL = "https://universear.hiliberate.biz/api/targets/" + targetId + "/ins_access_log/?os=" + os + "&ui=" + ui;
 		WWW www = new WWW(POST_URL, form);
 		StartCoroutine("WaitForRequest", www);
 	}

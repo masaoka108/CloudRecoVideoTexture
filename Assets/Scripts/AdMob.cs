@@ -15,9 +15,9 @@ public class AdMob : MonoBehaviour {
 	void Awake(){
 		//		DontDestroyOnLoad (this);
 		// バナー広告を表示
-		RequestBanner ();
+		//RequestBanner ();
 
-		bannerView.Show ();
+		//bannerView.Show ();
 
 	}
 
@@ -56,11 +56,11 @@ public class AdMob : MonoBehaviour {
 	}
 
 	public void BannerShow() {
-		bannerView.Show ();
+		//bannerView.Show ();
 	}
 
 	public void BannerHide() {
-		bannerView.Hide ();
+		//bannerView.Hide ();
 	}
 
 }

@@ -304,6 +304,11 @@ public class HlButton : MonoBehaviour
 
     }
 
+    public void OnClickNewTutorial()
+    {
+        Debug.Log("b click");
+        SceneManager.LoadScene("Tutorial");
+    }
 
 //	// Update is called once per frame
 //	void Update () {
